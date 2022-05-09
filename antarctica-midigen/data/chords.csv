@@ -1,0 +1,70 @@
+Ode-to-Napoleon hexachord;6-20;0 1 4 5 8 9;Atonal
+Petrushka chord;6-30;0 1 4 6 7 t;Bitonal
+Magic chord;8;0 1 5 6 t 0 3 5;Just
+Viennese trichord;3-5A;0 1 6;Atonal
+Mu chord;4-22;0 2 4 7;Major
+Diminished chord;3-10;0 3 6;Diminished
+Diminished seventh chord (leading-tone and secondary chord);4-28;0 3 6 9;Diminished
+Diminished major seventh chord;4-18;0 3 6 e;Diminished
+Half-diminished seventh chord;4-27;0 3 6 t;Diminished
+Minor chord;3-11;0 3 7;Minor
+Minor sixth chord;4-27;0 3 7 9;Minor
+Minor sixth ninth chord (6/9);5-29;0 3 7 9 2;Minor
+Minor major seventh chord;4-19;0 3 7 e;Minor
+Minor seventh chord;4-26;0 3 7 t;Minor
+Minor ninth chord;5-27;0 3 7 t 2;Minor
+Minor eleventh chord;6-32;0 3 7 t 2 5;Minor
+Minor thirteenth chord;7-35;0 3 7 t 2 5 9;Minor
+Dominant seventh flat five chord;4-25;0 4 6 t;Diminished
+Thirteenth flat ninth flat fifth chord[2];6-z49;0 4 6 t 1 x 9[7];M3+d5
+Ninth flat fifth chord[2];5-33;0 4 6 t 2;M3+d5
+Major chord;3-11;0 4 7;Major
+Major sixth chord;4-26;0 4 7 9;Major
+Major sixth ninth chord ("6 add 9",[2] Nine six,[3] 6/9);5-35;0 4 7 9 2;Major
+Seven six chord[5];5-25;0 4 7 9 t;Major
+Major seventh chord;4-20;0 4 7 e;Major
+Major ninth chord;5-27;0 4 7 e 2;Major
+Major eleventh chord;6-z25;0 4 7 e 2 5;Major
+Major thirteenth chord;7-35;0 4 7 e 2 6 9;Major
+Lydian chord;5-20;0 4 7 e 6;Major
+Dominant seventh chord;4-27;0 4 7 t;Major
+Dominant minor ninth;5-31;0 4 7 t 1;Major
+Thirteenth flat ninth chord[2];6-27;0 4 7 t 1 x 9[7];Major
+Dominant ninth;5-34;0 4 7 t 2;Major
+Dominant eleventh chord;6-33;0 4 7 t 2 5;Major
+Dominant thirteenth chord;7-35;0 4 7 t 2 5 9;Major
+Augmented eleventh chord[1];6-34;0 4 7 t 2 6;Major
+Dominant seventh sharp nine / Hendrix chord;5-32;0 4 7 t 3;Major
+Augmented chord;3-12;0 4 8;Augmented
+Augmented major seventh chord;4-19;0 4 8 e;Augmented
+Major seventh sharp eleventh chord;5-30;0 4 8 e 6;Augmented
+Augmented seventh chord;4-24;0 4 8 t;Augmented
+Ninth augmented fifth chord[2][4];5-33;0 4 8 t 2;Augmented
+Augmented sixth chord 1;3-8;0 4 t;Predominant
+Augmented sixth chord 2;4-25;0 4 6 t;Predominant
+Augmented sixth chord 3;4-27B;0 4 7 t;Predominant
+Dream chord;4-6;0 5 6 7;Just
+Suspended chord;3-9;0 5 7;Suspended
+Seventh suspension four chord[6];4-23;0 5 7 t;Suspended
+So What chord;5-35;0 5 t 3 7;Bitonal
+Viennese trichord;3-5A;0 6 7;Atonal
+Mystic chord;6-34;0 6 t 4 9 2;Atonal
+Power chord
+P5;2-5;0 7;Indeterminate
+Elektra chord;5-32;0 7 9 1 4;Bitonal
+Farben chord;5-z17;0 8 e 4 9;Atonal
+Northern lights chord;11-1;1 2 8 0 3 6 7 t e 4 7;Atonal
+Neapolitan chord;3-11;1 5 8;Major
+Minor second m2;;0 1;
+Major second M2;;0 2;
+Minor third m3;;0 3;
+Major third M3;;0 4;
+Perfect Fourth P4;;0 5;
+Diminished fifth d5 / agumented forth A4;;0 6;
+Perfect fifth P5;;0 7;
+Minor sixth m6;;0 8;
+Major sixth M6;;0 9;
+minor seventh m7;;0 t;
+Major seventh M7;;0 e;
+Perfect octave P8;;0 0;
+
