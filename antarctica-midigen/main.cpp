@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
 
 
-    mc.loadChordMap( "/home/c1/MISUCO/antarctica/data/chords.csv" );
-    mc.loadScaleMap( "/home/c1/MISUCO/antarctica/data/scales_cleaned_sorted.csv" );
+    mc.loadChordMap( "/home/c1/MISUCO/antarctica/antarctica-midigen/data/chords.csv" );
+    mc.loadScaleMap( "/home/c1/MISUCO/antarctica/antarctica-midigen/data/scales_cleaned_sorted.csv" );
     mc.loadMidiFile( "/home/c1/ownCloud/studio-exchange/schoenberg/Midi/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
     mc.analyzeMidiFile();
 

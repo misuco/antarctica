@@ -67,4 +67,17 @@ class sliderPlus {
 		this.valueFunction = f;
 	}
 	
+	inc() {
+			this.value+=this.step;
+			if(this.value>this.max) this.value=this.max;
+			this.slider.value = this.value;
+			this.valueFunction(this.value);
+	}
+	
+	dec() {
+			this.value-=this.step;
+			if(this.value<this.min) this.value=this.min;
+			this.slider.value = this.value;
+			this.valueFunction(this.value);
+	}	
 }

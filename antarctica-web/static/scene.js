@@ -8,6 +8,8 @@ var scene = new BABYLON.Scene(engine);
 var spheres = [];
 var sp=0;
 
+var selectedSpot;
+
 var angel = 0;
 var distance = 10;
 var speed = -0.02;
@@ -119,8 +121,8 @@ function addNextPoint() {
 		var alpha = parseFloat(fields[6]);
 		var hypotenuse = parseFloat(fields[5]) + 90;
 	
-		var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse;
-		var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse;
+		var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse * 1.865;
+		var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse * 1.865;
 		
 		xmin = Math.min( pointX , xmin );
 		ymin = Math.min( pointY , ymin );		
@@ -159,9 +161,9 @@ function addNextPoint() {
 
 			var sphere;
 			if( fields[2] == "Summit"  ) {
-				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:0.015,height:sHeight,depth:0.015, diameterTop: 0, diameterBottom: 0.05, tessellation: 4}, scene);    
+				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:0.05,height:sHeight,depth:0.05, diameterTop: 0, diameterBottom: 0.15, tessellation: 4}, scene);    
 			} else {
-				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.015,height:sHeight,depth:0.015}, scene);    
+				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.05,height:sHeight,depth:0.05}, scene);    
 			}
 			sphere.position.x = pointX;
 			sphere.position.z = pointY;
@@ -180,7 +182,7 @@ function addNextPoint() {
 				sphere.material = mWhite;
 				//base.material = mWhite;
 			}
-			*/
+
 			
 			if( fields[2] == "Building"  ) {
 				sphere.material = mRed;
@@ -217,6 +219,9 @@ function addNextPoint() {
 			} else {
 				sphere.material = mGray;
 			}
+			*/
+
+			sphere.material = mRed;
 				
 
 			sphere.actionManager = new BABYLON.ActionManager(scene);
@@ -229,6 +234,9 @@ function addNextPoint() {
 					function (event) { 
 						//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );						
 						infoPanel.text = fields[1] + "\n" + fields[2] + "\n" + fields[9] + "\n" + fields[10];
+						selectedSpot.position.x = pointX;
+						selectedSpot.position.z = pointY;
+						triggerNewSound();
 					 }
 				)
 			);
@@ -398,14 +406,19 @@ var createScene = function () {
     var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
     var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 1, -1), scene);
 
-    // Add and manipulate meshes in the scene
+    // The south pole
     var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:2}, scene);
-
 	var mat = new BABYLON.StandardMaterial("mat", scene);
 	mat.diffuseColor = BABYLON.Color3.Blue();
 	mat.alpha = 0.5;
-
 	sphere.material=mat;
+
+    // The selected spot
+    selectedSpot = BABYLON.MeshBuilder.CreateSphere("selectedSpot", {diameter:0.5}, scene);
+	var mat2 = new BABYLON.StandardMaterial("mat2", scene);
+	mat2.diffuseColor = BABYLON.Color3.Green();
+	mat2.alpha = 0.5;
+	selectedSpot.material=mat2;
 
 	var soundTrack1 = new BABYLON.SoundTrack(scene);
 	
