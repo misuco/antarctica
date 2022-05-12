@@ -12,7 +12,7 @@ var selectedSpot;
 
 var angel = 0;
 var distance = 10;
-var speed = -0.02;
+var speed = -0.001;
 
 var alphashift = 0.0;
 var alphaoffset = 0.0;
@@ -20,7 +20,9 @@ var betashift = 0.0;
 
 var csvLoaded = false;
 var csvIndex = 0;
+var recordIndex = 0;
 var lines;
+var records = [];
 var fieldId;
 
 var infoPanel;
@@ -89,26 +91,9 @@ function addNextPoint() {
 	camera.target.x = Math.sin(angel)*distance;
 	camera.position.z = 0;//Math.cos(angel)*distance;
 	camera.target.z = Math.cos(angel)*distance;
-	camera.alpha=angel*-1 + alphaoffset;
-	//camera.beta=Math.PI / 2 + betashift;
-		
-	/*
-	console.log("camera.position.y " + camera.position.y + " beta " + camera.beta + " diff " + ( camera.beta - Math.PI / 2 ) ); 
-	if(camera.position.y > 1.1 || camera.position.y < -1.1 ) {
-		console.log("direction change");
-		camera.beta = ( (camera.beta - Math.PI / 2) * -1 ) + Math.PI / 2;
-		camera.position.y += camera.beta - Math.PI / 2;
-		camera.target.y += camera.beta - Math.PI / 2;
-	console.log("camera.position.y " + camera.position.y + " beta " + camera.beta + " diff " + ( camera.beta - Math.PI / 2 ) ); 
-	}
-	if(camera.position.y > 1.1  || camera.position.y < -1.1 ) {
-		camera.beta=Math.PI/2;
-	}
-	*/
-	
+	camera.alpha=angel*-1 + alphaoffset;	
 	camera.position.y += betashift;
 	camera.target.y += betashift;
-
 	
 	//console.log("camera.position.y " + camera.position.y + " beta " + camera.beta + " diff " + ( camera.beta - Math.PI / 2 ) ); 
 	//console.log("distance " + distance + " alphashift " + alphashift ); 
@@ -121,8 +106,8 @@ function addNextPoint() {
 		var alpha = parseFloat(fields[6]);
 		var hypotenuse = parseFloat(fields[5]) + 90;
 	
-		var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse * 1.865;
-		var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse * 1.865;
+		var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse * 1.867;
+		var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse * 1.867;
 		
 		xmin = Math.min( pointX , xmin );
 		ymin = Math.min( pointY , ymin );		
@@ -233,9 +218,10 @@ function addNextPoint() {
 					},
 					function (event) { 
 						//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );						
-						infoPanel.text = fields[1] + "\n" + fields[2] + "\n" + fields[9] + "\n" + fields[10];
+						infoPanel.text = fields[5] + "\n" + fields[6] + "\n" + fields[13] + "\n" + fields[14];
 						selectedSpot.position.x = pointX;
 						selectedSpot.position.z = pointY;
+						recordIndex = csvIndex;
 						triggerNewSound();
 					 }
 				)
@@ -243,153 +229,14 @@ function addNextPoint() {
 
 			//spheres[csvIndex] = sphere;
 
-			/*
-			var plane = BABYLON.Mesh.CreatePlane("plane", 1 );
-			plane.parent = sphere;
-			plane.position.x = 50;
-			plane.position.y = 5;
-
-			var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(plane);
-
-			var button1 = BABYLON.GUI.Button.CreateSimpleButton("but1", fields[1]);
-			button1.width = 100;
-			button1.height = 10;
-			button1.color = "white";
-			button1.fontSize = 50;
-			button1.background = "transparent";
-			button1.onPointerUpObservable.add(function() {
-				alert("you did it!");
-			});
-			advancedTexture.addControl(button1);
-			*/
-			
-//			camera.target.x = camposx;
-//			camera.target.y = camposy;
-//			camera.target.z = 100;
-//			camera.position.x = camposx;
-//			camera.position.y = camposy;
-//			camera.position.z = 600;
+			fields.unshift(alpha,hypotenuse,pointX,pointY);
+			records[csvIndex]=fields;
 		}
 		csvIndex++;		
 	 } else {
 		statusPanel.text = "- loaded: " + csvIndex + " angel: " + Math.round(angel*100)/100  + " distance: " + distance + " height: " + camera.target.y;		 
 	 }
 	 
-}
-
-var pointActions = function() {
-
-		/*
-		console.log("have sphere at x: " + parseFloat(fields[6]) + " y: " + parseFloat(fields[5]) + " ar int x: " + parseInt(fields[6]) + " y: " + parseInt(fields[5]) );
-		sphere.actionManager = new BABYLON.ActionManager(scene);
-		
-		sphere.actionManager.registerAction(
-			new BABYLON.ExecuteCodeAction(
-				{
-					trigger: BABYLON.ActionManager.OnPickTrigger
-				},
-				function (event) { 
-					console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y);
-					camera.setPosition( new BABYLON.Vector3(event.source.position.x,event.source.position.y,50) );
-
-					camera.position.x=event.source.position.x;
-					camera.position.y=event.source.position.y;
-					camera.position.z=50;
-
-					camera.target.x=event.source.position.x;
-					camera.target.y=event.source.position.y;
-					camera.target.z=0;
-				 }
-			)
-		);
-		*/
-		
-					
-		/*
-		var oReq = new XMLHttpRequest();
-		oReq.sphere = sphere;
-		oReq.addEventListener("load", function() {
-			var music1 = new BABYLON.Sound(
-			  "track1",
-			  this.responseText,
-			  scene,
-			  function() {
-				console.log("music 1 ready... play");
-				console.log("music 1 class: " + music1.getClassName() );
-				console.log("music 1 gain: " + music1.getSoundGain() );
-				console.log("music 1 audio buffer: " + music1.getAudioBuffer() );
-				console.log("music 1 time: " + music1.currentTime );
-				
-			  },
-			  { loop: true, autoplay: true }
-			);
-			
-			console.log("loading sound:"+this.responseText);
-			
-			music1.distanceModel="exponential";
-			music1.rolloffFactor=1;
-			/*
-			music1.refDistance=10;
-			music1.distanceModel="linear";
-			music1.maxDistance=10;
-
-			music1.attachToMesh( spheres[sp++] );
-			
-			console.log("attaching sound:"+this.responseText);
-		});
-		
-		var getUrl = window.location;
-		var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ; //+ getUrl.pathname.split('/')[1];		
-		
-		console.log("getUrl " + getUrl + " " + baseUrl);
-		oReq.open("GET", baseUrl + "newclip?id="+Date.now()+"&clipId="+i+"&tempo=60");
-		oReq.send();
-			*/
-		
-
-	/*
-		sphere.actionManager.registerAction(
-			new BABYLON.SetValueAction(
-				BABYLON.ActionManager.OnPickTrigger, 
-				sphere, 
-				"scaling", 
-				new BABYLON.Vector3( 1.2, 1.2, 1.2 )
-			)
-		);
-
-		sphere.actionManager.registerAction(
-			new BABYLON.SetValueAction(
-				BABYLON.ActionManager.OnPickTrigger, 
-				camera, 
-				"target", 
-				new BABYLON.Vector3(2,2,0)
-	//			new BABYLON.Vector3(parseInt(fields[8]),parseInt(fields[7]),0)
-			)
-		);
-		
-		sphere.actionManager.registerAction(
-			new BABYLON.SetValueAction(
-				BABYLON.ActionManager.OnPickTrigger, 
-				camera, 
-				"position", 
-				new BABYLON.Vector3(2,2,50)
-	//			new BABYLON.Vector3(parseInt(fields[8]),parseInt(fields[7]),50)
-			)
-		);	
-	*/
-
-		
-	//		  console.log("[" + fields[0] + ","  + fields[1] + ","  + fields[2] + "," + fields[7] + "," + fields[8] + "],");
-			
-			/*
-		  for (var j = 0; j < fields.length && j < fieldId.length; j++) {
-			  console.log(" field "+ fieldId[j] + " value "+fields[j]);
-	//		var fieldValue = fields[j].replace(/#/g, prefix);
-	//		option[fieldId[j]] = fieldValue;
-		  }
-		  */
-	//	  destination.push(option);
-
 }
 
 var oReq = new XMLHttpRequest();
@@ -511,7 +358,7 @@ camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, new 
 // 0.00637
 //camera = new BABYLON.StereoscopicArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,50), 0.00137, 1, scene);
 camera.target.x = 0;
-camera.target.y = 0;
+camera.target.y = 0.7;
 camera.target.z = 0;
 
 createScene(); //Call the createScene function

@@ -1,3 +1,5 @@
+/* 6 370 099 200 combinations
+ */
 var clipId = 50;
 var tempo = 100;
 var loopLength = 1;
@@ -45,12 +47,20 @@ var triggerNewSound = function() {
 					soundTrack1.removeSound(music2);
 					music2.dispose();
 				}
-				
+				                    				
 				soundTrack1.addSound(music1);
+				music1.onEndedObservable.addOnce(() => {
+						recordIndex++;
+						if(recordIndex>=records.length) recordIndex=0;
+						selectedSpot.position.x = records[recordIndex][2];
+						selectedSpot.position.z = records[recordIndex][3];						
+						infoPanel.text = records[recordIndex][5] + "\n" + records[recordIndex][6] + "\n" + records[recordIndex][13] + "\n" + records[recordIndex][14];
+						triggerNewSound();
+                    });
 				music1.setVolume(1);
 				music1.play();
 			  },
-			  { loop: true }
+			  { loop: false }
 			);
 			
 			console.log("loading sound:"+this.responseText);

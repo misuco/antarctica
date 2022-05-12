@@ -17,7 +17,7 @@ var createCamSliders = function (scene,panel) {
 		alphaoffset = value;
 	} );
 
-	var row12 = new sliderPlus( panel, 12, "B", 0, 0.01, Math.PI, 0 );
+	var row12 = new sliderPlus( panel, 12, "B", 0, 0.01, Math.PI, Math.PI/2 );
 	row12.setValueFunction( function(value) {
 		camera.beta = value;
 	} );
