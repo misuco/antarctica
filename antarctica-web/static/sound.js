@@ -123,7 +123,7 @@ var createSound = function (scene,panel) {
 		scale = value;
 	} );
 
-	row8= new sliderPlus( panel, 8, "Arrange", 1, 1, 2, arrange );
+	row8= new sliderPlus( panel, 8, "Arrange", 1, 1, 10, arrange );
 	row8.setValueFunction( function(value) {
 		arrange = value;
 	} );

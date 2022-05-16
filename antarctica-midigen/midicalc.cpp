@@ -37,6 +37,7 @@ int Midicalc::filterKey(int key) {
 
 void Midicalc::setBPM(int b)
 {
+    if(b==0) b=1;
     bpm = b;
     currentTempo = setTempo( currentTempo / bpm );
 }
@@ -189,6 +190,8 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
 
     /* loop n */
 
+    int nBlocks;
+
     int loopOffset = 0;
     int n=0;
     for( auto& config: blockConfigs) {
@@ -197,13 +200,14 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
 
         setQuarter( config.block );
         setTranspose( config.transpose );
+        initScaleFilter( config.scale, config.note );
         if(config.tempo > 0) {
             tempoEvent.tick = loopOffset;
             setBPM( config.tempo );
             midiOut.addEvent( 1, loopOffset, tempoEvent );
         }
 
-        int nBlocks = toQuarter - fromQuarter + 1;
+        nBlocks = toQuarter - fromQuarter + 1;
 
         qDebug() << loopOffset << "   * beat  " << n << " from " << fromQuarter << " to " << toQuarter << " nBlocks " << nBlocks;
         qDebug() << "   * index " << n << " from " << fromIndex << " to " << toIndex;
@@ -255,7 +259,10 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
     midievent[0] = 0xFF;
     midievent[1] = 0x2F;
     midievent[2] = 0x00;
-    midiOut.addEvent( 1, loopOffset, midievent );
+
+    int endoftrack = loopOffset + tpq*(nBlocks+2);
+    midiOut.addEvent( 1, endoftrack, midievent );
+    qDebug() << " added EOT @  " << endoftrack;
 
     midiOut.sortTracks();         // make sure data is in correct order
 

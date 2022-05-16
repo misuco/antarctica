@@ -19,7 +19,7 @@ var alphaoffset = 0.0;
 var betashift = 0.0;
 
 var csvLoaded = false;
-var csvIndex = 0;
+var csvIndex = 1;
 var recordIndex = 0;
 var lines;
 var records = [];
@@ -79,6 +79,32 @@ function processCsv(csv) {
   lines = csv.split('\n');
   fieldId = lines[0].split(';');
   
+  for(var i=1;i<lines.length;i++) {
+		var line = lines[i];
+		var fields = line.split('|');
+		
+		if(fields.length > 6) {
+		
+			var alpha = parseFloat(fields[6]);
+			var hypotenuse = parseFloat(fields[5]) + 90;
+		
+			var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse * 1.8665;
+			var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse * 1.8665;
+			
+			xmin = Math.min( pointX , xmin );
+			ymin = Math.min( pointY , ymin );		
+			xmax = Math.max( pointX , xmax );
+			ymax = Math.max( pointY , ymax );
+
+			fields.unshift(alpha,hypotenuse,pointX,pointY);
+			records[i]=fields;
+			
+			console.log("scanning point " + i + " x " + pointX + " y "+ pointY + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
+		}
+  }
+  
+  console.log("scanned csv records " + lines.length + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
+  
   csvLoaded = true;
 }
 
@@ -98,36 +124,21 @@ function addNextPoint() {
 	//console.log("camera.position.y " + camera.position.y + " beta " + camera.beta + " diff " + ( camera.beta - Math.PI / 2 ) ); 
 	//console.log("distance " + distance + " alphashift " + alphashift ); 
 	
-	if(csvLoaded == true && csvIndex < lines.length) {
-		var line = lines[csvIndex];
-
-		var fields = line.split('|');
+	if(csvLoaded == true && csvIndex < records.length) {
 		
-		var alpha = parseFloat(fields[6]);
-		var hypotenuse = parseFloat(fields[5]) + 90;
-	
-		var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse * 1.867;
-		var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse * 1.867;
+		var fields = records[csvIndex];
 		
-		xmin = Math.min( pointX , xmin );
-		ymin = Math.min( pointY , ymin );		
-		xmax = Math.max( pointX , xmax );
-		ymax = Math.max( pointY , ymax );
-		
-		var camposx = xmin + (xmax-xmin) / 2;
-		var camposy = ymin + (ymax-ymin) / 2;
-		
-		statusPanel.text = "loading: " + csvIndex + " "  + fields[1] + " angel: " + Math.round(angel*100)/100  + " distance: " + distance + " height: " + camera.target.y;
+		statusPanel.text = "loading: " + csvIndex + " "  + fields[5] + " angel: " + Math.round(angel*100)/100  + " distance: " + distance + " height: " + camera.target.y;
 		//if( csvIndex%100==0 ) console.log( "- new record: " + csvIndex + " "  + fields[1] + " x: " + pointX + " y: " + pointY  + " xmin: " + xmin + " ymin: " + ymin   + " xmax: " + xmax + " ymax: " + ymax );
 
 		if (fields.length > 8) {
 						
 			var sHeight = 0.015;
 			
-			if( fields[2] == "Summit"  ) {
+			if( fields[6] == "Summit"  ) {
 				
-				if( fields[10].includes(" m,") ) {
-					var words = fields[10].split(" m,");
+				if( fields[14].includes(" m,") ) {
+					var words = fields[14].split(" m,");
 					var number = words[0].substring(words[0].length-5);
 					
 					if(number.charAt(1)==",") {
@@ -145,20 +156,20 @@ function addNextPoint() {
 						
 
 			var sphere;
-			if( fields[2] == "Summit"  ) {
+			if( fields[6] == "Summit"  ) {
 				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:0.05,height:sHeight,depth:0.05, diameterTop: 0, diameterBottom: 0.15, tessellation: 4}, scene);    
 			} else {
 				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.05,height:sHeight,depth:0.05}, scene);    
 			}
-			sphere.position.x = pointX;
-			sphere.position.z = pointY;
+			sphere.position.x = fields[2];
+			sphere.position.z = fields[3];
 			sphere.position.y = sHeight / 2;
 
 			
 			/*
 			var base = BABYLON.MeshBuilder.CreateBox("box", {width:0.07,height:0.02,depth:0.07}, scene);    
-			base.position.x = pointX;
-			base.position.z = pointY;
+			base.position.x = fields[2];
+			base.position.z = fields[3];
 			
 			if( (alpha + 180) % 40 > 20 ) {
 				sphere.material = mRed;
@@ -169,37 +180,37 @@ function addNextPoint() {
 			}
 
 			
-			if( fields[2] == "Building"  ) {
+			if( fields[6] == "Building"  ) {
 				sphere.material = mRed;
-			} else if( fields[2] == "Island"  ) {
+			} else if( fields[6] == "Island"  ) {
 				sphere.material = mYellow;
-			} else if( fields[2] == "Area"  ) {
+			} else if( fields[6] == "Area"  ) {
 				sphere.material = mCyan;
-			} else if( fields[2] == "Glacier"  ) {
+			} else if( fields[6] == "Glacier"  ) {
 				sphere.material = mCyan;
-			} else if( fields[2] == "Valley"  ) {
+			} else if( fields[6] == "Valley"  ) {
 				sphere.material = mCyan;
-			} else if( fields[2] == "Cape"  ) {
+			} else if( fields[6] == "Cape"  ) {
 				sphere.material = mCyan;
-			} else if( fields[2] == "Basin"  ) {
+			} else if( fields[6] == "Basin"  ) {
 				sphere.material = mCyan;
-			} else if( fields[2] == "Ridge"  ) {
+			} else if( fields[6] == "Ridge"  ) {
 				sphere.material = mGreen;
-			} else if( fields[2] == "Range"  ) {
+			} else if( fields[6] == "Range"  ) {
 				sphere.material = mGreen;
-			} else if( fields[2] == "Bay"  ) {
+			} else if( fields[6] == "Bay"  ) {
 				sphere.material = mBlue;
-			} else if( fields[2] == "Stream"  ) {
+			} else if( fields[6] == "Stream"  ) {
 				sphere.material = mBlue;
-			} else if( fields[2] == "Lake"  ) {
+			} else if( fields[6] == "Lake"  ) {
 				sphere.material = mBlue;
-			} else if( fields[2] == "Gap"  ) {
+			} else if( fields[6] == "Gap"  ) {
 				sphere.material = mBlue;
-			} else if( fields[2] == "Channel"  ) {
+			} else if( fields[6] == "Channel"  ) {
 				sphere.material = mBlue;
-			} else if( fields[2] == "Cliff"  ) {
+			} else if( fields[6] == "Cliff"  ) {
 				sphere.material = mMagenta;
-			} else if( fields[2] == "Summit"  ) {
+			} else if( fields[6] == "Summit"  ) {
 				sphere.material = mWhite;				
 			} else {
 				sphere.material = mGray;
@@ -219,8 +230,8 @@ function addNextPoint() {
 					function (event) { 
 						//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );						
 						infoPanel.text = fields[5] + "\n" + fields[6] + "\n" + fields[13] + "\n" + fields[14];
-						selectedSpot.position.x = pointX;
-						selectedSpot.position.z = pointY;
+						selectedSpot.position.x = fields[2];
+						selectedSpot.position.z = fields[3];
 						recordIndex = csvIndex;
 						triggerNewSound();
 					 }
@@ -229,8 +240,6 @@ function addNextPoint() {
 
 			//spheres[csvIndex] = sphere;
 
-			fields.unshift(alpha,hypotenuse,pointX,pointY);
-			records[csvIndex]=fields;
 		}
 		csvIndex++;		
 	 } else {

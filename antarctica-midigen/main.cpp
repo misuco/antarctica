@@ -32,9 +32,14 @@ int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
 
+    QFile file1( ":/data/chords.csv" );
+    if( file1.exists() ) { qDebug() << "chords.csv exists"; } else { qDebug() << "chords.csv does NOT exist"; }
+    QFile file2( ":/data/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
+    if( file2.exists() ) { qDebug() << "_Sechs_kleine_Klavierstcke_Op exists"; } else  { qDebug() << "_Sechs_kleine_Klavierstcke_Op does NOT exist"; }
 
-    mc.loadChordMap( "/home/c1/MISUCO/antarctica/antarctica-midigen/data/chords.csv" );
-    mc.loadScaleMap( "/home/c1/MISUCO/antarctica/antarctica-midigen/data/scales_cleaned_sorted.csv" );
+    mc.loadChordMap( ":/data/chords.csv" );
+    mc.loadScaleMap( ":/data/scales_cleaned_sorted.csv" );
+    //mc.loadMidiFile( ":/data/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
     mc.loadMidiFile( "/home/c1/ownCloud/studio-exchange/schoenberg/Midi/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
     mc.analyzeMidiFile();
 
@@ -109,170 +114,103 @@ int main(int argc, char *argv[])
 
     if( arrange == 1 ) {
         for(int r=0;r<=20;r++) {
-            config.push_back( { block, pitch+r*2, 20 + r*20 } );
+            config.push_back( { block, pitch+r*2, 20 + r*20, basenote, scale } );
         }
         for(int r=0;r<10;r++) {
-            config.push_back( { block, pitch+40, 420 } );
+            config.push_back( { block, pitch+40, 420, basenote, scale } );
         }
         for(int r=20;r>=0;r--) {
-            config.push_back( { block, pitch+r*2, 20 + r*20 } );
+            config.push_back( { block, pitch+r*2, 20 + r*20, basenote, scale } );
         }
-//    } else if( arrange == 2 ) {
-//        for(int r=0;r<repeat;r++) {
-//        }
+    } else if( arrange == 2 ) {
+        for(int r=0;r<repeat;r++) {
+            config.push_back( { block, pitch, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 5, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 4, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 9, tempo, basenote, scale } );
+        }
+    } else if( arrange == 3 ) {
+        for(int r=0;r<repeat;r++) {
+            config.push_back( { block, pitch, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 1, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 2, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 3, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 4, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 5, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 6, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 7, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 8, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 9, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 10, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 11, tempo, basenote, scale } );
+        }
+    } else if( arrange == 4 ) {
+        for(int r=0;r<repeat;r++) {
+            for(int c=0;c<loopLength;c++) {
+                config.push_back( { block+c, pitch, tempo, basenote, scale } );
+            }
+            for(int c=0;c<loopLength;c++) {
+                config.push_back( { block+c, pitch + 5, tempo, basenote, scale } );
+            }
+            for(int c=0;c<loopLength*4;c++) {
+                config.push_back( { block+c, pitch, tempo * 4, basenote, scale } );
+            }
+            for(int c=0;c<loopLength*4;c++) {
+                config.push_back( { block+c, pitch + 5, tempo * 4, basenote, scale } );
+            }
+            for(int c=0;c<loopLength*8;c++) {
+                config.push_back( { block+c, pitch, tempo * 8, basenote, scale } );
+            }
+            for(int c=0;c<loopLength*8;c++) {
+                config.push_back( { block+c, pitch + 5, tempo * 8, basenote, scale } );
+            }
+            for(int c=0;c<loopLength*16;c++) {
+                config.push_back( { block+c, pitch, tempo * 16, basenote, scale } );
+            }
+            for(int c=0;c<loopLength*16;c++) {
+                config.push_back( { block+c, pitch + 5, tempo * 16, basenote, scale } );
+            }
+        }
+    } else if( arrange == 5 ) {
+        for(int r=0;r<repeat;r++) {
+            for(int s=0;s<4;s++) {
+                for(int c=0;c<loopLength;c++) {
+                    config.push_back( { block+c, pitch, tempo, basenote, scale+s } );
+                }
+            }
+        }
+    } else if( arrange == 6 ) {
+        for(int r=0;r<repeat;r++) {
+            for(int n=0;n<4;n++) {
+                for(int c=0;c<loopLength;c++) {
+                    config.push_back( { block+c, pitch, tempo, basenote+n*2, scale } );
+                }
+            }
+        }
+    } else if( arrange == 7 ) {
+        for(int r=0;r<repeat;r++) {
+            for(int c=0;c<loopLength;c++) {
+                config.push_back( { block+c, pitch-24, tempo, basenote, scale } );
+            }
+            for(int c=0;c<loopLength;c++) {
+                config.push_back( { block+c, pitch+24, tempo, basenote, scale } );
+            }
+            for(int c=0;c<loopLength;c++) {
+                config.push_back( { block+c, pitch-12, tempo, basenote, scale } );
+            }
+            for(int c=0;c<loopLength;c++) {
+                config.push_back( { block+c, pitch+12, tempo, basenote, scale } );
+            }
+        }
     } else {
         for(int r=0;r<repeat;r++) {
             for(int c=0;c<loopLength;c++) {
-                config.push_back( { block+c, pitch, tempo } );
+                config.push_back( { block+c, pitch, tempo, basenote, scale } );
             }
         }
     }
 
     createNewSong( target, tempo, config, scale, basenote  );
-
-    //createNewSong( target, tempo, config );
-
-    /*
-    int from=0;
-    int to=999999;
-
-    QFile file("../antarctica/AntarcticNames.csv");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return 0;
-
-    int timestamp = 1645492942;  // 2022-02-22 02:22:22
-    int linecount = 0;
-    int minlen = 100;
-    int maxlen = 0;
-
-    QString minname;
-    QString maxname;
-
-    QMap<QString, int> spotTypes;
-
-    QMap<QString, QStringList> itemsByDate;
-
-    file.readLine();
-
-    while (!file.atEnd()) {
-        QString line = QString::fromLatin1( file.readLine() );
-        QStringList items = line.split( ";" );
-        linecount++;
-
-        QString date1 = items.at(11);
-        QString date2 = items.at(13);
-        QString date3 = items.at(14);
-        QString date = date3.isEmpty() ? ( date2.isEmpty() ? date1 : date2 ) : date3;
-
-        QString year  = date.right(4);
-        QString month = date.left(2);
-        QString day   = date.mid(3,2);
-
-        QString latitude = items.at(3);
-        QString longitude = items.at(4);
-
-        QString index = QString("%1-%2-%3-%4-%5-%6").arg( year,month,day,latitude,longitude ).arg( items.at(0),5,'0');
-
-        qDebug() << " read line " << index << " into records " << items.at(1) << " looping from " << items.at(2) << " lat " << latitude << " lon " << longitude;
-        itemsByDate.insert( index, items );
-    }
-
-    file.close();
-
-    qDebug() << " read lines " << linecount << " into records " << itemsByDate.size() << " looping from " << from << " to " << to;
-
-    /*
-    QDateTime dateTime;
-    dateTime.setTimeZone( QTimeZone::utc() );
-
-    linecount = 0;
-    for( const auto& date : itemsByDate.keys() ) {
-
-        QStringList items = itemsByDate[ date ];
-
-        linecount++;
-
-        QString name = items.at(1);
-        QString type = items.at(2);
-        QString latitude = items.at(3);
-        QString longitude = items.at(4);
-        QString date1 = items.at(11);
-        QString date2 = items.at(14);
-        QString description = items.at(15);
-
-        int itemlen = items.at(1).length();
-        if( itemlen > maxlen ) {
-            maxlen = itemlen;
-            maxname = name;
-        }
-        if( itemlen < minlen ) {
-            minlen = itemlen;
-            minname = name;
-        }
-
-        spotTypes[ type ]++;
-
-        dateTime = QDateTime::fromSecsSinceEpoch( timestamp );
-        timestamp+=60;
-
-        if( linecount >= from && linecount < to ) {
-            vector<Midicalc::BlockConfig> config;
-
-            qDebug() << QString("%1 %2 %3 %4 %5 %6 %7").arg( linecount, 5 ).arg( name, -20 ).arg( type, -10).arg( latitude, 8).arg( longitude, 8).arg( date1, 11 ).arg( date2, 11 );
-            QString filename = QString( "%1-%2.mid" ).arg( linecount, 5, 10, QChar('0') ).arg( name.replace(QRegularExpression("\\s+"),"_") );
-
-            QString nameForRandom = name;
-            nameForRandom.replace(QRegularExpression("\\s+"),"");
-
-            int randomLen = nameForRandom.length();
-
-            int tempo = 60 + (linecount % 180);
-            int nBeats = 4 + nameForRandom.length() % (tempo / 16);
-
-            int blockVariance = 1 + (nameForRandom.at(0).toLatin1() % (nBeats / 3) );
-            qDebug() << "beats " << nBeats << " tempo " << tempo << " variance " << blockVariance;
-
-            vector<int> blockVariants;
-            for(int i=0;i<blockVariance;i++) {
-                int sum=0;
-                for(int j=0;j<4;j++) {
-                    int charIndex = (i*4+j) % randomLen;
-                    sum+=nameForRandom.at(charIndex).toLatin1();
-                }
-                int blockNr = sum % 186;
-                blockVariants.push_back( blockNr );
-                quarterHistogram[ blockNr ]++;
-            }
-
-            int sum=0;
-            int transpose=0;
-            for(int i=0;i<nBeats;i++) {
-                int charIndex1 = i % randomLen;
-                int charIndex2 = (i+1) % randomLen;
-                sum+=nameForRandom.at(charIndex1).toLatin1();
-                int block = blockVariants.at( sum % blockVariance );
-
-                int transposeValue = (sum + nameForRandom.at(charIndex2).toLatin1() ) % 5;
-                switch(sum%3) {
-                case 1:
-                    transpose+=transposeValue;
-                    break;
-                case 2:
-                    transpose-=transposeValue;
-                    break;
-                }
-
-                config.push_back( { block, transpose } );
-                //qDebug() << "block " << block << " trans " << transpose;
-            }
-            createNewSong( filename, tempo, config );
-        }
-    }
-
-    for( auto &nr : quarterHistogram.keys() ) {
-        qDebug() << "block " << nr << " " << quarterHistogram[ nr ];
-    }
-    */
 
     return 0;
 }

@@ -26,6 +26,8 @@ public:
         int block;
         int transpose;
         int tempo;
+        int note;
+        int scale;
     };
 
     Midicalc();

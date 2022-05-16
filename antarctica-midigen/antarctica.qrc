@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>data/scales_cleaned_sorted.csv</file>
+        <file>data/chords.csv</file>
+        <file>data/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid</file>
+    </qresource>
+</RCC>

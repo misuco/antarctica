@@ -49,11 +49,12 @@ set(HDRS
     midifile/include/Options.h
 )
 
+
 add_library(midifile STATIC ${SRCS} ${HDRS})
 
+set(SOURCES main.cpp midicalc.cpp midicalc.hpp )
+qt5_add_resources(RESOURCES antarctica.qrc)
+
 ##############################
-add_executable(antarctica
-  main.cpp
-  midicalc.cpp midicalc.hpp
-)
+add_executable(antarctica ${SOURCES} ${RESOURCES} )
 target_link_libraries(antarctica Qt${QT_VERSION_MAJOR}::Core midifile )
