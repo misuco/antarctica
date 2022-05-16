@@ -172,19 +172,15 @@ int main(int argc, char *argv[])
             }
         }
     } else if( arrange == 5 ) {
-        for(int r=0;r<repeat;r++) {
-            for(int s=0;s<4;s++) {
-                for(int c=0;c<loopLength;c++) {
-                    config.push_back( { block+c, pitch, tempo, basenote, scale+s } );
-                }
+        for(int s=0;s<repeat;s++) {
+            for(int c=0;c<loopLength;c++) {
+                config.push_back( { block+c, pitch, tempo, basenote, scale+s } );
             }
         }
     } else if( arrange == 6 ) {
-        for(int r=0;r<repeat;r++) {
-            for(int n=0;n<4;n++) {
-                for(int c=0;c<loopLength;c++) {
-                    config.push_back( { block+c, pitch, tempo, basenote+n*2, scale } );
-                }
+        for(int n=0;n<repeat;n++) {
+            for(int c=0;c<loopLength;c++) {
+                config.push_back( { block+c, pitch, tempo, basenote+n*2, scale } );
             }
         }
     } else if( arrange == 7 ) {
@@ -201,6 +197,28 @@ int main(int argc, char *argv[])
             for(int c=0;c<loopLength;c++) {
                 config.push_back( { block+c, pitch+12, tempo, basenote, scale } );
             }
+        }
+    } else if( arrange == 8 ) {
+        for(int r=0;r<repeat;r++) {
+            config.push_back( { block, pitch, tempo, basenote, scale } );
+            config.push_back( { block, pitch, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 5, tempo, basenote, scale } );
+            config.push_back( { block, pitch, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 7, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 5, tempo, basenote, scale } );
+            config.push_back( { block, pitch, tempo, basenote, scale } );
+            config.push_back( { block, pitch - 4, tempo, basenote, scale } );
+        }
+    } else if( arrange == 9 ) {
+        for(int r=0;r<repeat;r++) {
+            config.push_back( { block, pitch + 11, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 4, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 9, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 2, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 7, tempo, basenote, scale } );
+            config.push_back( { block, pitch - 1, tempo, basenote, scale } );
+            config.push_back( { block, pitch, tempo, basenote, scale } );
+            config.push_back( { block, pitch + 4, tempo, basenote, scale } );
         }
     } else {
         for(int r=0;r<repeat;r++) {
