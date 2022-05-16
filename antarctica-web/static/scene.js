@@ -97,7 +97,7 @@ function processCsv(csv) {
 			ymax = Math.max( pointY , ymax );
 
 			fields.unshift(alpha,hypotenuse,pointX,pointY);
-			records[i]=fields;
+			records[i-1]=fields;
 			
 			console.log("scanning point " + i + " x " + pointX + " y "+ pointY + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
 		}
