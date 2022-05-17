@@ -24,6 +24,7 @@ var recordIndex = 0;
 var lines;
 var records = [];
 var fieldId;
+var sectorMap = new Map();
 
 var infoPanel;
 var statusPanel;
@@ -91,6 +92,17 @@ function processCsv(csv) {
 			var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse * 1.8665;
 			var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse * 1.8665;
 			
+			var sectorX = Math.floor(pointX/6);
+			var sectorY = Math.floor(pointY/6);
+			var sectorId = sectorX + ";" + sectorY;
+			if(sectorMap.has(sectorId)) {
+				var sectorCount = sectorMap.get(sectorId);
+				sectorCount++;
+				sectorMap.set(sectorId,sectorCount);
+			} else {
+				sectorMap.set(sectorId,1);
+			}
+			
 			xmin = Math.min( pointX , xmin );
 			ymin = Math.min( pointY , ymin );		
 			xmax = Math.max( pointX , xmax );
@@ -99,12 +111,17 @@ function processCsv(csv) {
 			fields.unshift(alpha,hypotenuse,pointX,pointY);
 			records[i-1]=fields;
 			
-			console.log("scanning point " + i + " x " + pointX + " y "+ pointY + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
+			//console.log("scanning point " + i + " x " + pointX + " y "+ pointY + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
 		}
   }
   
   console.log("scanned csv records " + lines.length + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
-  
+  var sectorEntryCount = 0;
+  for (const [key, value] of sectorMap) {
+		console.log(key + ' = ' + value)
+		sectorEntryCount += value;
+  }  
+  console.log("populated sectors " + sectorMap.size + " total entries " + sectorEntryCount );
   csvLoaded = true;
 }
 
