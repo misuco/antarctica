@@ -67,6 +67,13 @@ class sliderPlus {
 		this.valueFunction = f;
 	}
 	
+	setRandomValue() {
+		var fragments=(this.max-this.min)/this.step;
+		this.value=this.min+Math.round((Math.random()*fragments)*this.step);
+		this.slider.value = this.value;
+		this.valueFunction(this.value);
+	}
+	
 	inc() {
 			this.value+=this.step;
 			if(this.value>this.max) this.value=this.max;

@@ -23,54 +23,75 @@ var row6;
 var row7;
 var row8;
 
-var triggerNewSound = function() {
+var randomSound = function() {
+		row1.setRandomValue();
+		row2.setRandomValue();
+		row3.setRandomValue();
+		row4.setRandomValue();
+		row5.setRandomValue();
+		row6.setRandomValue();
+		row7.setRandomValue();
+		row8.setRandomValue();
+}
 
-		row1.inc();
-		row2.inc();
+var triggerNewSound = function() {
 		
 		var oReq = new XMLHttpRequest();
 		oReq.addEventListener("load", function() {
-			music2=music1;
-			music1 = new BABYLON.Sound(
-			  "track1",
-			  this.responseText,
-			  scene,
-			  function() {
-				console.log("music 1 ready... play");
-				console.log("music 1 class: " + music1.getClassName() );
-				console.log("music 1 gain: " + music1.getSoundGain() );
-				console.log("music 1 audio buffer: " + music1.getAudioBuffer() );
-				console.log("music 1 time: " + music1.currentTime );
+			if(this.response.includes("Error")) {
+				console.log("server error!!!");
+				statusPanel2.text = "server error!!!";
+			} else {
+				music2=music1;
+				music1 = new BABYLON.Sound(
+				  "track1",
+				  this.responseText,
+				  scene,
+				  function() {
+					console.log("music 1 ready... play");
+					console.log("music 1 class: " + music1.getClassName() );
+					console.log("music 1 gain: " + music1.getSoundGain() );
+					console.log("music 1 audio buffer: " + music1.getAudioBuffer() );
+					console.log("music 1 time: " + music1.currentTime );
+					
+					if(music2!=undefined) {
+						music2.stop();
+						soundTrack1.removeSound(music2);
+						music2.dispose();
+					}
+														
+					soundTrack1.addSound(music1);
+					
+					music1.onEndedObservable.addOnce(() => {
+						music1.stop();
+					});
+					/*
+					music1.onEndedObservable.addOnce(() => {
+							recordIndex++;
+							if(recordIndex>=records.length) recordIndex=0;
+							selectedSpot.position.x = records[recordIndex][2];
+							selectedSpot.position.z = records[recordIndex][3];						
+							infoPanel.text = records[recordIndex][5] + "\n" + records[recordIndex][6] + "\n" + records[recordIndex][13] + "\n" + records[recordIndex][14];
+							triggerNewSound();
+						});
+						*/
+					music1.setVolume(1);
+					music1.play();
+					statusPanel2.text = " playing: " + music1.currentTime;
+				  },
+				  { loop: false }
+				);
 				
-				if(music2!=undefined) {
-					music2.stop();
-					soundTrack1.removeSound(music2);
-					music2.dispose();
-				}
-				                    				
-				soundTrack1.addSound(music1);
-				music1.onEndedObservable.addOnce(() => {
-						recordIndex++;
-						if(recordIndex>=records.length) recordIndex=0;
-						selectedSpot.position.x = records[recordIndex][2];
-						selectedSpot.position.z = records[recordIndex][3];						
-						infoPanel.text = records[recordIndex][5] + "\n" + records[recordIndex][6] + "\n" + records[recordIndex][13] + "\n" + records[recordIndex][14];
-						triggerNewSound();
-                    });
-				music1.setVolume(1);
-				music1.play();
-			  },
-			  { loop: false }
-			);
-			
-			console.log("loading sound:"+this.responseText);
+				console.log("loading sound:"+this.responseText);
+				statusPanel2.text = "loading sound:"+this.responseText;
+			}
 		});
 		
 		var getUrl = window.location;
 		var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ; //+ getUrl.pathname.split('/')[1];		
 		
-		console.log("getUrl " + getUrl + " " + baseUrl);
-		oReq.open("GET", baseUrl + "newclip?id="+Date.now()+"&clipId="+clipId+"&tempo="+tempo+"&loopLength="+loopLength+"&repeat="+repeat+"&pitch="+pitch+"&basenote="+basenote+"&scale="+scale+"&arrange="+arrange);
+		statusPanel2.text = "downloading " + getUrl + "/" + recordIndex + "-"+Date.now();
+		oReq.open("GET", baseUrl + "newclip?id="+recordIndex+"-"+Date.now()+"&clipId="+clipId+"&tempo="+tempo+"&loopLength="+loopLength+"&repeat="+repeat+"&pitch="+pitch+"&basenote="+basenote+"&scale="+scale+"&arrange="+arrange);
 		oReq.send();
     }
     

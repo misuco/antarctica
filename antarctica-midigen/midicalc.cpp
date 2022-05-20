@@ -286,7 +286,7 @@ void Midicalc::saveNewMidiFile(const string &filename)
     //p.setProgram( "../antarctica/fluidsynth-2.2.5-win10-x64/bin/fluidsynth.exe" );
     //p.setArguments( {"../antarctica/fluidsynth-2.2.5-win10-x64/sf/TimGM6mb.sf2", QString::fromStdString( filename ), "-F", QString::fromStdString( filename ).append( ".wav" ) });
     p.setProgram( "fluidsynth" );
-    p.setArguments( { QString::fromStdString(filename), "-F", QString::fromStdString(filename)+".wav" , "-r", "48000", "-O", "s24" });
+    p.setArguments( { "/home/antarctica/antarcticalibs/TimGM6mb.sf2", QString::fromStdString(filename), "-F", QString::fromStdString(filename)+".wav" , "-r", "48000", "-O", "s24" });
     p.start();
     p.waitForFinished();
 

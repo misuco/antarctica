@@ -11,7 +11,7 @@ var sp=0;
 var selectedSpot;
 
 var angel = 0;
-var distance = 10;
+var distance = 5;
 var speed = -0.001;
 
 var alphashift = 0.0;
@@ -28,6 +28,7 @@ var sectorMap = new Map();
 
 var infoPanel;
 var statusPanel;
+var statusPanel2;
 
 var xmin=0;
 var ymin=0;
@@ -89,8 +90,8 @@ function processCsv(csv) {
 			var alpha = parseFloat(fields[6]);
 			var hypotenuse = parseFloat(fields[5]) + 90;
 		
-			var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse * 1.8665;
-			var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse * 1.8665;
+			var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse * 1.8667;
+			var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse * 1.8667;
 			
 			var sectorX = Math.floor(pointX/6);
 			var sectorY = Math.floor(pointY/6);
@@ -126,15 +127,26 @@ function processCsv(csv) {
 }
 
 function addNextPoint() {
+	
+	if(music1!=undefined) {
+		if(music1.isPlaying) {
+			statusPanel2.text = " playing: " + Math.round( music1.currentTime ) + " secs | spot nr: " + recordIndex;
+		} else if( music1.currentTime > 0 ) {
+			statusPanel2.text = " end at: " + Math.round( music1.currentTime ) + " secs | spot nr: " + recordIndex;
+		} else {
+			statusPanel2.text = " end at: " + Math.round( music1.currentTime ) + " secs | spot nr: " + recordIndex;
+		}
+	}
+
 	angel+=speed;
 	
 	distance += alphashift * -0.01; 
 	
-	camera.position.x = 0;//Math.sin(angel)*distance;
-	camera.target.x = Math.sin(angel)*distance;
-	camera.position.z = 0;//Math.cos(angel)*distance;
-	camera.target.z = Math.cos(angel)*distance;
-	camera.alpha=angel*-1 + alphaoffset;	
+	camera.position.x = selectedSpot.position.x + Math.sin(angel)*distance //0; //Math.sin(angel)*distance;
+	camera.target.x = selectedSpot.position.x;
+	camera.position.z = selectedSpot.position.z + Math.sin(angel)*distance //0; //Math.cos(angel)*distance;
+	camera.target.z = selectedSpot.position.z;
+	//camera.alpha=angel + alphaoffset;	
 	camera.position.y += betashift;
 	camera.target.y += betashift;
 	
@@ -145,12 +157,12 @@ function addNextPoint() {
 		
 		var fields = records[csvIndex];
 		
-		statusPanel.text = "loading: " + csvIndex + " "  + fields[5] + " angel: " + Math.round(angel*100)/100  + " distance: " + distance + " height: " + camera.target.y;
+		statusPanel.text = csvIndex + " "  + fields[5] + " loading ...";
 		//if( csvIndex%100==0 ) console.log( "- new record: " + csvIndex + " "  + fields[1] + " x: " + pointX + " y: " + pointY  + " xmin: " + xmin + " ymin: " + ymin   + " xmax: " + xmax + " ymax: " + ymax );
 
 		if (fields.length > 8) {
 						
-			var sHeight = 0.015;
+			var sHeight = 0.05;
 			
 			if( fields[6] == "Summit"  ) {
 				
@@ -175,6 +187,8 @@ function addNextPoint() {
 			var sphere;
 			if( fields[6] == "Summit"  ) {
 				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:0.05,height:sHeight,depth:0.05, diameterTop: 0, diameterBottom: 0.15, tessellation: 4}, scene);    
+			} else if( fields[6] == "Building"  ) {
+				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);    
 			} else {
 				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.05,height:sHeight,depth:0.05}, scene);    
 			}
@@ -197,6 +211,8 @@ function addNextPoint() {
 			}
 
 			
+			*/
+
 			if( fields[6] == "Building"  ) {
 				sphere.material = mRed;
 			} else if( fields[6] == "Island"  ) {
@@ -228,13 +244,10 @@ function addNextPoint() {
 			} else if( fields[6] == "Cliff"  ) {
 				sphere.material = mMagenta;
 			} else if( fields[6] == "Summit"  ) {
-				sphere.material = mWhite;				
+				sphere.material = mRed;				
 			} else {
-				sphere.material = mGray;
+				sphere.material = mGreen;
 			}
-			*/
-
-			sphere.material = mRed;
 				
 
 			sphere.actionManager = new BABYLON.ActionManager(scene);
@@ -246,10 +259,11 @@ function addNextPoint() {
 					},
 					function (event) { 
 						//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );						
-						infoPanel.text = fields[5] + "\n" + fields[6] + "\n" + fields[13] + "\n" + fields[14];
+						infoPanel.text = "spot nr. " + csvIndex + "\n" + fields[5] + "\n" + fields[6] + "\n" + fields[13] + "\n" + fields[14];
 						selectedSpot.position.x = fields[2];
 						selectedSpot.position.z = fields[3];
 						recordIndex = csvIndex;
+						randomSound();
 						triggerNewSound();
 					 }
 				)
@@ -260,7 +274,7 @@ function addNextPoint() {
 		}
 		csvIndex++;		
 	 } else {
-		statusPanel.text = "- loaded: " + csvIndex + " angel: " + Math.round(angel*100)/100  + " distance: " + distance + " height: " + camera.target.y;		 
+		statusPanel.text = "- loaded all " + csvIndex;		 
 	 }
 	 
 }
@@ -280,11 +294,11 @@ var createScene = function () {
     var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 1, -1), scene);
 
     // The south pole
-    var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:2}, scene);
-	var mat = new BABYLON.StandardMaterial("mat", scene);
-	mat.diffuseColor = BABYLON.Color3.Blue();
-	mat.alpha = 0.5;
-	sphere.material=mat;
+    //var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:2}, scene);
+	//var mat = new BABYLON.StandardMaterial("mat", scene);
+	//mat.diffuseColor = BABYLON.Color3.Blue();
+	//mat.alpha = 0.5;
+	//sphere.material=mat;
 
     // The selected spot
     selectedSpot = BABYLON.MeshBuilder.CreateSphere("selectedSpot", {diameter:0.5}, scene);
@@ -355,6 +369,15 @@ var createScene = function () {
 	statusPanel.color = "white";
 	panel2.addControl(statusPanel, 1, 1);
 	
+	statusPanel2 = new BABYLON.GUI.TextBlock();
+	statusPanel2.text = "Please select objects to load sound.";
+	statusPanel2.textWrapping=true;
+	statusPanel2.textVerticalAlignment=BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM
+	//statusPanel.width = "500px";
+	//statusPanel.height = "500px";
+	statusPanel2.color = "white";
+	panel2.addControl(statusPanel2, 1, 0);
+	
 	advancedTexture2.addControl(panel2);
 
 
@@ -386,6 +409,8 @@ camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, new 
 camera.target.x = 0;
 camera.target.y = 0.7;
 camera.target.z = 0;
+
+camera.attachControl(canvas, true);
 
 createScene(); //Call the createScene function
 

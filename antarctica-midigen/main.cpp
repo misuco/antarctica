@@ -40,7 +40,8 @@ int main(int argc, char *argv[])
     mc.loadChordMap( ":/data/chords.csv" );
     mc.loadScaleMap( ":/data/scales_cleaned_sorted.csv" );
     //mc.loadMidiFile( ":/data/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
-    mc.loadMidiFile( "/home/c1/ownCloud/studio-exchange/schoenberg/Midi/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
+    //mc.loadMidiFile( "/home/c1/ownCloud/studio-exchange/schoenberg/Midi/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
+    mc.loadMidiFile( "/home/antarctica/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
     mc.analyzeMidiFile();
 
     for(int i=0;i<argc;i++) {
