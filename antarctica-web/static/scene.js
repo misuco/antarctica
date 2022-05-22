@@ -134,7 +134,7 @@ function addNextPoint() {
 		} else if( music1.currentTime > 0 ) {
 			statusPanel2.text = " end at: " + Math.round( music1.currentTime ) + " secs | spot nr: " + recordIndex;
 		} else {
-			statusPanel2.text = " end at: " + Math.round( music1.currentTime ) + " secs | spot nr: " + recordIndex;
+			//statusPanel2.text = " end at: " + Math.round( music1.currentTime ) + " secs | spot nr: " + recordIndex;
 		}
 	}
 
@@ -188,7 +188,7 @@ function addNextPoint() {
 			if( fields[6] == "Summit"  ) {
 				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:0.05,height:sHeight,depth:0.05, diameterTop: 0, diameterBottom: 0.15, tessellation: 4}, scene);    
 			} else if( fields[6] == "Building"  ) {
-				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);    
+				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:0.1}, scene);    
 			} else {
 				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.05,height:sHeight,depth:0.05}, scene);    
 			}
@@ -244,7 +244,7 @@ function addNextPoint() {
 			} else if( fields[6] == "Cliff"  ) {
 				sphere.material = mMagenta;
 			} else if( fields[6] == "Summit"  ) {
-				sphere.material = mRed;				
+				sphere.material = mWhite;				
 			} else {
 				sphere.material = mGreen;
 			}
@@ -337,7 +337,7 @@ var createScene = function () {
     panel.addRowDefinition(0.05);
     panel.addRowDefinition(0.05);
     panel.addRowDefinition(0.05);
-	
+    	
 	advancedTexture.addControl(panel);
        
 	createAudioAnalyser(scene);
@@ -355,8 +355,7 @@ var createScene = function () {
 	infoPanel.text = "--- Hello Antarctica ---";
 	infoPanel.textWrapping=true;
 	infoPanel.textVerticalAlignment=BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
-	//infoPanel.width = "500px";
-	//infoPanel.height = "500px";
+	infoPanel.fontSize=40;
 	infoPanel.color = "white";
 	panel2.addControl(infoPanel, 0, 1);
 	
@@ -364,17 +363,14 @@ var createScene = function () {
 	statusPanel.text = "--- loading ---";
 	statusPanel.textWrapping=true;
 	statusPanel.textVerticalAlignment=BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM
-	//statusPanel.width = "500px";
-	//statusPanel.height = "500px";
 	statusPanel.color = "white";
 	panel2.addControl(statusPanel, 1, 1);
 	
 	statusPanel2 = new BABYLON.GUI.TextBlock();
 	statusPanel2.text = "Please select objects to load sound.";
 	statusPanel2.textWrapping=true;
+	statusPanel2.fontSize=100;
 	statusPanel2.textVerticalAlignment=BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM
-	//statusPanel.width = "500px";
-	//statusPanel.height = "500px";
 	statusPanel2.color = "white";
 	panel2.addControl(statusPanel2, 1, 0);
 	
@@ -391,7 +387,7 @@ var createScene = function () {
     backgroundMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/TropicalSunnyDay", scene);
     backgroundMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     skybox.material = backgroundMaterial;
-
+    
 /*
     const xr = scene.createDefaultXRExperienceAsync({
         floorMeshes: [env.ground]
@@ -409,6 +405,16 @@ camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, new 
 camera.target.x = 0;
 camera.target.y = 0.7;
 camera.target.z = 0;
+
+console.log("angularSensibilityX " + camera.angularSensibilityX + " camera.angularSensibilityY " + camera.angularSensibilityY + " camera.panningSensibility " + camera.panningSensibility);
+
+camera.angularSensibilityX=10000;
+camera.angularSensibilityY=10000;
+camera.panningSensibility=10000;
+camera.wheelDeltaPercentage=0.01;
+camera.wheelPresision=0.01;
+camera.pinchDeltaPercentage=0.01;
+camera.pinchPresision=0.01;
 
 camera.attachControl(canvas, true);
 

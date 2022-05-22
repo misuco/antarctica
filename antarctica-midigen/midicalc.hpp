@@ -96,6 +96,8 @@ private:
 
     vector<bool> scaleFilter;
     vector<int> scaleFilterMap;
+    int scaleFilterLowestNote;
+    int scaleFilterHighestNote;
 
     //vector<int> endIndicies;
     //vector<int> blockQuarter;

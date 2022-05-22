@@ -19,20 +19,25 @@
 
 int Midicalc::filterKey(int key) {
 
-    if(scaleFilterMap[key] == -1) {
-        int mapKey=0;
-        while(scaleFilter.at(key+mapKey)!=true && scaleFilter.at(key-mapKey)!=true ) {
-            mapKey++;
+    if(key>=scaleFilterHighestNote) {
+        return scaleFilterHighestNote;
+    } else if(key<=scaleFilterLowestNote) {
+        return scaleFilterLowestNote;
+    } else if(scaleFilterMap[key] == -1) {
+        int mapKeyUp=key;
+        int mapKeyDown=key;
+
+        while(scaleFilter.at(mapKeyDown)!=true && scaleFilter.at(mapKeyUp)!=true ) {
+            mapKeyDown--;
+            mapKeyUp++;
         }
-        if(scaleFilter.at(key+mapKey)==true) {
-            scaleFilterMap[key] = key+mapKey;
-        } else if(scaleFilter.at(key-mapKey)==true) {
-            scaleFilterMap[key] = key-mapKey;
+        if( scaleFilter.at(mapKeyUp)==true) {
+            scaleFilterMap[key] = mapKeyUp;
+        } else if( scaleFilter.at(mapKeyDown)==true ) {
+            scaleFilterMap[key] = mapKeyDown;
         }
     }
-
     return scaleFilterMap[key];
-
 }
 
 void Midicalc::setBPM(int b)
@@ -70,18 +75,30 @@ void Midicalc::setTranspose(int n)
 
 void Midicalc::initScaleFilter(int scale, int basenote)
 {
+    qDebug() << "init scale filter " << scaleMap[scalePool.at(scale)];
+
+    // clear existing filter
+    scaleFilter.clear();
+    scaleFilterMap.clear();
     for(int i=0;i<127;i++) {
         scaleFilter.push_back( false );
         scaleFilterMap.push_back( -1 );
     }
+
+    // seek lowest hearable note
+    scaleFilterLowestNote = basenote;
+    while(scaleFilterLowestNote<21) { scaleFilterLowestNote+=12; }
+
+    // get record
     QStringList scaleSteps=scalePool.at(scale).split("-");
 
-    qDebug() << "init scale filter " << scaleMap[scalePool.at(scale)];
-
     int stepI = 0;
-    for(int i=basenote;i<127;i++) {
+    for(int i=scaleFilterLowestNote;i<127;) {
         scaleFilter.at(i)=true;
+        scaleFilterHighestNote=i;
+
         qDebug() << "*** scale note " << i;
+
         if(scaleSteps.at(stepI)=="H") {
             i+=1;
         } else if(scaleSteps.at(stepI)=="W") {
@@ -94,7 +111,10 @@ void Midicalc::initScaleFilter(int scale, int basenote)
             qDebug() << "unknown step token " << scaleSteps.at(stepI);
         }
         stepI++;
-        if(stepI>=scaleSteps.size()) stepI=0;
+        if(stepI>=scaleSteps.size()) {
+            qDebug() << "new octave ";
+            stepI=0;
+        }
     }
 }
 
@@ -281,12 +301,12 @@ void Midicalc::saveNewMidiFile(const string &filename)
     QString wavPath = outputPath+"wav/"+groupPath+"/"+QString::fromStdString(filename)+ ".wav";
     */
 
-    midiOut.write(filename);
+    midiOut.write(filename+".mid");
     QProcess p;
     //p.setProgram( "../antarctica/fluidsynth-2.2.5-win10-x64/bin/fluidsynth.exe" );
     //p.setArguments( {"../antarctica/fluidsynth-2.2.5-win10-x64/sf/TimGM6mb.sf2", QString::fromStdString( filename ), "-F", QString::fromStdString( filename ).append( ".wav" ) });
     p.setProgram( "fluidsynth" );
-    p.setArguments( { "/home/antarctica/antarcticalibs/TimGM6mb.sf2", QString::fromStdString(filename), "-F", QString::fromStdString(filename)+".wav" , "-r", "48000", "-O", "s24" });
+    p.setArguments( { "/home/antarctica/antarcticalibs/TimGM6mb.sf2", QString::fromStdString(filename+".mid"), "-F", QString::fromStdString(filename)+".wav" , "-r", "48000", "-O", "s24" });
     p.start();
     p.waitForFinished();
 
