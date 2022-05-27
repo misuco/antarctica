@@ -23,15 +23,24 @@ var row6;
 var row7;
 var row8;
 
+var value1;
+var value2;
+var value3;
+var value4;
+var value5;
+var value6;
+var value7;
+var value8;
+
 var randomSound = function() {
-		row1.setRandomValue();
-		row2.setRandomValue();
-		row3.setRandomValue();
-		row4.setRandomValue();
-		row5.setRandomValue();
-		row6.setRandomValue();
-		row7.setRandomValue();
-		row8.setRandomValue();
+	value1.setRandomValue();
+	value2.setRandomValue();
+	value3.setRandomValue();
+	value4.setRandomValue();
+	value5.setRandomValue();
+	value6.setRandomValue();
+	value7.setRandomValue();
+	value8.setRandomValue();
 }
 
 var triggerNewSound = function() {
@@ -95,20 +104,113 @@ var triggerNewSound = function() {
 		oReq.send();
     }
     
-var createSound = function (scene,panel) {
-	BABYLON.Engine.audioEngine.setGlobalVolume(1);	
+var createSoundTrack = function (scene) {
 	soundTrack1 = new BABYLON.SoundTrack(scene);
-    
-    var button1 = BABYLON.GUI.Button.CreateSimpleButton("but1", "play");
-    button1.width = "50px"
-    button1.height = "40px";
-    button1.color = "white";
-    button1.cornerRadius = 20;
-    button1.background = "green";
-    button1.onPointerUpObservable.add( triggerNewSound );
-    panel.addControl(button1, 0, 0);    
-    
+	BABYLON.Engine.audioEngine.setGlobalVolume(1);	
 
+
+	value1 = new valuePlus( 0, 1, 185, clipId );
+	value1.setValueFunction( function(value) {
+		clipId = value;
+		if(row1!=undefined) row1.setValue(value);
+	} );
+
+	value2 = new valuePlus( 10, 1, 500, tempo );
+	value2.setValueFunction( function(value) {
+		tempo = value;
+		if(row2!=undefined) row2.setValue(value);
+	} );
+
+	value3 = new valuePlus( 1, 1, 16, loopLength );
+	value3.setValueFunction( function(value) {
+		loopLength = value;
+		if(row3!=undefined) row3.setValue(value);
+	} );
+
+	value4 = new valuePlus( 1, 1, 16, repeat );
+	value4.setValueFunction( function(value) {
+		repeat = value;
+		if(row4!=undefined) row4.setValue(value);
+	} );
+
+	value5 = new valuePlus( -36, 1, 36, pitch );
+	value5.setValueFunction( function(value) {
+		pitch = value;
+		if(row5!=undefined) row5.setValue(value);
+	} );
+
+	value6 = new valuePlus( 0, 1, 12, basenote );
+	value6.setValueFunction( function(value) {
+		basenote = value;
+		if(row6!=undefined) row6.setValue(value);
+	} );
+
+	value7 = new valuePlus( 1, 1,46, scale );
+	value7.setValueFunction( function(value) {
+		scale = value;
+		if(row7!=undefined) row7.setValue(value);
+	} );
+
+	value8= new valuePlus( 1, 1, 10, arrange );
+	value8.setValueFunction( function(value) {
+		arrange = value;
+		if(row8!=undefined) row8.setValue(value);
+	} );
+	
+}
+    
+var createSoundPanel = function () {
+        
+	var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+	var panel = new BABYLON.GUI.Grid();
+    panel.addColumnDefinition(0.05);
+    panel.addColumnDefinition(0.05);
+    panel.addColumnDefinition(0.1);
+    panel.addColumnDefinition(0.05);
+    panel.addColumnDefinition(0.80);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.05);
+
+	advancedTexture.addControl(panel);
+	
+    var closeButton = BABYLON.GUI.Button.CreateSimpleButton("closeButton", "close");
+    closeButton.width = "250px"
+    closeButton.height = "200px";
+    closeButton.color = "white";
+    closeButton.cornerRadius = 20;
+    closeButton.background = "green";
+    closeButton.onPointerUpObservable.add( function() { soundPanel.dispose(); } );
+    panel.addControl(closeButton, 0, 0);    
+	
+    var playButton = BABYLON.GUI.Button.CreateSimpleButton("playButton", "play");
+    playButton.width = "250px"
+    playButton.height = "200px";
+    playButton.color = "white";
+    playButton.cornerRadius = 20;
+    playButton.background = "green";
+    playButton.onPointerUpObservable.add( triggerNewSound );
+    panel.addControl(playButton, 9, 0);    
+
+   	
 	row1 = new sliderPlus( panel, 1, "Clip", 0, 1, 185, clipId );
 	row1.setValueFunction( function(value) {
 		clipId = value;
@@ -149,6 +251,6 @@ var createSound = function (scene,panel) {
 		arrange = value;
 	} );
     
-    return scene;
+    return panel;
 };
 

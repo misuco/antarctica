@@ -5,6 +5,12 @@ var canvas = document.getElementById("renderCanvas"); // Get the canvas element
 var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
 var scene = new BABYLON.Scene(engine);
 
+var infoPanel;
+var statusPanel;
+var statusPanel2;
+var ratePanel;
+var soundPanel;
+
 var spheres = [];
 var sp=0;
 
@@ -25,10 +31,6 @@ var lines;
 var records = [];
 var fieldId;
 var sectorMap = new Map();
-
-var infoPanel;
-var statusPanel;
-var statusPanel2;
 
 var xmin=0;
 var ymin=0;
@@ -154,125 +156,133 @@ function addNextPoint() {
 	//console.log("distance " + distance + " alphashift " + alphashift ); 
 	
 	if(csvLoaded == true && csvIndex < records.length) {
-		
-		var fields = records[csvIndex];
-		
-		statusPanel.text = csvIndex + " "  + fields[5] + " loading ...";
-		//if( csvIndex%100==0 ) console.log( "- new record: " + csvIndex + " "  + fields[1] + " x: " + pointX + " y: " + pointY  + " xmin: " + xmin + " ymin: " + ymin   + " xmax: " + xmax + " ymax: " + ymax );
-
-		if (fields.length > 8) {
-						
-			var sHeight = 0.05;
-			
-			if( fields[6] == "Summit"  ) {
-				
-				if( fields[14].includes(" m,") ) {
-					var words = fields[14].split(" m,");
-					var number = words[0].substring(words[0].length-5);
+//		for(csvIndex=0;csvIndex < records.length;csvIndex++) {
+			var fields = records[csvIndex];		
+//			if(fields[6] == "Building" || fields[6] == "Airport") {
 					
-					if(number.charAt(1)==",") {
-						number=number.replace(",",number.charAt(0));
-						number=number.substring(number.length-4);
-					} else {
-						number=number.substring(number.length-3);
+						
+				statusPanel.text = csvIndex + " "  + fields[5] + " loading ...";
+				//if( csvIndex%100==0 ) console.log( "- new record: " + csvIndex + " "  + fields[1] + " x: " + pointX + " y: " + pointY  + " xmin: " + xmin + " ymin: " + ymin   + " xmax: " + xmax + " ymax: " + ymax );
+
+				if (fields.length > 8) {
+								
+					var sHeight = 0.05;
+					
+					if( fields[6] == "Summit"  ) {
+						
+						if( fields[14].includes(" m,") ) {
+							var words = fields[14].split(" m,");
+							var number = words[0].substring(words[0].length-5);
+							
+							if(number.charAt(1)==",") {
+								number=number.replace(",",number.charAt(0));
+								number=number.substring(number.length-4);
+							} else {
+								number=number.substring(number.length-3);
+							}
+							
+							//console.log( "have height " + number + " " + parseInt(number) );
+							sHeight = parseInt(number) / 6000;
+						}
+						
 					}
+								
+
+					var sphere;
+					if( fields[6] == "Summit"  ) {
+						sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:0.05,height:sHeight,depth:0.05, diameterTop: 0, diameterBottom: 0.15, tessellation: 4}, scene);    
+					} else if( fields[6] == "Building" ) {
+						sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);    
+					} else if( fields[6] == "Airport" ){
+						sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.8,height:0.4,depth:2}, scene);    
+					} else {
+						sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.05,height:sHeight,depth:0.05}, scene);    
+					}
+					sphere.position.x = fields[2];
+					sphere.position.z = fields[3];
+					sphere.position.y = sHeight / 2;
+
 					
-					//console.log( "have height " + number + " " + parseInt(number) );
-					sHeight = parseInt(number) / 6000;
-				}
-				
-			}
+					/*
+					var base = BABYLON.MeshBuilder.CreateBox("box", {width:0.07,height:0.02,depth:0.07}, scene);    
+					base.position.x = fields[2];
+					base.position.z = fields[3];
+					
+					if( (alpha + 180) % 40 > 20 ) {
+						sphere.material = mRed;
+						//base.material = mRed;
+					} else {
+						sphere.material = mWhite;
+						//base.material = mWhite;
+					}
+
+					
+					*/
+
+					if( fields[6] == "Building"  ) {
+						sphere.material = mRed;
+					} else if( fields[6] == "Airport"  ) {
+						sphere.material = mYellow;
+					} else if( fields[6] == "Island"  ) {
+						sphere.material = mYellow;
+					} else if( fields[6] == "Area"  ) {
+						sphere.material = mCyan;
+					} else if( fields[6] == "Glacier"  ) {
+						sphere.material = mCyan;
+					} else if( fields[6] == "Valley"  ) {
+						sphere.material = mCyan;
+					} else if( fields[6] == "Cape"  ) {
+						sphere.material = mCyan;
+					} else if( fields[6] == "Basin"  ) {
+						sphere.material = mCyan;
+					} else if( fields[6] == "Ridge"  ) {
+						sphere.material = mGreen;
+					} else if( fields[6] == "Range"  ) {
+						sphere.material = mGreen;
+					} else if( fields[6] == "Bay"  ) {
+						sphere.material = mBlue;
+					} else if( fields[6] == "Stream"  ) {
+						sphere.material = mBlue;
+					} else if( fields[6] == "Lake"  ) {
+						sphere.material = mBlue;
+					} else if( fields[6] == "Gap"  ) {
+						sphere.material = mBlue;
+					} else if( fields[6] == "Channel"  ) {
+						sphere.material = mBlue;
+					} else if( fields[6] == "Cliff"  ) {
+						sphere.material = mMagenta;
+					} else if( fields[6] == "Summit"  ) {
+						sphere.material = mWhite;				
+					} else {
+						sphere.material = mGreen;
+					}
 						
 
-			var sphere;
-			if( fields[6] == "Summit"  ) {
-				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:0.05,height:sHeight,depth:0.05, diameterTop: 0, diameterBottom: 0.15, tessellation: 4}, scene);    
-			} else if( fields[6] == "Building"  ) {
-				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:0.1}, scene);    
-			} else {
-				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.05,height:sHeight,depth:0.05}, scene);    
-			}
-			sphere.position.x = fields[2];
-			sphere.position.z = fields[3];
-			sphere.position.y = sHeight / 2;
+					sphere.actionManager = new BABYLON.ActionManager(scene);
+					
+					sphere.actionManager.registerAction(
+						new BABYLON.ExecuteCodeAction(
+							{
+								trigger: BABYLON.ActionManager.OnPickTrigger
+							},
+							function (event) { 
+								//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );						
+								infoPanel.text = "spot nr. " + csvIndex + "\n" + fields[5] + "\n" + fields[6] + "\n" + fields[13] + "\n" + fields[14];
+								selectedSpot.position.x = fields[2];
+								selectedSpot.position.z = fields[3];
+								recordIndex = csvIndex;
+								randomSound();
+								triggerNewSound();
+							 }
+						)
+					);
 
-			
-			/*
-			var base = BABYLON.MeshBuilder.CreateBox("box", {width:0.07,height:0.02,depth:0.07}, scene);    
-			base.position.x = fields[2];
-			base.position.z = fields[3];
-			
-			if( (alpha + 180) % 40 > 20 ) {
-				sphere.material = mRed;
-				//base.material = mRed;
-			} else {
-				sphere.material = mWhite;
-				//base.material = mWhite;
-			}
-
-			
-			*/
-
-			if( fields[6] == "Building"  ) {
-				sphere.material = mRed;
-			} else if( fields[6] == "Island"  ) {
-				sphere.material = mYellow;
-			} else if( fields[6] == "Area"  ) {
-				sphere.material = mCyan;
-			} else if( fields[6] == "Glacier"  ) {
-				sphere.material = mCyan;
-			} else if( fields[6] == "Valley"  ) {
-				sphere.material = mCyan;
-			} else if( fields[6] == "Cape"  ) {
-				sphere.material = mCyan;
-			} else if( fields[6] == "Basin"  ) {
-				sphere.material = mCyan;
-			} else if( fields[6] == "Ridge"  ) {
-				sphere.material = mGreen;
-			} else if( fields[6] == "Range"  ) {
-				sphere.material = mGreen;
-			} else if( fields[6] == "Bay"  ) {
-				sphere.material = mBlue;
-			} else if( fields[6] == "Stream"  ) {
-				sphere.material = mBlue;
-			} else if( fields[6] == "Lake"  ) {
-				sphere.material = mBlue;
-			} else if( fields[6] == "Gap"  ) {
-				sphere.material = mBlue;
-			} else if( fields[6] == "Channel"  ) {
-				sphere.material = mBlue;
-			} else if( fields[6] == "Cliff"  ) {
-				sphere.material = mMagenta;
-			} else if( fields[6] == "Summit"  ) {
-				sphere.material = mWhite;				
-			} else {
-				sphere.material = mGreen;
-			}
-				
-
-			sphere.actionManager = new BABYLON.ActionManager(scene);
-			
-			sphere.actionManager.registerAction(
-				new BABYLON.ExecuteCodeAction(
-					{
-						trigger: BABYLON.ActionManager.OnPickTrigger
-					},
-					function (event) { 
-						//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );						
-						infoPanel.text = "spot nr. " + csvIndex + "\n" + fields[5] + "\n" + fields[6] + "\n" + fields[13] + "\n" + fields[14];
-						selectedSpot.position.x = fields[2];
-						selectedSpot.position.z = fields[3];
-						recordIndex = csvIndex;
-						randomSound();
-						triggerNewSound();
-					 }
-				)
-			);
-
-			//spheres[csvIndex] = sphere;
-
+					//spheres[csvIndex] = sphere;
+					
+					csvIndex++;
+//				}
+//			}
 		}
-		csvIndex++;		
 	 } else {
 		statusPanel.text = "- loaded all " + csvIndex;		 
 	 }
@@ -306,43 +316,14 @@ var createScene = function () {
 	mat2.diffuseColor = BABYLON.Color3.Green();
 	mat2.alpha = 0.5;
 	selectedSpot.material=mat2;
-
-	var soundTrack1 = new BABYLON.SoundTrack(scene);
-	
-	var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-
-	var panel = new BABYLON.GUI.Grid();
-    panel.addColumnDefinition(0.05);
-    panel.addColumnDefinition(0.05);
-    panel.addColumnDefinition(0.1);
-    panel.addColumnDefinition(0.05);
-    panel.addColumnDefinition(0.80);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    	
-	advancedTexture.addControl(panel);
-       
+	       
+	createSoundTrack(scene);
 	createAudioAnalyser(scene);
-	createSound(scene,panel);
-	createCamSliders(scene,panel);
+	
+	//soundPanel = createSoundPanel();
+	//createCamSliders(panel);
+	
+	ratePanel = createRatePanel();
 
 	var advancedTexture2 = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
     
@@ -407,10 +388,15 @@ camera.target.y = 0.7;
 camera.target.z = 0;
 
 console.log("angularSensibilityX " + camera.angularSensibilityX + " camera.angularSensibilityY " + camera.angularSensibilityY + " camera.panningSensibility " + camera.panningSensibility);
+console.log("camera.minZ " + camera.minZ + " camera.maxZ " + camera.maxZ );
 
-camera.angularSensibilityX=10000;
-camera.angularSensibilityY=10000;
-camera.panningSensibility=10000;
+camera.upperRadiusLimit=60;
+camera.lowerRadiusLimit=5;
+camera.lowerBetaLimit=0;
+camera.upperBetaLimit=Math.PI/2;
+camera.angularSensibilityX=1000;
+camera.angularSensibilityY=1000;
+camera.panningSensibility=1000;
 camera.wheelDeltaPercentage=0.01;
 camera.wheelPresision=0.01;
 camera.pinchDeltaPercentage=0.01;

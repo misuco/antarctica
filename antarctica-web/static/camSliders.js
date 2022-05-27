@@ -1,5 +1,5 @@
 
-var createCamSliders = function (scene,panel) {
+var createCamSliders = function (panel) {
     /// ROW 6
 
 	var row9 = new sliderPlus( panel, 9, "As", -Math.PI/2, 0.01, Math.PI/2, 0 );
@@ -27,6 +27,5 @@ var createCamSliders = function (scene,panel) {
 		speed = value;
 	} );
 
-    return scene;
 };
 
