@@ -5,6 +5,8 @@ var canvas = document.getElementById("renderCanvas"); // Get the canvas element
 var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
 var scene = new BABYLON.Scene(engine);
 
+var state = 'select';
+
 var infoPanel;
 var statusPanel;
 var statusPanel2;
@@ -27,11 +29,14 @@ var betashift = 0.0;
 var csvLoaded = false;
 var csvIndex = 1;
 var recordIndex = 0;
+var selectedRecord;
 var lines;
 var records = [];
 var fieldId;
 var sectorCountMap = new Map();
 var pointLoadedMap = new Map();
+//var homePointMap = new Map();
+var homePonits = [];
 
 var xmin=0;
 var ymin=0;
@@ -46,9 +51,11 @@ mMagenta.diffuseColor = new BABYLON.Color3(1, 0, 1);
 
 var mYellow = new BABYLON.StandardMaterial("m3", scene);
 mYellow.diffuseColor = new BABYLON.Color3(1, 1, 0);
+mYellow.alpha = 0.5;
 
 var mRed = new BABYLON.StandardMaterial("m4", scene);
 mRed.diffuseColor = new BABYLON.Color3(1, 0, 0);
+mRed.alpha = 0.5;
 
 var mGreen = new BABYLON.StandardMaterial("m5", scene);
 mGreen.diffuseColor = new BABYLON.Color3(0, 1, 0);
@@ -102,7 +109,7 @@ function createSectorMap() {
 			
 			var sectorX = Math.floor(pointX/2);
 			var sectorY = Math.floor(pointY/2);
-			var sectorId = sectorX + ";" + sectorY;
+			var sectorId = sectorX + "_" + sectorY;
 			if(sectorCountMap.has(sectorId)) {
 				var sectorCount = sectorCountMap.get(sectorId);
 				sectorCount++;
@@ -142,7 +149,7 @@ function filterCsv(filter) {
 			
 			var sectorX = Math.floor(pointX/2);
 			var sectorY = Math.floor(pointY/2);
-			var sectorId = sectorX + ";" + sectorY;
+			var sectorId = sectorX + "_" + sectorY;
 			
 			xmin = Math.min( pointX , xmin );
 			ymin = Math.min( pointY , ymin );		
@@ -152,7 +159,7 @@ function filterCsv(filter) {
 			fields.unshift(alpha,hypotenuse,pointX,pointY,sectorId);
 			
 			if(pointLoadedMap.get(fields[5])==0) {				
-				if(filter.includes(";")) {
+				if(filter.includes("_")) {
 					if(sectorId==filter) {
 						records.push(fields);
 						pointLoadedMap.set(fields[5],1);
@@ -175,29 +182,50 @@ function filterCsv(filter) {
 
 }
 
+function resizeHomePoints(d) {
+	/*
+	homePointMap.forEach((value, key) => {
+		console.log(" resize " + key + " to " + d + " orig " + value.diameter );
+		value.diameter=d;
+		value.diameterX=d;
+		value.diameterY=d;
+		value.diameterZ=d;		
+	});
+	*/	
+	homePonits.forEach(element => {
+		console.log(" resize " + element + " to " + d + " orig " + element.diameter );
+		element.diameter=d;
+	});
+}
+
 function addNextPoint() {
 	
-	if(music1!=undefined) {
+	if(state=='rate') {
+		statusPanel2.text = " rate: " + Math.round( music1.currentTime ) + " secs | spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
+	} else if(music1!=undefined) {
 		if(music1.isPlaying) {
-			statusPanel2.text = " playing: " + Math.round( music1.currentTime ) + " secs | spot nr: " + recordIndex;
+			statusPanel2.text = " playing: " + Math.round( music1.currentTime ) + " secs | spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
 		} else if( music1.currentTime > 0 ) {
-			statusPanel2.text = " end at: " + Math.round( music1.currentTime ) + " secs | spot nr: " + recordIndex;
+			statusPanel2.text = " end at: " + Math.round( music1.currentTime ) + " secs | spot nr: " + selectedRecord[5];
 		} else {
 			//statusPanel2.text = " end at: " + Math.round( music1.currentTime ) + " secs | spot nr: " + recordIndex;
 		}
 	}
 
+	/*
 	angel+=speed;
 	
 	distance += alphashift * -0.01; 
 	
 	camera.position.x = selectedSpot.position.x + Math.sin(angel)*distance //0; //Math.sin(angel)*distance;
-	camera.target.x = selectedSpot.position.x;
 	camera.position.z = selectedSpot.position.z + Math.sin(angel)*distance //0; //Math.cos(angel)*distance;
-	camera.target.z = selectedSpot.position.z;
 	//camera.alpha=angel + alphaoffset;	
 	camera.position.y += betashift;
 	camera.target.y += betashift;
+	*/
+	camera.target.x = selectedSpot.position.x;
+	camera.target.z = selectedSpot.position.z;
+	camera.alpha+=0.00005;
 	
 	//console.log("camera.position.y " + camera.position.y + " beta " + camera.beta + " diff " + ( camera.beta - Math.PI / 2 ) ); 
 	//console.log("distance " + distance + " alphashift " + alphashift ); 
@@ -236,6 +264,8 @@ function addNextPoint() {
 				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:0.05,height:sHeight,depth:0.05, diameterTop: 0, diameterBottom: 0.15, tessellation: 4}, scene);    
 			} else if( fields[7] == "Building" ) {
 				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);    
+				//homePointMap.set(fields[5],sphere);
+				homePonits.push(sphere);
 			} else if( fields[7] == "Airport" ){
 				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.8,height:0.4,depth:2}, scene);    
 			} else {
@@ -293,35 +323,40 @@ function addNextPoint() {
 					},
 					function (event) { 
 						//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );						
-						infoPanel.text = "spot nr. " + csvIndex + " / " + fields[5] + "\n" + fields[6] + "\n" + fields[7] + "\n" + fields[14] + "\n" + fields[15];
+						infoPanel.text = "spot nr. " + fields[5] + "\n" + fields[6] + "\n" + fields[7] + "\n" + fields[14] + "\n" + fields[15];
 						selectedSpot.position.x = fields[2];
 						selectedSpot.position.z = fields[3];
 						recordIndex = csvIndex;
+						selectedRecord = fields;
 						
 						// filter current sector
 						filterCsv(fields[4]);	
 						
 						// filter neighbour sectors					
-						var sectorId = fields[4].split(';');
+						var sectorId = fields[4].split('_');
 						var northSector=parseInt(sectorId[0])+1;
 						var southSector=parseInt(sectorId[0])-1;
 						var eastSector=parseInt(sectorId[1])+1;
 						var westSector=parseInt(sectorId[1])-1;
 
-						filterCsv(northSector+";"+sectorId[1]);
-						filterCsv(southSector+";"+sectorId[1]);
-						filterCsv(sectorId[0]+";"+eastSector);
-						filterCsv(sectorId[0]+";"+westSector);
+						filterCsv(northSector+"_"+sectorId[1]);
+						filterCsv(southSector+"_"+sectorId[1]);
+						filterCsv(sectorId[0]+"_"+eastSector);
+						filterCsv(sectorId[0]+"_"+westSector);
+						
+						//resizeHomePoints(0.1);
 						
 						randomSound();
-						triggerNewSound();
+						triggerNewSound(fields[4]+"_"+fields[5]);
+						
+						state='loading';
 					 }
 				)
 			);					
 			csvIndex++;
 		}
 	 } else {
-		statusPanel.text = "- loaded all " + csvIndex;		 
+		statusPanel.text = "loaded " + csvIndex + " spots";		 
 	 }
 	 
 }
@@ -360,7 +395,7 @@ var createScene = function () {
 	//soundPanel = createSoundPanel();
 	//createCamSliders(panel);
 	
-	ratePanel = createRatePanel();
+	//ratePanel = createRatePanel();
 
 	var advancedTexture2 = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
     
@@ -373,7 +408,7 @@ var createScene = function () {
 	infoPanel.text = "--- Hello Antarctica ---";
 	infoPanel.textWrapping=true;
 	infoPanel.textVerticalAlignment=BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
-	infoPanel.fontSize=40;
+	//infoPanel.fontSize=10;
 	infoPanel.color = "white";
 	panel2.addControl(infoPanel, 0, 1);
 	
@@ -387,7 +422,7 @@ var createScene = function () {
 	statusPanel2 = new BABYLON.GUI.TextBlock();
 	statusPanel2.text = "Please select objects to load sound.";
 	statusPanel2.textWrapping=true;
-	statusPanel2.fontSize=100;
+	//statusPanel2.fontSize=10;
 	statusPanel2.textVerticalAlignment=BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM
 	statusPanel2.color = "white";
 	panel2.addControl(statusPanel2, 1, 0);
@@ -428,7 +463,7 @@ console.log("angularSensibilityX " + camera.angularSensibilityX + " camera.angul
 console.log("camera.minZ " + camera.minZ + " camera.maxZ " + camera.maxZ );
 
 camera.upperRadiusLimit=60;
-camera.lowerRadiusLimit=5;
+camera.lowerRadiusLimit=2;
 camera.lowerBetaLimit=0;
 camera.upperBetaLimit=Math.PI/2;
 camera.angularSensibilityX=1000;

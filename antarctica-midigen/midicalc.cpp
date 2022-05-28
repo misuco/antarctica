@@ -246,26 +246,31 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
                  (command == 0x90 || command == 0x80) ) {
 
                 int key = midiIn[0][i][1];
-                int keyTransposed = (key + transpose)%127;
+                int keyTransposed = key + transpose;
+                if(keyTransposed>127) keyTransposed=127;
                 int newkey = filterKey(keyTransposed);
                 int velocity = midiIn[0][i][2];
-                int newvelovity = 127;
+                int newvelocity = velocity * 5;
+                if(newvelocity>127) newvelocity=127;
 
                 for(unsigned long j=0;j<midiIn[0][i].size();j++) {
                     midievent[j] = midiIn[0][i][j];
                 }
+                if(velocity == 0) {
+                    newvelocity = 0;
+                    midievent[0] = 0x80 + (midievent[0] & 0x0f);
+                }
                 midievent[1] = newkey;
-                midievent[2] = newvelovity;
+                midievent[2] = newvelocity;
 
                 int destinationTick = translatedTick + loopOffset;
 
                 //cout << " dest " << destinationTick << " \n";
                 midiOut.addEvent( 1, destinationTick /*+ tickOffset*/, midievent );
 
-                QString noteType = command == 0x90 ? " on " : " off ";
+                QString noteType = ( ( midievent[0] & 0xf0 ) == 0x90 ? " on " : " off " );
 
-
-                qDebug() << " added @  " << destinationTick << " " << i << ". note " << noteType << QString::fromStdString(midinote2txt(key)) << " transposed "  << QString::fromStdString(midinote2txt(keyTransposed)) << " translated " << QString::fromStdString(midinote2txt(newkey))  << " at " << destinationTick;
+                qDebug() << " added @  " << destinationTick << " " << i << ". note " << noteType << " velocity " << newvelocity << " " << QString::fromStdString(midinote2txt(key)) << " transposed "  << QString::fromStdString(midinote2txt(keyTransposed)) << " translated " << QString::fromStdString(midinote2txt(newkey))  << " at " << destinationTick;
 
             } else if (midiIn[0][i][0] == 0xff &&
                        midiIn[0][i][1] == 0x51) {

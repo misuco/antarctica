@@ -43,7 +43,7 @@ var randomSound = function() {
 	value8.setRandomValue();
 }
 
-var triggerNewSound = function() {
+var triggerNewSound = function(trackId) {
 		
 		var oReq = new XMLHttpRequest();
 		oReq.addEventListener("load", function() {
@@ -73,7 +73,10 @@ var triggerNewSound = function() {
 					
 					music1.onEndedObservable.addOnce(() => {
 						music1.stop();
+						state='rate';
+						ratePanel = createRatePanel();
 					});
+					
 					/*
 					music1.onEndedObservable.addOnce(() => {
 							recordIndex++;
@@ -86,6 +89,7 @@ var triggerNewSound = function() {
 						*/
 					music1.setVolume(1);
 					music1.play();
+					if(ratePanel!=undefined) ratePanel.dispose();
 					statusPanel2.text = " playing: " + music1.currentTime;
 				  },
 				  { loop: false }
@@ -99,8 +103,11 @@ var triggerNewSound = function() {
 		var getUrl = window.location;
 		var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ; //+ getUrl.pathname.split('/')[1];		
 		
-		statusPanel2.text = "downloading " + getUrl + "/" + recordIndex + "-"+Date.now();
-		oReq.open("GET", baseUrl + "newclip?id="+recordIndex+"-"+Date.now()+"&clipId="+clipId+"&tempo="+tempo+"&loopLength="+loopLength+"&repeat="+repeat+"&pitch="+pitch+"&basenote="+basenote+"&scale="+scale+"&arrange="+arrange);
+		console.log("trackId " + trackId);
+
+		statusPanel2.text = "downloading " + getUrl + "/" + clipId;
+		var queryId=trackId+"_"+clipId+"_"+tempo+"_"+loopLength+"_"+repeat+"_"+pitch+"_"+basenote+"_"+scale+"_"+arrange+"_"+Date.now();
+		oReq.open("GET", baseUrl + "newclip?id="+queryId+"&clipId="+clipId+"&tempo="+tempo+"&loopLength="+loopLength+"&repeat="+repeat+"&pitch="+pitch+"&basenote="+basenote+"&scale="+scale+"&arrange="+arrange);
 		oReq.send();
     }
     
@@ -207,7 +214,7 @@ var createSoundPanel = function () {
     playButton.color = "white";
     playButton.cornerRadius = 20;
     playButton.background = "green";
-    playButton.onPointerUpObservable.add( triggerNewSound );
+    playButton.onPointerUpObservable.add( triggerNewSound(selectedRecord[4]));
     panel.addControl(playButton, 9, 0);    
 
    	

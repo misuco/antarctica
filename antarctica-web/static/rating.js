@@ -11,11 +11,24 @@ var createRatePanel = function () {
     panel.addRowDefinition(0.8);
     panel.addRowDefinition(0.2);
 
-   	createRateButton(panel,1,0);
-   	createRateButton(panel,2,1);
-   	createRateButton(panel,3,2);
-   	createRateButton(panel,4,3);
-   	createRateButton(panel,5,4);
+   	createRateButton(panel,"change",0,function() {
+		if(soundPanel!=undefined) soundPanel.dispose(); 
+		soundPanel = createSoundPanel();
+		state='play';
+	});
+   	createRateButton(panel,"Rate 1",1,function() {
+		console.log("rate 1");
+	});
+   	createRateButton(panel,"Rate 2",2,function() {
+		console.log("rate 2");
+	});
+   	createRateButton(panel,"Rate 3",3,function() {
+		console.log("rate 3");
+	});
+   	createRateButton(panel,"Replay",4,function() {
+		console.log("Replay");
+		music1.play();
+	});
    	
 	advancedTexture.addControl(panel);
 	
@@ -23,18 +36,15 @@ var createRatePanel = function () {
 
 };
 
-var createRateButton = function (panel,nr,col) {
+var createRateButton = function (panel,text,col,func) {
 	var rate1button;
-	rate1button = BABYLON.GUI.Button.CreateSimpleButton("rate "+nr, "Rate "+nr );
+	rate1button = BABYLON.GUI.Button.CreateSimpleButton(text,text);
 	rate1button.width = "200px"
 	rate1button.height = "100px";
 	rate1button.color = "black";
 	rate1button.cornerRadius = 20;
 	rate1button.background = "white";
-	rate1button.onPointerUpObservable.add(function() {
-		console.log("rate "+nr);
-		soundPanel = createSoundPanel();
-	});
+	rate1button.onPointerUpObservable.add(func);
 	
 	panel.addControl(rate1button, 1, col);
 }
