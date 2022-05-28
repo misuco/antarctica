@@ -30,7 +30,8 @@ var recordIndex = 0;
 var lines;
 var records = [];
 var fieldId;
-var sectorMap = new Map();
+var sectorCountMap = new Map();
+var pointLoadedMap = new Map();
 
 var xmin=0;
 var ymin=0;
@@ -77,11 +78,55 @@ function createButton(id,name) {
     return button;
 }
 
-function processCsv(csv) {
-		
+function processCsv(csv) {		
   csv = csv.replace(/\r/g, '');
   lines = csv.split('\n');
   fieldId = lines[0].split(';');
+  createSectorMap();
+  filterCsv("Airport");
+  filterCsv("Building");
+}
+
+function createSectorMap() {		
+  for(var i=1;i<lines.length;i++) {
+		var line = lines[i];
+		var fields = line.split('|');
+		
+		if(fields.length > 6) {
+		
+			var alpha = parseFloat(fields[6]);
+			var hypotenuse = parseFloat(fields[5]) + 90;
+		
+			var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse * 1.8667;
+			var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse * 1.8667;
+			
+			var sectorX = Math.floor(pointX/2);
+			var sectorY = Math.floor(pointY/2);
+			var sectorId = sectorX + ";" + sectorY;
+			if(sectorCountMap.has(sectorId)) {
+				var sectorCount = sectorCountMap.get(sectorId);
+				sectorCount++;
+				sectorCountMap.set(sectorId,sectorCount);
+			} else {
+				sectorCountMap.set(sectorId,1);
+			}			
+			
+			pointLoadedMap.set(fields[0],0);
+		}
+  }
+  
+  var sectorEntryCount = 0;
+  for (const [key, value] of sectorCountMap) {
+		console.log(key + ' = ' + value)
+		sectorEntryCount += value;
+  }  
+  console.log("populated sectors " + sectorCountMap.size + " total entries " + sectorEntryCount );
+  csvLoaded = true;
+}
+  
+function filterCsv(filter) {		
+  console.log("filterCsv "+filter);
+  var addedRecords=0;
   
   for(var i=1;i<lines.length;i++) {
 		var line = lines[i];
@@ -95,37 +140,39 @@ function processCsv(csv) {
 			var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse * 1.8667;
 			var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse * 1.8667;
 			
-			var sectorX = Math.floor(pointX/6);
-			var sectorY = Math.floor(pointY/6);
+			var sectorX = Math.floor(pointX/2);
+			var sectorY = Math.floor(pointY/2);
 			var sectorId = sectorX + ";" + sectorY;
-			if(sectorMap.has(sectorId)) {
-				var sectorCount = sectorMap.get(sectorId);
-				sectorCount++;
-				sectorMap.set(sectorId,sectorCount);
-			} else {
-				sectorMap.set(sectorId,1);
-			}
 			
 			xmin = Math.min( pointX , xmin );
 			ymin = Math.min( pointY , ymin );		
 			xmax = Math.max( pointX , xmax );
 			ymax = Math.max( pointY , ymax );
-
-			fields.unshift(alpha,hypotenuse,pointX,pointY);
-			records[i-1]=fields;
+			
+			fields.unshift(alpha,hypotenuse,pointX,pointY,sectorId);
+			
+			if(pointLoadedMap.get(fields[5])==0) {				
+				if(filter.includes(";")) {
+					if(sectorId==filter) {
+						records.push(fields);
+						pointLoadedMap.set(fields[5],1);
+						addedRecords++;
+					}				
+				} else if(filter!="") {
+					if(fields[7] == filter) {
+						records.push(fields);
+						pointLoadedMap.set(fields[5],1);
+						addedRecords++;
+					}
+				}
+			}
 			
 			//console.log("scanning point " + i + " x " + pointX + " y "+ pointY + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
 		}
-  }
-  
-  console.log("scanned csv records " + lines.length + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
-  var sectorEntryCount = 0;
-  for (const [key, value] of sectorMap) {
-		console.log(key + ' = ' + value)
-		sectorEntryCount += value;
   }  
-  console.log("populated sectors " + sectorMap.size + " total entries " + sectorEntryCount );
-  csvLoaded = true;
+  console.log("filtered csv records " + lines.length + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
+  console.log("added "+addedRecords);
+
 }
 
 function addNextPoint() {
@@ -156,132 +203,122 @@ function addNextPoint() {
 	//console.log("distance " + distance + " alphashift " + alphashift ); 
 	
 	if(csvLoaded == true && csvIndex < records.length) {
-//		for(csvIndex=0;csvIndex < records.length;csvIndex++) {
-			var fields = records[csvIndex];		
-//			if(fields[6] == "Building" || fields[6] == "Airport") {
-					
-						
-				statusPanel.text = csvIndex + " "  + fields[5] + " loading ...";
-				//if( csvIndex%100==0 ) console.log( "- new record: " + csvIndex + " "  + fields[1] + " x: " + pointX + " y: " + pointY  + " xmin: " + xmin + " ymin: " + ymin   + " xmax: " + xmax + " ymax: " + ymax );
+		var fields = records[csvIndex];		
+				
+		statusPanel.text = csvIndex + " ("  + records.length  + ") "  + fields[6] + " loading ...";
 
-				if (fields.length > 8) {
-								
-					var sHeight = 0.05;
+		if (fields.length > 8) {
+						
+			var sHeight = 0.05;
+			
+			if( fields[7] == "Summit"  ) {
+				
+				if( fields[15].includes(" m,") ) {
+					var words = fields[15].split(" m,");
+					var number = words[0].substring(words[0].length-5);
 					
-					if( fields[6] == "Summit"  ) {
-						
-						if( fields[14].includes(" m,") ) {
-							var words = fields[14].split(" m,");
-							var number = words[0].substring(words[0].length-5);
-							
-							if(number.charAt(1)==",") {
-								number=number.replace(",",number.charAt(0));
-								number=number.substring(number.length-4);
-							} else {
-								number=number.substring(number.length-3);
-							}
-							
-							//console.log( "have height " + number + " " + parseInt(number) );
-							sHeight = parseInt(number) / 6000;
-						}
-						
-					}
-								
-
-					var sphere;
-					if( fields[6] == "Summit"  ) {
-						sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:0.05,height:sHeight,depth:0.05, diameterTop: 0, diameterBottom: 0.15, tessellation: 4}, scene);    
-					} else if( fields[6] == "Building" ) {
-						sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);    
-					} else if( fields[6] == "Airport" ){
-						sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.8,height:0.4,depth:2}, scene);    
+					if(number.charAt(1)==",") {
+						number=number.replace(",",number.charAt(0));
+						number=number.substring(number.length-4);
 					} else {
-						sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.05,height:sHeight,depth:0.05}, scene);    
+						number=number.substring(number.length-3);
 					}
-					sphere.position.x = fields[2];
-					sphere.position.z = fields[3];
-					sphere.position.y = sHeight / 2;
-
 					
-					/*
-					var base = BABYLON.MeshBuilder.CreateBox("box", {width:0.07,height:0.02,depth:0.07}, scene);    
-					base.position.x = fields[2];
-					base.position.z = fields[3];
-					
-					if( (alpha + 180) % 40 > 20 ) {
-						sphere.material = mRed;
-						//base.material = mRed;
-					} else {
-						sphere.material = mWhite;
-						//base.material = mWhite;
-					}
-
-					
-					*/
-
-					if( fields[6] == "Building"  ) {
-						sphere.material = mRed;
-					} else if( fields[6] == "Airport"  ) {
-						sphere.material = mYellow;
-					} else if( fields[6] == "Island"  ) {
-						sphere.material = mYellow;
-					} else if( fields[6] == "Area"  ) {
-						sphere.material = mCyan;
-					} else if( fields[6] == "Glacier"  ) {
-						sphere.material = mCyan;
-					} else if( fields[6] == "Valley"  ) {
-						sphere.material = mCyan;
-					} else if( fields[6] == "Cape"  ) {
-						sphere.material = mCyan;
-					} else if( fields[6] == "Basin"  ) {
-						sphere.material = mCyan;
-					} else if( fields[6] == "Ridge"  ) {
-						sphere.material = mGreen;
-					} else if( fields[6] == "Range"  ) {
-						sphere.material = mGreen;
-					} else if( fields[6] == "Bay"  ) {
-						sphere.material = mBlue;
-					} else if( fields[6] == "Stream"  ) {
-						sphere.material = mBlue;
-					} else if( fields[6] == "Lake"  ) {
-						sphere.material = mBlue;
-					} else if( fields[6] == "Gap"  ) {
-						sphere.material = mBlue;
-					} else if( fields[6] == "Channel"  ) {
-						sphere.material = mBlue;
-					} else if( fields[6] == "Cliff"  ) {
-						sphere.material = mMagenta;
-					} else if( fields[6] == "Summit"  ) {
-						sphere.material = mWhite;				
-					} else {
-						sphere.material = mGreen;
-					}
+					//console.log( "have height " + number + " " + parseInt(number) );
+					sHeight = parseInt(number) / 6000;
+				}
+				
+			}
 						
 
-					sphere.actionManager = new BABYLON.ActionManager(scene);
-					
-					sphere.actionManager.registerAction(
-						new BABYLON.ExecuteCodeAction(
-							{
-								trigger: BABYLON.ActionManager.OnPickTrigger
-							},
-							function (event) { 
-								//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );						
-								infoPanel.text = "spot nr. " + csvIndex + "\n" + fields[5] + "\n" + fields[6] + "\n" + fields[13] + "\n" + fields[14];
-								selectedSpot.position.x = fields[2];
-								selectedSpot.position.z = fields[3];
-								recordIndex = csvIndex;
-								randomSound();
-								triggerNewSound();
-							 }
-						)
-					);
+			var sphere;
+			if( fields[7] == "Summit"  ) {
+				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:0.05,height:sHeight,depth:0.05, diameterTop: 0, diameterBottom: 0.15, tessellation: 4}, scene);    
+			} else if( fields[7] == "Building" ) {
+				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);    
+			} else if( fields[7] == "Airport" ){
+				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.8,height:0.4,depth:2}, scene);    
+			} else {
+				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.05,height:sHeight,depth:0.05}, scene);    
+			}
+			sphere.position.x = fields[2];
+			sphere.position.z = fields[3];
+			sphere.position.y = sHeight / 2;
 
-					//spheres[csvIndex] = sphere;
-					
-					csvIndex++;
-//				}
-//			}
+			if( fields[7] == "Building"  ) {
+				sphere.material = mRed;
+			} else if( fields[7] == "Airport"  ) {
+				sphere.material = mYellow;
+			} else if( fields[7] == "Island"  ) {
+				sphere.material = mYellow;
+			} else if( fields[7] == "Area"  ) {
+				sphere.material = mCyan;
+			} else if( fields[7] == "Glacier"  ) {
+				sphere.material = mCyan;
+			} else if( fields[7] == "Valley"  ) {
+				sphere.material = mCyan;
+			} else if( fields[7] == "Cape"  ) {
+				sphere.material = mCyan;
+			} else if( fields[7] == "Basin"  ) {
+				sphere.material = mCyan;
+			} else if( fields[7] == "Ridge"  ) {
+				sphere.material = mGreen;
+			} else if( fields[7] == "Range"  ) {
+				sphere.material = mGreen;
+			} else if( fields[7] == "Bay"  ) {
+				sphere.material = mBlue;
+			} else if( fields[7] == "Stream"  ) {
+				sphere.material = mBlue;
+			} else if( fields[7] == "Lake"  ) {
+				sphere.material = mBlue;
+			} else if( fields[7] == "Gap"  ) {
+				sphere.material = mBlue;
+			} else if( fields[7] == "Channel"  ) {
+				sphere.material = mBlue;
+			} else if( fields[7] == "Cliff"  ) {
+				sphere.material = mMagenta;
+			} else if( fields[7] == "Summit"  ) {
+				sphere.material = mWhite;				
+			} else {
+				sphere.material = mGreen;
+			}
+				
+
+			sphere.actionManager = new BABYLON.ActionManager(scene);
+			
+			sphere.actionManager.registerAction(
+				new BABYLON.ExecuteCodeAction(
+					{
+						trigger: BABYLON.ActionManager.OnPickTrigger
+					},
+					function (event) { 
+						//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );						
+						infoPanel.text = "spot nr. " + csvIndex + " / " + fields[5] + "\n" + fields[6] + "\n" + fields[7] + "\n" + fields[14] + "\n" + fields[15];
+						selectedSpot.position.x = fields[2];
+						selectedSpot.position.z = fields[3];
+						recordIndex = csvIndex;
+						
+						// filter current sector
+						filterCsv(fields[4]);	
+						
+						// filter neighbour sectors					
+						var sectorId = fields[4].split(';');
+						var northSector=parseInt(sectorId[0])+1;
+						var southSector=parseInt(sectorId[0])-1;
+						var eastSector=parseInt(sectorId[1])+1;
+						var westSector=parseInt(sectorId[1])-1;
+
+						filterCsv(northSector+";"+sectorId[1]);
+						filterCsv(southSector+";"+sectorId[1]);
+						filterCsv(sectorId[0]+";"+eastSector);
+						filterCsv(sectorId[0]+";"+westSector);
+						
+						randomSound();
+						triggerNewSound();
+					 }
+				)
+			);					
+			csvIndex++;
 		}
 	 } else {
 		statusPanel.text = "- loaded all " + csvIndex;		 
@@ -417,4 +454,4 @@ engine.runRenderLoop(function () {
 oReq.open("GET", "AntarcticNames.csv");
 oReq.send();
 
-window.setInterval( addNextPoint, 100 );
+window.setInterval( addNextPoint, 1 );
