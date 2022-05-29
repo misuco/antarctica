@@ -248,6 +248,7 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
                 int key = midiIn[0][i][1];
                 int keyTransposed = key + transpose;
                 if(keyTransposed>127) keyTransposed=127;
+                if(keyTransposed<24) keyTransposed=24;
                 int newkey = filterKey(keyTransposed);
                 int velocity = midiIn[0][i][2];
                 int newvelocity = velocity * 5;
@@ -285,7 +286,7 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
     midievent[1] = 0x2F;
     midievent[2] = 0x00;
 
-    int endoftrack = loopOffset + tpq*(nBlocks+2);
+    int endoftrack = loopOffset + tpq*nBlocks;
     midiOut.addEvent( 1, endoftrack, midievent );
     qDebug() << " added EOT @  " << endoftrack;
 

@@ -3,18 +3,19 @@ var createRatePanel = function () {
 	var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
 	var panel = new BABYLON.GUI.Grid();
+    panel.addColumnDefinition(0.16);
+    panel.addColumnDefinition(0.16);
+    panel.addColumnDefinition(0.16);
+    panel.addColumnDefinition(0.16);
+    panel.addColumnDefinition(0.16);
     panel.addColumnDefinition(0.2);
-    panel.addColumnDefinition(0.2);
-    panel.addColumnDefinition(0.2);
-    panel.addColumnDefinition(0.2);
-    panel.addColumnDefinition(0.2);
+    panel.addRowDefinition(0.01);
+    panel.addRowDefinition(0.19);
     panel.addRowDefinition(0.8);
-    panel.addRowDefinition(0.2);
 
    	createRateButton(panel,"change",0,function() {
-		if(soundPanel!=undefined) soundPanel.dispose(); 
-		soundPanel = createSoundPanel();
-		state='play';
+		if(soundPanel==undefined) soundPanel = createSoundPanel();
+		playControlPanel.isVisible=true;
 	});
    	createRateButton(panel,"Rate 1",1,function() {
 		console.log("rate 1");
@@ -28,6 +29,9 @@ var createRatePanel = function () {
    	createRateButton(panel,"Replay",4,function() {
 		console.log("Replay");
 		music1.play();
+		state='play';
+		ratePanel.isVisible=false;
+		playControlPanel.isVisible=true;
 	});
    	
 	advancedTexture.addControl(panel);

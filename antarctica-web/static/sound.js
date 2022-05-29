@@ -49,8 +49,9 @@ var triggerNewSound = function(trackId) {
 		oReq.addEventListener("load", function() {
 			if(this.response.includes("Error")) {
 				console.log("server error!!!");
-				statusPanel2.text = "server error!!!";
+				state='server error';
 			} else {
+				playingTrack=this.responseText;
 				music2=music1;
 				music1 = new BABYLON.Sound(
 				  "track1",
@@ -58,10 +59,6 @@ var triggerNewSound = function(trackId) {
 				  scene,
 				  function() {
 					console.log("music 1 ready... play");
-					console.log("music 1 class: " + music1.getClassName() );
-					console.log("music 1 gain: " + music1.getSoundGain() );
-					console.log("music 1 audio buffer: " + music1.getAudioBuffer() );
-					console.log("music 1 time: " + music1.currentTime );
 					
 					if(music2!=undefined) {
 						music2.stop();
@@ -71,10 +68,14 @@ var triggerNewSound = function(trackId) {
 														
 					soundTrack1.addSound(music1);
 					
-					music1.onEndedObservable.addOnce(() => {
-						music1.stop();
-						state='rate';
-						ratePanel = createRatePanel();
+					music1.onEndedObservable.add(() => {
+						console.log("music 1 ended at state " + state);
+						if(loopPlay!=true) {
+							music1.stop();
+							state='rate';
+							if(playControlPanel!=undefined) playControlPanel.isVisible=false;						
+							ratePanel = createRatePanel();
+						}
 					});
 					
 					/*
@@ -89,10 +90,12 @@ var triggerNewSound = function(trackId) {
 						*/
 					music1.setVolume(1);
 					music1.play();
-					if(ratePanel!=undefined) ratePanel.dispose();
-					statusPanel2.text = " playing: " + music1.currentTime;
+					state='play';
+					playControlPanel=createPlayControlPanel();
+					if(ratePanel!=undefined) ratePanel.isVisible=false;
+					//statusPanel2.text = " playing: " + music1.currentTime;
 				  },
-				  { loop: false }
+				  { loop: loopPlay }
 				);
 				
 				console.log("loading sound:"+this.responseText);
@@ -103,7 +106,7 @@ var triggerNewSound = function(trackId) {
 		var getUrl = window.location;
 		var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ; //+ getUrl.pathname.split('/')[1];		
 		
-		console.log("trackId " + trackId);
+		console.log("trigger new sound trackId " + trackId);
 
 		statusPanel2.text = "downloading " + getUrl + "/" + clipId;
 		var queryId=trackId+"_"+clipId+"_"+tempo+"_"+loopLength+"_"+repeat+"_"+pitch+"_"+basenote+"_"+scale+"_"+arrange+"_"+Date.now();
@@ -176,26 +179,17 @@ var createSoundPanel = function () {
     panel.addColumnDefinition(0.1);
     panel.addColumnDefinition(0.05);
     panel.addColumnDefinition(0.80);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
-    panel.addRowDefinition(0.05);
+    panel.addRowDefinition(0.2);
+    panel.addRowDefinition(0.08);
+    panel.addRowDefinition(0.08);
+    panel.addRowDefinition(0.08);
+    panel.addRowDefinition(0.08);
+    panel.addRowDefinition(0.08);
+    panel.addRowDefinition(0.08);
+    panel.addRowDefinition(0.08);
+    panel.addRowDefinition(0.08);
+    panel.addRowDefinition(0.08);
+    panel.addRowDefinition(0.08);
 
 	advancedTexture.addControl(panel);
 	
@@ -205,8 +199,8 @@ var createSoundPanel = function () {
     closeButton.color = "white";
     closeButton.cornerRadius = 20;
     closeButton.background = "green";
-    closeButton.onPointerUpObservable.add( function() { soundPanel.dispose(); } );
-    panel.addControl(closeButton, 0, 0);    
+    closeButton.onPointerUpObservable.add( function() { soundPanel.isVisible=false; } );
+    panel.addControl(closeButton, 9, 3);    
 	
     var playButton = BABYLON.GUI.Button.CreateSimpleButton("playButton", "play");
     playButton.width = "250px"
@@ -214,9 +208,8 @@ var createSoundPanel = function () {
     playButton.color = "white";
     playButton.cornerRadius = 20;
     playButton.background = "green";
-    playButton.onPointerUpObservable.add( triggerNewSound(selectedRecord[4]));
+    playButton.onPointerUpObservable.add( function() { triggerNewSound(selectedRecord[4]); } );
     panel.addControl(playButton, 9, 0);    
-
    	
 	row1 = new sliderPlus( panel, 1, "Clip", 0, 1, 185, clipId );
 	row1.setValueFunction( function(value) {
