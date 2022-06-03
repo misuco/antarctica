@@ -13,6 +13,7 @@ var infoPanel;
 var statusPanel;
 var statusPanel2;
 var ratePanel;
+var replayPanel;
 var playControlPanel;
 var soundPanel;
 
@@ -225,7 +226,9 @@ function addNextPoint() {
 	}
 	
 	resizeHomePoints(camera.radius * 0.02);
-
+	var d=camera.radius * 0.1;
+	selectedSpot.scaling = new BABYLON.Vector3(d,d,d);
+	
 	/*
 	angel+=speed;
 	
@@ -296,8 +299,15 @@ function addNextPoint() {
 						
 
 			var sphere;
+			
+			var sectorX = Math.floor(fields[2]/2);
+			var sectorY = Math.floor(fields[3]/2);
+			var sectorId = sectorX + "_" + sectorY;			
+			var sWidth = 0.01 + ( 400 - sectorCountMap.get(sectorId) ) / 10000;
+			console.log("sWidth " + sWidth + " sectorId " + sectorId + " count " + sectorCountMap.get(sectorId) );
+			
 			if( fields[7] == "Summit"  ) {
-				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:0.01,height:sHeight,depth:0.01, diameterTop: 0, diameterBottom: 0.01, tessellation: 4}, scene);    
+				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);    
 			} else if( fields[7] == "Building" ) {
 				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);    
 				homePonits.push(sphere);
@@ -305,7 +315,8 @@ function addNextPoint() {
 				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.8,height:0.4,depth:2}, scene);    
 				homePonits.push(sphere);
 			} else {
-				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.005,height:sHeight,depth:0.005}, scene);    
+				//sphere = BABYLON.MeshBuilder.CreateBox("box", {width:sWidth,height:sHeight,depth:sWidth}, scene);    
+				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);    
 			}
 			sphere.position.x = fields[2];
 			sphere.position.z = fields[3];
@@ -432,8 +443,14 @@ var createScene = function () {
 	//soundPanel = createSoundPanel();
 	//createCamSliders(panel);
 	
-	ratePanel = createRatePanel();
+	ratePanel=createRatePanel();
 	ratePanel.isVisible=false;
+	
+	replayPanel=createReplayPanel();
+	replayPanel.isVisible=false;
+	
+	playControlPanel=createPlayControlPanel();
+	playControlPanel.isVisible=false;
 
 	var advancedTexture2 = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
     

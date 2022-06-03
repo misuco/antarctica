@@ -19,9 +19,12 @@ var createPlayControlPanel = function () {
 	});
    	createRateButton(panel,"Play",1,function() {
 		console.log("Play");
-		music1.play();
-		state='play';
+		if(state!='play') {
+			music1.play();
+			state='play';
+		}
 	});
+	/*
    	createRateButton(panel,"Loop On",2,function() {
 		console.log("Loop On");
 		loopPlay=true;
@@ -30,6 +33,7 @@ var createPlayControlPanel = function () {
 		console.log("Loop Off");
 		loopPlay=false;
 	});
+	*/
    	createRateButton(panel,"change",4,function() {
 		console.log("change");		
 		if(soundPanel==undefined) soundPanel = createSoundPanel();

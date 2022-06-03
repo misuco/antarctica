@@ -91,7 +91,7 @@ var triggerNewSound = function(trackId) {
 					music1.setVolume(1);
 					music1.play();
 					state='play';
-					playControlPanel=createPlayControlPanel();
+					playControlPanel.isVisible=true;
 					if(ratePanel!=undefined) ratePanel.isVisible=false;
 					//statusPanel2.text = " playing: " + music1.currentTime;
 				  },
@@ -104,7 +104,7 @@ var triggerNewSound = function(trackId) {
 		});
 		
 		var getUrl = window.location;
-		var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ; //+ getUrl.pathname.split('/')[1];		
+		var baseUrl = getUrl.protocol + "//" + getUrl.host + "/";
 		
 		console.log("trigger new sound trackId " + trackId);
 
@@ -208,7 +208,12 @@ var createSoundPanel = function () {
     playButton.color = "white";
     playButton.cornerRadius = 20;
     playButton.background = "green";
-    playButton.onPointerUpObservable.add( function() { triggerNewSound(selectedRecord[4]); } );
+    playButton.onPointerUpObservable.add( function() { 
+		music1.pause();
+		state='pause';
+		playControlPanel.isVisible=false;
+		triggerNewSound(selectedRecord[4]); 
+	} );
     panel.addControl(playButton, 9, 0);    
    	
 	row1 = new sliderPlus( panel, 1, "Clip", 0, 1, 185, clipId );
@@ -253,4 +258,3 @@ var createSoundPanel = function () {
     
     return panel;
 };
-

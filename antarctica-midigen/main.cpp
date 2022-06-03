@@ -111,6 +111,13 @@ int main(int argc, char *argv[])
 
     qDebug() << "got request block: " << block << " pitch: " << pitch << " tempo: " << tempo << " repeat: " << repeat << " loopLength: " << loopLength << " scale: " << scale << " basenote: " << basenote << " arrange: " << arrange << " " << target;
 
+    double secondsPerQuarter = 60.0 / tempo;
+    double playTime = 0;
+    double minPlayTime = 30;
+    double maxPlayTime = 120;
+
+    qDebug() << "seconds per quarter: " << secondsPerQuarter;
+
     vector<Midicalc::BlockConfig> config;
 
     if( arrange == 1 ) {
@@ -124,14 +131,15 @@ int main(int argc, char *argv[])
             config.push_back( { block, pitch+r*2, 20 + r*20, basenote, scale } );
         }
     } else if( arrange == 2 ) {
-        for(int r=0;r<repeat;r++) {
+        for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
             config.push_back( { block, pitch, tempo, basenote, scale } );
             config.push_back( { block, pitch + 5, tempo, basenote, scale } );
             config.push_back( { block, pitch + 4, tempo, basenote, scale } );
             config.push_back( { block, pitch + 9, tempo, basenote, scale } );
+            playTime += secondsPerQuarter * 4;
         }
     } else if( arrange == 3 ) {
-        for(int r=0;r<repeat;r++) {
+        for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
             config.push_back( { block, pitch, tempo, basenote, scale } );
             config.push_back( { block, pitch + 1, tempo, basenote, scale } );
             config.push_back( { block, pitch + 2, tempo, basenote, scale } );
@@ -144,9 +152,10 @@ int main(int argc, char *argv[])
             config.push_back( { block, pitch + 9, tempo, basenote, scale } );
             config.push_back( { block, pitch + 10, tempo, basenote, scale } );
             config.push_back( { block, pitch + 11, tempo, basenote, scale } );
+            playTime += secondsPerQuarter * 12;
         }
     } else if( arrange == 4 ) {
-        for(int r=0;r<repeat;r++) {
+        for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
             for(int c=0;c<loopLength;c++) {
                 config.push_back( { block+c, pitch, tempo, basenote, scale } );
             }
@@ -171,21 +180,24 @@ int main(int argc, char *argv[])
             for(int c=0;c<loopLength*16;c++) {
                 config.push_back( { block+c, pitch + 5, tempo * 16, basenote, scale } );
             }
+            playTime += secondsPerQuarter * 8 * loopLength;
         }
     } else if( arrange == 5 ) {
-        for(int s=0;s<repeat;s++) {
+        for(int s=0;(s<repeat || playTime<minPlayTime) && playTime<maxPlayTime;s++) {
             for(int c=0;c<loopLength;c++) {
                 config.push_back( { block+c, pitch, tempo, basenote, scale+s } );
             }
+            playTime += secondsPerQuarter * loopLength;
         }
     } else if( arrange == 6 ) {
-        for(int n=0;n<repeat;n++) {
+        for(int n=0;(n<repeat || playTime<minPlayTime) && playTime<maxPlayTime;n++) {
             for(int c=0;c<loopLength;c++) {
                 config.push_back( { block+c, pitch, tempo, basenote+n*2, scale } );
             }
+            playTime += secondsPerQuarter * loopLength;
         }
     } else if( arrange == 7 ) {
-        for(int r=0;r<repeat;r++) {
+        for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
             for(int c=0;c<loopLength;c++) {
                 config.push_back( { block+c, pitch-24, tempo, basenote, scale } );
             }
@@ -198,9 +210,10 @@ int main(int argc, char *argv[])
             for(int c=0;c<loopLength;c++) {
                 config.push_back( { block+c, pitch+12, tempo, basenote, scale } );
             }
+            playTime += secondsPerQuarter * loopLength * 4;
         }
     } else if( arrange == 8 ) {
-        for(int r=0;r<repeat;r++) {
+        for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
             config.push_back( { block, pitch, tempo, basenote, scale } );
             config.push_back( { block, pitch, tempo, basenote, scale } );
             config.push_back( { block, pitch + 5, tempo, basenote, scale } );
@@ -209,9 +222,10 @@ int main(int argc, char *argv[])
             config.push_back( { block, pitch + 5, tempo, basenote, scale } );
             config.push_back( { block, pitch, tempo, basenote, scale } );
             config.push_back( { block, pitch - 4, tempo, basenote, scale } );
+            playTime += secondsPerQuarter * 8;
         }
     } else if( arrange == 9 ) {
-        for(int r=0;r<repeat;r++) {
+        for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
             config.push_back( { block, pitch + 11, tempo, basenote, scale } );
             config.push_back( { block, pitch + 4, tempo, basenote, scale } );
             config.push_back( { block, pitch + 9, tempo, basenote, scale } );
@@ -220,16 +234,21 @@ int main(int argc, char *argv[])
             config.push_back( { block, pitch - 1, tempo, basenote, scale } );
             config.push_back( { block, pitch, tempo, basenote, scale } );
             config.push_back( { block, pitch + 4, tempo, basenote, scale } );
+            playTime += secondsPerQuarter * 8;
         }
     } else {
-        for(int r=0;r<repeat;r++) {
+        for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
             for(int c=0;c<loopLength;c++) {
                 config.push_back( { block+c, pitch, tempo, basenote, scale } );
             }
+            playTime += secondsPerQuarter * loopLength;
         }
     }
 
     createNewSong( target, tempo, config, scale, basenote  );
+
+    qDebug() << "seconds per quarter: " << secondsPerQuarter;
+    qDebug() << "play time: " << playTime;
 
     return 0;
 }

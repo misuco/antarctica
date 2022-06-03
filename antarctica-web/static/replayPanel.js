@@ -1,5 +1,5 @@
 
-var createRatePanel = function () {
+var createReplayPanel = function () {
 	var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
 	var panel = new BABYLON.GUI.Grid();
@@ -20,27 +20,10 @@ var createRatePanel = function () {
 		ratePanel.isVisible=false;
 		playControlPanel.isVisible=true;
 	});
+	
    	createRateButton(panel,"change",4,function() {
 		if(soundPanel==undefined) soundPanel = createSoundPanel();
-		//playControlPanel.isVisible=true;
-	});
-   	createRateButton(panel,"Rate 1",1,function() {
-		console.log("rate 1");
-		sendRate(1);
-		ratePanel.isVisible=false;
-		replayPanel.isVisible=true;
-	});
-   	createRateButton(panel,"Rate 2",2,function() {
-		console.log("rate 2");
-		sendRate(2);
-		ratePanel.isVisible=false;
-		replayPanel.isVisible=true;
-	});
-   	createRateButton(panel,"Rate 3",3,function() {
-		console.log("rate 3");
-		sendRate(3);
-		ratePanel.isVisible=false;
-		replayPanel.isVisible=true;
+		playControlPanel.isVisible=true;
 	});
    	
 	advancedTexture.addControl(panel);
@@ -60,19 +43,4 @@ var createRateButton = function (panel,text,col,func) {
 	rate1button.onPointerUpObservable.add(func);
 	
 	panel.addControl(rate1button, 1, col);
-}
-
-
-var sendRate = function( rating ) {
-	var oReq = new XMLHttpRequest();
-	oReq.addEventListener("load", function() {
-		statusPanel2.text = this.response;
-	});
-	
-	var getUrl = window.location;
-	var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ;
-	console.log("rate trackId " + playingTrack + " rating " + rating);
-	
-	oReq.open("GET", baseUrl + "rate?trackId="+playingTrack+"&rating="+rating);
-	oReq.send();
 }

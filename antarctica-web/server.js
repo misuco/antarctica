@@ -16,4 +16,11 @@ app.get('/newclip', function(req, res) {
 });
 
 
+app.get('/rate', function(req, res) {
+  console.log("got rating " + req.query.rating + " for " + req.query.trackId);
+  var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress  
+  proc.execSync('echo $(date +%Y-%m-%d-%H-%M-%S) '+ip+' >> /home/c1/MISUCO/antarctica/antarctica-web/static/'+req.query.trackId+'-r-'+req.query.rating);
+  res.send("Thanks for your rating for "+req.query.trackId);
+});
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))

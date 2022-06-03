@@ -97,8 +97,6 @@ void Midicalc::initScaleFilter(int scale, int basenote)
         scaleFilter.at(i)=true;
         scaleFilterHighestNote=i;
 
-        qDebug() << "*** scale note " << i;
-
         if(scaleSteps.at(stepI)=="H") {
             i+=1;
         } else if(scaleSteps.at(stepI)=="W") {
@@ -112,7 +110,6 @@ void Midicalc::initScaleFilter(int scale, int basenote)
         }
         stepI++;
         if(stepI>=scaleSteps.size()) {
-            qDebug() << "new octave ";
             stepI=0;
         }
     }
@@ -282,15 +279,27 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
         //tickOffset += ( midiOut[0][endIndicies.at(fromBeat)].tick - midiOut[0][beginIndicies.at(toBeat)].tick);
     }
 
+    /*
     midievent[0] = 0xFF;
     midievent[1] = 0x2F;
     midievent[2] = 0x00;
 
-    int endoftrack = loopOffset + tpq*nBlocks;
+    int endoftrack = loopOffset + tpq*24;
     midiOut.addEvent( 1, endoftrack, midievent );
     qDebug() << " added EOT @  " << endoftrack;
+    */
 
-    midiOut.sortTracks();         // make sure data is in correct order
+    for(int i=120;i>=0;i-=2) {
+        loopOffset += tpq / 4;
+        midievent[0] = 0xB0;
+        midievent[1] = 0x07;
+        midievent[2] = i;
+        midiOut.addEvent( 1, loopOffset, midievent );
+    }
+
+    midiOut.addCopyright( 1, 0, "Antarctica 2020 by Dock 18" );
+
+    midiOut.sortTracks();
 
 }
 
