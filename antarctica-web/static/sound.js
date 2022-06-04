@@ -50,6 +50,8 @@ var triggerNewSound = function(trackId) {
 			if(this.response.includes("Error")) {
 				console.log("server error!!!");
 				state='server error';
+				if(soundPanel==undefined) soundPanel = createSoundPanel();
+				soundPanel.isVisible=true;
 			} else {
 				playingTrack=this.responseText;
 				music2=music1;
@@ -78,19 +80,10 @@ var triggerNewSound = function(trackId) {
 						}
 					});
 					
-					/*
-					music1.onEndedObservable.addOnce(() => {
-							recordIndex++;
-							if(recordIndex>=records.length) recordIndex=0;
-							selectedSpot.position.x = records[recordIndex][2];
-							selectedSpot.position.z = records[recordIndex][3];						
-							infoPanel.text = records[recordIndex][5] + "\n" + records[recordIndex][6] + "\n" + records[recordIndex][13] + "\n" + records[recordIndex][14];
-							triggerNewSound();
-						});
-						*/
 					music1.setVolume(1);
 					music1.play();
 					state='play';
+					playButton.setText("Pause");
 					playControlPanel.isVisible=true;
 					if(ratePanel!=undefined) ratePanel.isVisible=false;
 					//statusPanel2.text = " playing: " + music1.currentTime;
@@ -107,6 +100,7 @@ var triggerNewSound = function(trackId) {
 		var baseUrl = getUrl.protocol + "//" + getUrl.host + "/";
 		
 		console.log("trigger new sound trackId " + trackId);
+		if(playControlPanel!=undefined) playControlPanel.isVisible=false;						
 
 		statusPanel2.text = "downloading " + getUrl + "/" + clipId;
 		var queryId=trackId+"_"+clipId+"_"+tempo+"_"+loopLength+"_"+repeat+"_"+pitch+"_"+basenote+"_"+scale+"_"+arrange+"_"+Date.now();

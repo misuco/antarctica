@@ -17,6 +17,8 @@ var replayPanel;
 var playControlPanel;
 var soundPanel;
 
+var playButton;
+
 var spheres = [];
 var sp=0;
 
@@ -140,7 +142,7 @@ function createSectorMap() {
   
   var sectorEntryCount = 0;
   for (const [key, value] of sectorCountMap) {
-		console.log(key + ' = ' + value)
+		//console.log(key + ' = ' + value)
 		sectorEntryCount += value;
   }  
   console.log("populated sectors " + sectorCountMap.size + " total entries " + sectorEntryCount );
@@ -205,8 +207,7 @@ function resizeHomePoints(d) {
 	});
 }
 
-function addNextPoint() {
-	
+function updateScene() {
 	if(state=='rate') {
 		statusPanel2.text = " rate spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
 	} else if(state=='loading') {
@@ -229,18 +230,6 @@ function addNextPoint() {
 	var d=camera.radius * 0.1;
 	selectedSpot.scaling = new BABYLON.Vector3(d,d,d);
 	
-	/*
-	angel+=speed;
-	
-	distance += alphashift * -0.01; 
-	
-	camera.position.x = selectedSpot.position.x + Math.sin(angel)*distance //0; //Math.sin(angel)*distance;
-	camera.position.z = selectedSpot.position.z + Math.sin(angel)*distance //0; //Math.cos(angel)*distance;
-	//camera.alpha=angel + alphaoffset;	
-	camera.position.y += betashift;
-	camera.target.y += betashift;
-	*/
-
 	if(camera.target.x!=selectedSpot.position.x || camera.target.z!=selectedSpot.position.z) {
 		if(cameraDeltaX==0) {
 			cameraDeltaX = (selectedSpot.position.x - camera.target.x)/200;
@@ -263,6 +252,9 @@ function addNextPoint() {
 	}
 	
 	camera.alpha+=0.00005;
+}
+
+function addNextPoint() {
 	
 	//console.log("selectedSpot.position.x " + selectedSpot.position.x + " camera.target.x " + camera.target.x + " cameraDeltaX " + cameraDeltaX ); 
 	//console.log("selectedSpot.position.z " + selectedSpot.position.z + " camera.target.z " + camera.target.z + " cameraDeltaZ " + cameraDeltaZ ); 
@@ -304,7 +296,7 @@ function addNextPoint() {
 			var sectorY = Math.floor(fields[3]/2);
 			var sectorId = sectorX + "_" + sectorY;			
 			var sWidth = 0.01 + ( 400 - sectorCountMap.get(sectorId) ) / 10000;
-			console.log("sWidth " + sWidth + " sectorId " + sectorId + " count " + sectorCountMap.get(sectorId) );
+			//console.log("sWidth " + sWidth + " sectorId " + sectorId + " count " + sectorCountMap.get(sectorId) );
 			
 			if( fields[7] == "Summit"  ) {
 				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);    
@@ -529,8 +521,9 @@ camera.angularSensibilityY=1000;
 camera.panningSensibility=1000;
 camera.wheelDeltaPercentage=0.01;
 camera.wheelPresision=0.01;
-camera.pinchDeltaPercentage=0.01;
-camera.pinchPresision=0.01;
+//camera.pinchDeltaPercentage=0.001;
+//camera.pinchPresision=0.01;
+camera.useNaturalPinchZoom=true;
 
 camera.attachControl(canvas, true);
 
@@ -548,3 +541,4 @@ oReq.open("GET", "AntarcticNames.csv");
 oReq.send();
 
 window.setInterval( addNextPoint, 10 );
+window.setInterval( updateScene, 100 );

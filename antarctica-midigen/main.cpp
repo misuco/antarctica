@@ -155,6 +155,9 @@ int main(int argc, char *argv[])
             playTime += secondsPerQuarter * 12;
         }
     } else if( arrange == 4 ) {
+        if(tempo>500 ) tempo/=4;
+        if(tempo>250 ) tempo/=2;
+
         for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
             for(int c=0;c<loopLength;c++) {
                 config.push_back( { block+c, pitch, tempo, basenote, scale } );
@@ -162,23 +165,23 @@ int main(int argc, char *argv[])
             for(int c=0;c<loopLength;c++) {
                 config.push_back( { block+c, pitch + 5, tempo, basenote, scale } );
             }
+            for(int c=0;c<loopLength*2;c++) {
+                config.push_back( { block+c, pitch, tempo * 2, basenote, scale } );
+            }
+            for(int c=0;c<loopLength*2;c++) {
+                config.push_back( { block+c, pitch + 5, tempo * 2, basenote, scale } );
+            }
+            for(int c=0;c<loopLength*3;c++) {
+                config.push_back( { block+c, pitch, tempo * 3, basenote, scale } );
+            }
+            for(int c=0;c<loopLength*3;c++) {
+                config.push_back( { block+c, pitch + 5, tempo * 3, basenote, scale } );
+            }
             for(int c=0;c<loopLength*4;c++) {
                 config.push_back( { block+c, pitch, tempo * 4, basenote, scale } );
             }
             for(int c=0;c<loopLength*4;c++) {
                 config.push_back( { block+c, pitch + 5, tempo * 4, basenote, scale } );
-            }
-            for(int c=0;c<loopLength*8;c++) {
-                config.push_back( { block+c, pitch, tempo * 8, basenote, scale } );
-            }
-            for(int c=0;c<loopLength*8;c++) {
-                config.push_back( { block+c, pitch + 5, tempo * 8, basenote, scale } );
-            }
-            for(int c=0;c<loopLength*16;c++) {
-                config.push_back( { block+c, pitch, tempo * 16, basenote, scale } );
-            }
-            for(int c=0;c<loopLength*16;c++) {
-                config.push_back( { block+c, pitch + 5, tempo * 16, basenote, scale } );
             }
             playTime += secondsPerQuarter * 8 * loopLength;
         }

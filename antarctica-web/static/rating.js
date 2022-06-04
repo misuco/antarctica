@@ -22,6 +22,7 @@ var createRatePanel = function () {
 	});
    	createRateButton(panel,"change",4,function() {
 		if(soundPanel==undefined) soundPanel = createSoundPanel();
+		soundPanel.isVisible=true;
 		//playControlPanel.isVisible=true;
 	});
    	createRateButton(panel,"Rate 1",1,function() {
@@ -50,16 +51,18 @@ var createRatePanel = function () {
 };
 
 var createRateButton = function (panel,text,col,func) {
-	var rate1button;
-	rate1button = BABYLON.GUI.Button.CreateSimpleButton(text,text);
-	rate1button.width = "200px"
-	rate1button.height = "100px";
-	rate1button.color = "black";
-	rate1button.cornerRadius = 20;
-	rate1button.background = "white";
-	rate1button.onPointerUpObservable.add(func);
+	var b;
+	b = BABYLON.GUI.Button.CreateSimpleButton(text,text);
+	b.width = "200px"
+	b.height = "100px";
+	b.color = "black";
+	b.cornerRadius = 20;
+	b.background = "white";
+	b.onPointerUpObservable.add(func);
 	
-	panel.addControl(rate1button, 1, col);
+	panel.addControl(b, 1, col);
+	
+	return b;
 }
 
 

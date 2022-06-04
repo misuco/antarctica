@@ -49,6 +49,7 @@ void Midicalc::setBPM(int b)
 
 void Midicalc::setCluster(int c)
 {
+    if(c>=clusters.size()) c=clusters.size()-1;
     fromQuarter = clusters[c].quarterBegin;
     toQuarter = clusters[c].quarterEnd;
     fromIndex = clusters[c].iBegin;
@@ -57,6 +58,7 @@ void Midicalc::setCluster(int c)
 
 void Midicalc::setQuarter(int q)
 {
+    if(q>=blocks.size()) q=blocks.size()-1;
     fromQuarter = blocks[q].quarterBegin;
     toQuarter = blocks[q].quarterEnd;
     fromIndex = blocks[q].iBegin;
@@ -75,6 +77,8 @@ void Midicalc::setTranspose(int n)
 
 void Midicalc::initScaleFilter(int scale, int basenote)
 {
+    if(scale>=scalePool.size()) scale=scalePool.size()-1;
+
     qDebug() << "init scale filter " << scaleMap[scalePool.at(scale)];
 
     // clear existing filter
