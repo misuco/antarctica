@@ -268,8 +268,8 @@ var requestFiles = function( spotId ) {
 			var files=this.response.split('\n');
 			infoPanel.text += "\n\nFiles: " + files.length;
 			playTrack("loops/"+files[0]);
+			console.log("got file response " + this.response );
 		}
-		console.log("got file response " + this.response );
 	});
 	
 	var getUrl = window.location;
