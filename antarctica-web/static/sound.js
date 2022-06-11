@@ -43,6 +43,50 @@ var randomSound = function() {
 	value8.setRandomValue();
 }
 
+var playTrack = function(trackId) {
+	console.log("play track: "+trackId);
+	playingTrack=trackId;
+	music2=music1;
+	music1 = new BABYLON.Sound(
+	  "track1",
+	  trackId,
+	  scene,
+	  function() {
+		console.log("music 1 ready... play");
+		
+		if(music2!=undefined) {
+			music2.stop();
+			soundTrack1.removeSound(music2);
+			music2.dispose();
+		}
+											
+		soundTrack1.addSound(music1);
+		
+		music1.onEndedObservable.add(() => {
+			console.log("music 1 ended at state " + state);
+			if(loopPlay!=true) {
+				music1.stop();
+				state='rate';
+				if(playControlPanel!=undefined) playControlPanel.isVisible=false;						
+				//ratePanel = createRatePanel();
+				ratePanel.isVisible=true;
+			}
+		});
+		
+		music1.setVolume(1);
+		music1.play();
+		state='play';
+		playButton.setText("Pause");
+		playControlPanel.isVisible=true;
+		ratePanel.isVisible=false;
+	  },
+	  { loop: loopPlay }
+	);
+	
+	console.log("loading sound:"+this.responseText);
+	statusPanel2.text = "loading sound:"+this.responseText;
+}
+
 var triggerNewSound = function(trackId) {
 		
 		var oReq = new XMLHttpRequest();
@@ -53,46 +97,7 @@ var triggerNewSound = function(trackId) {
 				if(soundPanel==undefined) soundPanel = createSoundPanel();
 				soundPanel.isVisible=true;
 			} else {
-				playingTrack=this.responseText;
-				music2=music1;
-				music1 = new BABYLON.Sound(
-				  "track1",
-				  this.responseText,
-				  scene,
-				  function() {
-					console.log("music 1 ready... play");
-					
-					if(music2!=undefined) {
-						music2.stop();
-						soundTrack1.removeSound(music2);
-						music2.dispose();
-					}
-														
-					soundTrack1.addSound(music1);
-					
-					music1.onEndedObservable.add(() => {
-						console.log("music 1 ended at state " + state);
-						if(loopPlay!=true) {
-							music1.stop();
-							state='rate';
-							if(playControlPanel!=undefined) playControlPanel.isVisible=false;						
-							ratePanel = createRatePanel();
-						}
-					});
-					
-					music1.setVolume(1);
-					music1.play();
-					state='play';
-					playButton.setText("Pause");
-					playControlPanel.isVisible=true;
-					if(ratePanel!=undefined) ratePanel.isVisible=false;
-					//statusPanel2.text = " playing: " + music1.currentTime;
-				  },
-				  { loop: loopPlay }
-				);
-				
-				console.log("loading sound:"+this.responseText);
-				statusPanel2.text = "loading sound:"+this.responseText;
+				playTrack(this.response);
 			}
 		});
 		

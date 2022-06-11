@@ -28,20 +28,14 @@ var createRatePanel = function () {
    	createRateButton(panel,"Rate 1",1,function() {
 		console.log("rate 1");
 		sendRate(1);
-		ratePanel.isVisible=false;
-		replayPanel.isVisible=true;
 	});
    	createRateButton(panel,"Rate 2",2,function() {
 		console.log("rate 2");
 		sendRate(2);
-		ratePanel.isVisible=false;
-		replayPanel.isVisible=true;
 	});
    	createRateButton(panel,"Rate 3",3,function() {
 		console.log("rate 3");
 		sendRate(3);
-		ratePanel.isVisible=false;
-		replayPanel.isVisible=true;
 	});
    	
 	advancedTexture.addControl(panel);
@@ -78,4 +72,8 @@ var sendRate = function( rating ) {
 	
 	oReq.open("GET", baseUrl + "rate?trackId="+playingTrack+"&rating="+rating);
 	oReq.send();
+	
+	ratePanel.isVisible=false;
+	replayPanel.isVisible=true;
+	state='rated';
 }

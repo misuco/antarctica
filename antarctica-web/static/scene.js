@@ -209,7 +209,9 @@ function resizeHomePoints(d) {
 
 function updateScene() {
 	if(state=='rate') {
-		statusPanel2.text = " rate spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
+		statusPanel2.text = "rate spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
+	} else if(state=='rated') {
+		statusPanel2.text = "rated spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
 	} else if(state=='loading') {
 		statusPanel2.text = " loading spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
 	} else if(state=='server error') {
@@ -252,6 +254,30 @@ function updateScene() {
 	}
 	
 	camera.alpha+=0.00005;
+}
+
+
+var requestFiles = function( spotId ) {
+	var oReq = new XMLHttpRequest();
+	oReq.addEventListener("load", function() {
+		if(this.response.includes("Error")) {
+			infoPanel.text += "\n\nFiles: 0";
+			randomSound();
+			triggerNewSound(spotId);
+		} else {
+			var files=this.response.split('\n');
+			infoPanel.text += "\n\nFiles: " + files.length;
+			playTrack("loops/"+files[0]);
+		}
+		console.log("got file response " + this.response );
+	});
+	
+	var getUrl = window.location;
+	var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ;
+	console.log("request files for spot " + spotId);
+	
+	oReq.open("GET", baseUrl + "files?spotId="+spotId);
+	oReq.send();	
 }
 
 function addNextPoint() {
@@ -351,7 +377,6 @@ function addNextPoint() {
 			} else {
 				sphere.material = mGreen;
 			}
-				
 
 			sphere.actionManager = new BABYLON.ActionManager(scene);
 			
@@ -367,6 +392,7 @@ function addNextPoint() {
 						selectedSpot.position.z = fields[3];
 						recordIndex = csvIndex;
 						selectedRecord = fields;
+						requestFiles(fields[4] + '_' + fields[5]);
 						
 						// filter current sector
 						filterCsv(fields[4]);	
@@ -383,8 +409,8 @@ function addNextPoint() {
 						filterCsv(sectorId[0]+"_"+eastSector);
 						filterCsv(sectorId[0]+"_"+westSector);
 											
-						randomSound();
-						triggerNewSound(fields[4]+"_"+fields[5]);
+//						randomSound();
+//						triggerNewSound(fields[4]+"_"+fields[5]);
 						
 						if(ratePanel!=undefined) ratePanel.isVisible=false;
 						state='loading';
@@ -509,8 +535,8 @@ camera.target.z = 0;
 camera.radius=50;
 camera.beta=0;
 
-console.log("angularSensibilityX " + camera.angularSensibilityX + " camera.angularSensibilityY " + camera.angularSensibilityY + " camera.panningSensibility " + camera.panningSensibility);
-console.log("camera.minZ " + camera.minZ + " camera.maxZ " + camera.maxZ );
+//console.log("angularSensibilityX " + camera.angularSensibilityX + " camera.angularSensibilityY " + camera.angularSensibilityY + " camera.panningSensibility " + camera.panningSensibility);
+//console.log("camera.minZ " + camera.minZ + " camera.maxZ " + camera.maxZ );
 
 camera.upperRadiusLimit=60;
 camera.lowerRadiusLimit=2;
@@ -529,7 +555,7 @@ camera.attachControl(canvas, true);
 
 createScene(); //Call the createScene function
 
-//scene.registerBeforeRender( addNextPoint() );
+scene.registerBeforeRender( updateScene );
 
 // Register a render loop to repeatedly render the scene
 engine.runRenderLoop(function () {
@@ -541,4 +567,3 @@ oReq.open("GET", "AntarcticNames.csv");
 oReq.send();
 
 window.setInterval( addNextPoint, 10 );
-window.setInterval( updateScene, 100 );

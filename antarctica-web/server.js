@@ -15,12 +15,17 @@ app.get('/newclip', function(req, res) {
   res.send("loops/" + req.query.id +".wav");
 });
 
-
 app.get('/rate', function(req, res) {
   console.log("got rating " + req.query.rating + " for " + req.query.trackId);
   var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress  
   proc.execSync('echo $(date +%Y-%m-%d-%H-%M-%S) '+ip+' >> /home/c1/MISUCO/antarctica/antarctica-web/static/'+req.query.trackId+'-r-'+req.query.rating);
   res.send("Thanks for your rating for "+req.query.trackId);
+});
+
+app.get('/files', function(req, res) {
+  console.log("got files request for spot " + req.query.spotId);
+  var files = proc.execSync('ls -1 /home/c1/MISUCO/antarctica/antarctica-web/static/loops/*'+req.query.spotId+'*.wav | xargs -n 1 basename');
+  res.send(files);
 });
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))

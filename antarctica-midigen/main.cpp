@@ -155,8 +155,7 @@ int main(int argc, char *argv[])
             playTime += secondsPerQuarter * 12;
         }
     } else if( arrange == 4 ) {
-        if(tempo>500 ) tempo/=4;
-        if(tempo>250 ) tempo/=2;
+        if(tempo>200 ) tempo/=4;
 
         for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
             for(int c=0;c<loopLength;c++) {
