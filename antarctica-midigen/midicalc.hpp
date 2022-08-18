@@ -1,20 +1,28 @@
+/**
+ * Antarctica
+ *
+ * Piano music composition generator
+ *
+ * (c) 2022 by claudio zopfi
+ *
+ * Licence: GNU/GPL
+ *
+ * https://github.com/misuco/antarctica
+ *
+ */
+
 #ifndef MIDICALC_HPP
 #define MIDICALC_HPP
-
-#include <map>
-#include <QMap>
 
 #include "MidiFile.h"
 #include "Options.h"
 
-
+#include <map>
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
 #include <iostream>
 #include <vector>
-
-#include <QString>
 
 using namespace std;
 using namespace smf;
@@ -33,8 +41,8 @@ public:
     Midicalc();
     ~Midicalc() {}
 
-    void    loadChordMap(QString filename);
-    void    loadScaleMap(QString filename);
+    void    loadChordMap(string filename);
+    void    loadScaleMap(string filename);
     void    loadMidiFile(const string &filename);
     void    analyzeMidiFile ();
 
@@ -89,10 +97,10 @@ private:
     vector<Block> blocks;
     vector<Block> clusters;
 
-    QMap<QString,QString> chordMap;
+    map<string,string> chordMap;
 
-    vector<QString> scalePool;
-    QMap<QString,QString> scaleMap;
+    vector<string> scalePool;
+    map<string,string> scaleMap;
 
     vector<bool> scaleFilter;
     vector<int> scaleFilterMap;
@@ -109,12 +117,12 @@ private:
     double  setTempo(double factor);
 
     void harmonicAnalyze(Block b);
-    std::string midinote2txt(int note);
+    string midinote2txt(int note);
     string step2txt(int step);
     string triplet2txt(vector<int> tripletSteps, vector<int> triplets);
-    QString interval2txt( int i );
+    string interval2txt( int i );
 
-    QString outputPath;
+    string outputPath;
     void disassembleChord(map<int, int> pressedKeys);
 };
 

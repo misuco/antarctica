@@ -1,21 +1,19 @@
-//
-// Programmer:    Craig Stuart Sapp <craig@ccrma.stanford.edu>
-// Creation Date: Tue Jan 22 22:09:46 PST 2002
-// Last Modified: Tue Jan 22 22:09:48 PST 2002
-// Last Modified: Mon Feb  9 21:26:32 PST 2015 Updated for C++11.
-// Filename:      ...sig/examples/all/midi2text.cpp
-// Web Address:   http://sig.sapp.org/examples/museinfo/midi/midi2text.cpp
-// Syntax:        C++; museinfo
-//
-// Description:   Description: Converts a MIDI file into a text based notelist.
-//
+/**
+ * Antarctica
+ *
+ * Piano music composition generator
+ *
+ * (c) 2022 by claudio zopfi
+ *
+ * Licence: GNU/GPL
+ *
+ * https://github.com/misuco/antarctica
+ *
+ */
 
 #include "midicalc.hpp"
-#include <QProcess>
-#include <QDir>
-#include <QDebug>
-
-//////////////////////////////////////////////////////////////////////////
+#include <sstream>
+#include <stdlib.h>
 
 int Midicalc::filterKey(int key) {
 
@@ -79,7 +77,7 @@ void Midicalc::initScaleFilter(int scale, int basenote)
 {
     if(scale>=scalePool.size()) scale=scalePool.size()-1;
 
-    qDebug() << "init scale filter " << scaleMap[scalePool.at(scale)];
+    cout << "init scale filter " << scaleMap[scalePool.at(scale)] << endl;
 
     // clear existing filter
     scaleFilter.clear();
@@ -94,7 +92,13 @@ void Midicalc::initScaleFilter(int scale, int basenote)
     while(scaleFilterLowestNote<21) { scaleFilterLowestNote+=12; }
 
     // get record
-    QStringList scaleSteps=scalePool.at(scale).split("-");
+    vector<string> scaleSteps;
+    istringstream f(scalePool.at(scale));
+    string s;
+    while (getline(f, s, '-')) {
+        cout << s << endl;
+        scaleSteps.push_back(s);
+    }
 
     int stepI = 0;
     for(int i=scaleFilterLowestNote;i<127;) {
@@ -110,7 +114,7 @@ void Midicalc::initScaleFilter(int scale, int basenote)
         } else if(scaleSteps.at(stepI)=="3H") {
             i+=3;
         } else {
-            qDebug() << "unknown step token " << scaleSteps.at(stepI);
+            cout << "unknown step token " << scaleSteps.at(stepI) << endl;
         }
         stepI++;
         if(stepI>=scaleSteps.size()) {
@@ -129,48 +133,58 @@ Midicalc::Midicalc() :
     bpm { 125 },
     outputPath { "/home/c1/MISUCO/antarctica-files/" }
 {
-    QDir d;
+    //QDir d;
     //d.mkdir(outputPath+"wav");
     //d.mkdir(outputPath+"mid");
 }
 
-void Midicalc::loadChordMap(QString filename)
+void Midicalc::loadChordMap(string filename)
 {
-    QFile file(filename);
+    ifstream file(filename);
+    string line;
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
+    if(!file.is_open()) return;
 
-    while (!file.atEnd()) {
-        QString line = QString::fromLocal8Bit(file.readLine());
-        QStringList fields = line.split(";");
+    while(getline(file,line)) {
+        vector<string> fields;// = line.split(";");
+        istringstream f(line);
+        string s;
+        while (getline(f, s, ';')) {
+            cout << s << endl;
+            fields.push_back(s);
+        }
 
         if(fields.size()>2) {
             chordMap[fields.at(2)] = fields.at(0);
-            //qDebug() << "loaded chord " << fields.at(0);
+            cout << "loaded chord " << fields.at(0) << endl;
         } else {
-            //qDebug() << "invalid record " << line;
+            cout << "invalid record " << line << endl;
         }
     }
 
 }
-void Midicalc::loadScaleMap(QString filename)
+void Midicalc::loadScaleMap(string filename)
 {
-    QFile file(filename);
+    ifstream file(filename);
+    string line;
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
+    if(!file.is_open()) return;
 
-    while (!file.atEnd()) {
-        QString line = QString::fromLocal8Bit(file.readLine());
-        QStringList fields = line.split(";");
+    while(getline(file,line)) {
+        vector<string> fields;// = line.split(";");
+        istringstream f(line);
+        string s;
+        while (getline(f, s, ';')) {
+            cout << s << endl;
+            fields.push_back(s);
+        }
 
         if(fields.size()>2) {
             scaleMap[fields.at(2)] = fields.at(0);
             scalePool.push_back(fields.at(2));
-            //qDebug() << "loaded chord " << fields.at(0);
+            cout << "loaded chord " << fields.at(0) << endl;
         } else {
-            //qDebug() << "invalid record " << line;
+            cout << "invalid record " << line << endl;
         }
     }
 
@@ -217,7 +231,7 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
     int n=0;
     for( auto& config: blockConfigs) {
 
-        qDebug() << " - create Block " << config.block << " trans " << config.transpose;
+        cout << " - create Block " << config.block << " trans " << config.transpose << endl;
 
         setQuarter( config.block );
         setTranspose( config.transpose );
@@ -230,9 +244,9 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
 
         nBlocks = toQuarter - fromQuarter + 1;
 
-        qDebug() << loopOffset << "   * beat  " << n << " from " << fromQuarter << " to " << toQuarter << " nBlocks " << nBlocks;
-        qDebug() << "   * index " << n << " from " << fromIndex << " to " << toIndex;
-        qDebug() << "   * tempo " << config.tempo;
+        cout << loopOffset << "   * beat  " << n << " from " << fromQuarter << " to " << toQuarter << " nBlocks " << nBlocks << endl;
+        cout << "   * index " << n << " from " << fromIndex << " to " << toIndex << endl;
+        cout << "   * tempo " << config.tempo << endl;
         n++;
 
         for(int i=fromIndex;i<=toIndex;i++) {
@@ -270,9 +284,9 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
                 //cout << " dest " << destinationTick << " \n";
                 midiOut.addEvent( 1, destinationTick /*+ tickOffset*/, midievent );
 
-                QString noteType = ( ( midievent[0] & 0xf0 ) == 0x90 ? " on " : " off " );
+                string noteType = ( ( midievent[0] & 0xf0 ) == 0x90 ? " on " : " off " );
 
-                qDebug() << " added @  " << destinationTick << " " << i << ". note " << noteType << " velocity " << newvelocity << " " << QString::fromStdString(midinote2txt(key)) << " transposed "  << QString::fromStdString(midinote2txt(keyTransposed)) << " translated " << QString::fromStdString(midinote2txt(newkey))  << " at " << destinationTick;
+                cout << " added @  " << destinationTick << " " << i << ". note " << noteType << " velocity " << newvelocity << " " << midinote2txt(key) << " transposed "  << midinote2txt(keyTransposed) << " translated " << midinote2txt(newkey)  << " at " << destinationTick << endl;
 
             } else if (midiIn[0][i][0] == 0xff &&
                        midiIn[0][i][1] == 0x51) {
@@ -321,6 +335,8 @@ void Midicalc::saveNewMidiFile(const string &filename)
     */
 
     midiOut.write(filename+".mid");
+
+    /*
     QProcess p;
     //p.setProgram( "../antarctica/fluidsynth-2.2.5-win10-x64/bin/fluidsynth.exe" );
     //p.setArguments( {"../antarctica/fluidsynth-2.2.5-win10-x64/sf/TimGM6mb.sf2", QString::fromStdString( filename ), "-F", QString::fromStdString( filename ).append( ".wav" ) });
@@ -328,8 +344,13 @@ void Midicalc::saveNewMidiFile(const string &filename)
     p.setArguments( { "/home/antarctica/antarcticalibs/TimGM6mb.sf2", QString::fromStdString(filename+".mid"), "-F", QString::fromStdString(filename)+".wav" , "-r", "48000", "-O", "s24" });
     p.start();
     p.waitForFinished();
+    */
+    string command = "fluidsynth /home/antarctica/antarcticalibs/TimGM6mb.sf2 " + filename + ".mid -F " + filename + ".wav -r 48000 -O s24";
+    system( command.c_str() );
+    command = "ffmpeg -i " + filename + ".mid -acodec mp3 -ab 128k " + filename + ".mp3";
+    system( command.c_str() );
 
-    cout << "saved " << filename << " " << filename <<  "\n";
+    cout << "saved " << filename << endl;
 }
 
 //////////////////////////////
@@ -347,7 +368,7 @@ void Midicalc::analyzeMidiFile() {
     int beat = 0;
 
     int key = 0;
-    int vel = 0;
+    //int vel = 0;
 
     double previousQuarter=0;
 
@@ -394,9 +415,9 @@ void Midicalc::analyzeMidiFile() {
 
             blocks.push_back(b);
 
-            qDebug() << "- block " << blocks.size() << "\tbeat\t" << beat << "\tquarter begin\t" << b.quarterBegin << "\tend\t" << b.quarterEnd << "\tindex begin\t" << b.iBegin << "\tend\t" << b.iEnd;
-            qDebug() << "\ton\t" << b.nNoteOn << "\toff\t" << b.nNoteOff << "\tother\t" << b.nEventOther << "\tonOffdiff\t" << b.nNoteOn - b.nNoteOff << "\tcOn\t" <<  b.totalOn << "\ttempo init\t" << b.tempoInit << "\tmin\t" << b.tempoMin << "\tmax\t" << b.tempoMax << "\tevs\t" << b.nEventTempo;
-            qDebug() << "\ttick min " << midiIn[0][b.iBegin].tick << " max " << midiIn[0][b.iEnd].tick;
+            cout << "- block " << blocks.size() << "\tbeat\t" << beat << "\tquarter begin\t" << b.quarterBegin << "\tend\t" << b.quarterEnd << "\tindex begin\t" << b.iBegin << "\tend\t" << b.iEnd << endl;
+            cout << "\ton\t" << b.nNoteOn << "\toff\t" << b.nNoteOff << "\tother\t" << b.nEventOther << "\tonOffdiff\t" << b.nNoteOn - b.nNoteOff << "\tcOn\t" <<  b.totalOn << "\ttempo init\t" << b.tempoInit << "\tmin\t" << b.tempoMin << "\tmax\t" << b.tempoMax << "\tevs\t" << b.nEventTempo << endl;
+            cout << "\ttick min " << midiIn[0][b.iBegin].tick << " max " << midiIn[0][b.iEnd].tick << endl;
 
             b.quarterBegin = quarter;
             b.iBegin = i;
@@ -415,10 +436,10 @@ void Midicalc::analyzeMidiFile() {
 
             if( cluster.totalOn == 0 && nNewNoteEvents > 0 ) {
                 clusters.push_back( cluster );
-                qDebug() << "- end cluster -------------------------------------------------------------------------------------------------------------------------------------------------------";
-                qDebug() << "- cluster " << clusters.size() << "\tbeat\t" << beat << "\tquarter begin\t" << cluster.quarterBegin << "\tend\t" << cluster.quarterEnd << "\tindex begin\t" << cluster.iBegin << "\tend\t" << cluster.iEnd;
-                qDebug() << "\ton\t" << cluster.nNoteOn << "\toff\t" << cluster.nNoteOff << "\tother\t" << cluster.nEventOther << "\tonOffdiff\t" << cluster.nNoteOn - cluster.nNoteOff << "\tcOn\t" <<  cluster.totalOn << "\ttempo init\t" << cluster.tempoInit << "\tmin\t" << cluster.tempoMin << "\tmax\t" << cluster.tempoMax << "\tevs\t" << cluster.nEventTempo;
-                qDebug() << "\ttick min " << midiIn[0][cluster.iBegin].tick << " max " << midiIn[0][cluster.iEnd].tick;
+                cout << "- end cluster -------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+                cout << "- cluster " << clusters.size() << "\tbeat\t" << beat << "\tquarter begin\t" << cluster.quarterBegin << "\tend\t" << cluster.quarterEnd << "\tindex begin\t" << cluster.iBegin << "\tend\t" << cluster.iEnd << endl;
+                cout << "\ton\t" << cluster.nNoteOn << "\toff\t" << cluster.nNoteOff << "\tother\t" << cluster.nEventOther << "\tonOffdiff\t" << cluster.nNoteOn - cluster.nNoteOff << "\tcOn\t" <<  cluster.totalOn << "\ttempo init\t" << cluster.tempoInit << "\tmin\t" << cluster.tempoMin << "\tmax\t" << cluster.tempoMax << "\tevs\t" << cluster.nEventTempo << endl;
+                cout << "\ttick min " << midiIn[0][cluster.iBegin].tick << " max " << midiIn[0][cluster.iEnd].tick << endl;
 
                 cluster.quarterBegin = quarter;
                 cluster.iBegin = i;
@@ -436,7 +457,7 @@ void Midicalc::analyzeMidiFile() {
                 cluster.notes.clear();
                 cluster.harmonicMap.clear();
 
-                qDebug() << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------";
+                cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 
             }
 
@@ -446,7 +467,7 @@ void Midicalc::analyzeMidiFile() {
         if (command == 0x90 && midiIn[0][i][2] != 0) {
             // NOTE ON
             key = midiIn[0][i][1];
-            vel = midiIn[0][i][2];
+            //vel = midiIn[0][i][2];
 
             pressedKeys[key]++;
             if(pressedKeys[key]>1) cout << "WARNING: multiple key press for " << key << "\n";
@@ -595,7 +616,7 @@ void Midicalc::disassembleChord(map<int,int> pressedKeys) {
     if( pressedKeys.size() > 1) {
         int baseNote = 0;
         bool isFirstNote = true;
-        QString chordQualifier = "0";
+        string chordQualifier = "0";
         for(auto key:pressedKeys) {
             if( isFirstNote ) {
                 baseNote = key.first;
@@ -603,15 +624,15 @@ void Midicalc::disassembleChord(map<int,int> pressedKeys) {
             } else {
                 int note  = key.first;
                 int interval = note - baseNote;
-                chordQualifier.append( QString(" %1").arg( interval2txt( interval )) );
+                chordQualifier.append( " " + interval2txt( interval ) );
             }
         }
 
 
-        if( chordMap.contains( chordQualifier )) {
+        if( chordMap.find(chordQualifier)!=chordMap.cend()) {
             if( pressedKeys.size() > 2 ){
-                cout << " chord " << chordQualifier.toStdString();
-                cout << " is " << chordMap[ chordQualifier ].toStdString() << " from " << midinote2txt( baseNote ) << "\n";
+                cout << " chord " << chordQualifier;
+                cout << " is " << chordMap[chordQualifier] << " from " << midinote2txt(baseNote) << "\n";
             }
         } else {
             //cout << " is unknown \n";
@@ -653,16 +674,16 @@ string Midicalc::triplet2txt(vector<int> tripletSteps, vector<int> triplets) {
     return txt;
 }
 
-QString Midicalc::interval2txt(int i)
+string Midicalc::interval2txt(int i)
 {
-    QString txt;
+    string txt;
     i = i % 12;
     if( i == 10 ) {
         txt = "t";
     } else if( i == 11 ) {
         txt = "e";
     } else {
-        txt = QString("%1").arg( i );
+        txt = to_string(i);
     }
 
     return txt;
