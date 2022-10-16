@@ -17,13 +17,13 @@ var createReplayPanel = function () {
 		console.log("Replay");
 		music1.play();
 		state='play';
-		ratePanel.isVisible=false;
-		playControlPanel.isVisible=true;
+		//ratePanel.isVisible=false;
+		//playControlPanel.isVisible=true;
 	});
 	
    	createRateButton(panel,"change",4,function() {
 		if(soundPanel==undefined) soundPanel = createSoundPanel();
-		playControlPanel.isVisible=true;
+		//playControlPanel.isVisible=true;
 	});
    	
 	advancedTexture.addControl(panel);

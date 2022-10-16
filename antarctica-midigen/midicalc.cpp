@@ -307,8 +307,11 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
     qDebug() << " added EOT @  " << endoftrack;
     */
 
+    midiOutLoop = midiOut;
+
+    // fade out 10s (at 120 bpm 40 quarter = 10 s)
     for(int i=120;i>=0;i-=2) {
-        loopOffset += tpq / 4;
+        loopOffset += tpq /  3 * 2 * tempoEvent.getTempoBPM() / 120;
         midievent[0] = 0xB0;
         midievent[1] = 0x07;
         midievent[2] = i;
@@ -316,8 +319,10 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
     }
 
     midiOut.addCopyright( 1, 0, "Antarctica 2020 by Dock 18" );
-
     midiOut.sortTracks();
+
+    midiOutLoop.addCopyright( 1, 0, "Antarctica 2020 by Dock 18 - loop version" );
+    midiOutLoop.sortTracks();
 
 }
 
@@ -335,6 +340,7 @@ void Midicalc::saveNewMidiFile(const string &filename)
     */
 
     midiOut.write(filename+".mid");
+    midiOutLoop.write(filename+"-loop.mid");
 
     /*
     QProcess p;
@@ -347,7 +353,12 @@ void Midicalc::saveNewMidiFile(const string &filename)
     */
     string command = "fluidsynth /home/antarctica/antarcticalibs/TimGM6mb.sf2 " + filename + ".mid -F " + filename + ".wav -r 48000 -O s24";
     system( command.c_str() );
-    command = "ffmpeg -i " + filename + ".mid -acodec mp3 -ab 128k " + filename + ".mp3";
+    command = "ffmpeg -i " + filename + ".wav -acodec mp3 -ab 128k " + filename + ".mp3";
+    system( command.c_str() );
+
+    command = "fluidsynth /home/antarctica/antarcticalibs/TimGM6mb.sf2 " + filename + "-loop.mid -F " + filename + "-loop.wav -r 48000 -O s24";
+    system( command.c_str() );
+    command = "ffmpeg -i " + filename + "-loop.wav -acodec mp3 -ab 128k " + filename + "-loop.mp3";
     system( command.c_str() );
 
     cout << "saved " << filename << endl;

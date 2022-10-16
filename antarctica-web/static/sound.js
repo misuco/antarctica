@@ -9,8 +9,8 @@ var basenote = 0;
 var scale = 32;
 var arrange = 1;
 	
-var music1;
-var music2;
+var sounds = [];
+var trackStateUpdated = false;
 
 var soundTrack1;
 
@@ -46,20 +46,22 @@ var randomSound = function() {
 var playTrack = function(trackId) {
 	console.log("play track: "+trackId);
 	playingTrack=trackId;
-	music2=music1;
-	music1 = new BABYLON.Sound(
-	  "track1",
+
+	var music1 = new BABYLON.Sound(
+	  trackId,
 	  trackId,
 	  scene,
 	  function() {
 		console.log("music 1 ready... play");
 		
+		/* DONT STOP
 		if(music2!=undefined) {
 			music2.stop();
 			soundTrack1.removeSound(music2);
 			music2.dispose();
 		}
-											
+		*/
+							
 		soundTrack1.addSound(music1);
 		
 		music1.onEndedObservable.add(() => {
@@ -67,21 +69,31 @@ var playTrack = function(trackId) {
 			if(loopPlay!=true) {
 				music1.stop();
 				state='rate';
-				if(playControlPanel!=undefined) playControlPanel.isVisible=false;						
+				//if(playControlPanel!=undefined) playControlPanel.isVisible=false;						
 				//ratePanel = createRatePanel();
-				ratePanel.isVisible=true;
+				//ratePanel.isVisible=true;
 			}
 		});
 		
 		music1.setVolume(1);
 		music1.play();
 		state='play';
-		playButton.setText("Pause");
-		playControlPanel.isVisible=true;
-		ratePanel.isVisible=false;
+		trackStateUpdated=true;
+		//playButton.setText("Pause");
+		//playControlPanel.isVisible=true;
+		//ratePanel.isVisible=false;
 	  },
-	  { loop: loopPlay }
+	  { 
+		  loop: loopPlay, 
+		  spatialSound: true, 
+		  distanceModel: "exponential", 
+		  rolloffFactor: 1.5 
+	  }
 	);
+	
+	music1.setPosition(new BABYLON.Vector3(selectedSpot.position.x, selectedSpot.position.y, selectedSpot.position.z));
+	
+	sounds.push(music1);
 	
 	console.log("loading sound:"+this.responseText);
 	statusPanel2.text = "loading sound:"+this.responseText;
@@ -97,7 +109,8 @@ var triggerNewSound = function(trackId) {
 				if(soundPanel==undefined) soundPanel = createSoundPanel();
 				soundPanel.isVisible=true;
 			} else {
-				playTrack(this.response);
+				if(loopPlay) playTrack(this.response + "-loop.mp3");
+				else playTrack(this.response + ".mp3");
 			}
 		});
 		
@@ -105,7 +118,7 @@ var triggerNewSound = function(trackId) {
 		var baseUrl = getUrl.protocol + "//" + getUrl.host + "/";
 		
 		console.log("trigger new sound trackId " + trackId);
-		if(playControlPanel!=undefined) playControlPanel.isVisible=false;						
+		//if(playControlPanel!=undefined) playControlPanel.isVisible=false;						
 
 		statusPanel2.text = "downloading " + getUrl + "/" + clipId;
 		var queryId=trackId+"_"+clipId+"_"+tempo+"_"+loopLength+"_"+repeat+"_"+pitch+"_"+basenote+"_"+scale+"_"+arrange+"_"+Date.now();
@@ -168,6 +181,29 @@ var createSoundTrack = function (scene) {
 	
 }
     
+var disposeSoundTrack = function ( trackNr ) {
+	if(trackNr<sounds.length) {
+		sounds[trackNr].stop();
+		sounds[trackNr].dispose();
+		sounds.splice(trackNr,1);
+		trackStateUpdated=true;
+	}
+}
+    
+var pauseSoundTrack = function ( trackNr ) {
+	if(trackNr<sounds.length) {
+		sounds[trackNr].pause();
+		trackStateUpdated=true;
+	}
+}
+    
+var playSoundTrack = function ( trackNr ) {
+	if(trackNr<sounds.length) {
+		sounds[trackNr].play();
+		trackStateUpdated=true;
+	}
+}
+
 var createSoundPanel = function () {
         
 	var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -208,10 +244,13 @@ var createSoundPanel = function () {
     playButton.cornerRadius = 20;
     playButton.background = "green";
     playButton.onPointerUpObservable.add( function() { 
+		/*
 		music1.pause();
 		state='pause';
 		playControlPanel.isVisible=false;
 		triggerNewSound(selectedRecord[4]); 
+		*/
+		assignNext = true;
 	} );
     panel.addControl(playButton, 9, 0);    
    	

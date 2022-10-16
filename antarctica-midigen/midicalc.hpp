@@ -60,6 +60,7 @@ private:
 
     MidiFile    midiIn;
     MidiFile    midiOut;
+    MidiFile    midiOutLoop;
     int         ticksPerQuarterNote;
 
     // parameters

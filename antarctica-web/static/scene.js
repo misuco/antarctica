@@ -7,22 +7,23 @@ var scene = new BABYLON.Scene(engine);
 
 var state = 'select';
 var playingTrack = '';
-var loopPlay = false;
+var loopPlay = true;
 
 var infoPanel;
 var statusPanel;
 var statusPanel2;
 var ratePanel;
 var replayPanel;
-var playControlPanel;
+//var playControlPanel;
 var soundPanel;
 
-var playButton;
+//var playButton;
 
 var spheres = [];
 var sp=0;
 
 var selectedSpot;
+var assignNext = false;
 
 var angel = 0;
 var distance = 5;
@@ -93,6 +94,13 @@ window.addEventListener("resize", function () {
 		engine.resize();
 });
 
+function name2Id(name) {
+	var fields=name.split("_");
+	var id="";
+	if(fields.length>2) id=fields[2];
+	return id;
+}
+
 function createButton(id,name) {
     var button = BABYLON.GUI.Button.CreateSimpleButton(id, name);
     button.width = "150px"
@@ -150,7 +158,7 @@ function createSectorMap() {
 }
   
 function filterCsv(filter) {		
-  //console.log("filterCsv "+filter);
+  console.log("filterCsv "+filter);
   var addedRecords=0;
   
   for(var i=1;i<lines.length;i++) {
@@ -158,45 +166,51 @@ function filterCsv(filter) {
 		var fields = line.split('|');
 		
 		if(fields.length > 6) {
+			var point = {};
+			
+			point.name=fields[1];
+			point.alpha = parseFloat(fields[6]);
+			point.hypotenuse = parseFloat(fields[5]) + 90;
 		
-			var alpha = parseFloat(fields[6]);
-			var hypotenuse = parseFloat(fields[5]) + 90;
-		
-			var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse * 1.8667;
-			var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse * 1.8667;
+			point.pointX = Math.sin( Math.PI * point.alpha / 180 ) * point.hypotenuse * 1.8667;
+			point.pointY = Math.cos( Math.PI * point.alpha / 180 ) * point.hypotenuse * 1.8667;
 			
-			var sectorX = Math.floor(pointX/2);
-			var sectorY = Math.floor(pointY/2);
-			var sectorId = sectorX + "_" + sectorY;
+			point.sectorX = Math.floor(point.pointX/2);
+			point.sectorY = Math.floor(point.pointY/2);
+			point.sectorId = point.sectorX + "_" + point.sectorY;
 			
-			xmin = Math.min( pointX , xmin );
-			ymin = Math.min( pointY , ymin );		
-			xmax = Math.max( pointX , xmax );
-			ymax = Math.max( pointY , ymax );
+			xmin = Math.min( point.pointX , xmin );
+			ymin = Math.min( point.pointY , ymin );		
+			xmax = Math.max( point.pointX , xmax );
+			ymax = Math.max( point.pointY , ymax );
 			
-			fields.unshift(alpha,hypotenuse,pointX,pointY,sectorId);
+			fields.unshift(point.alpha,point.hypotenuse,point.pointX,point.pointY,point.sectorId);
 			
 			if(pointLoadedMap.get(fields[5])==0) {				
 				if(filter.includes("_")) {
-					if(sectorId==filter) {
+					if(point.sectorId==filter) {
+						point.fields=fields;
 						records.push(fields);
-						pointLoadedMap.set(fields[5],1);
+						pointLoadedMap.set(fields[5],point);
 						addedRecords++;
+						console.log("added "+point.sectorId+"_"+fields[5]);
 					}				
 				} else if(filter!="") {
 					if(fields[7] == filter) {
+						point.fields=fields;
 						records.push(fields);
-						pointLoadedMap.set(fields[5],1);
+						pointLoadedMap.set(fields[5],point);
 						addedRecords++;
+						console.log("added "+point.sectorId+"_"+fields[5]);
 					}
 				}
 			}
 			
-			//console.log("scanning point " + i + " x " + pointX + " y "+ pointY + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
+			//console.log("scanning point " + i + " x " + point.pointX + " y "+ point.pointY + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
 		}
   }  
   //console.log("filtered csv records " + lines.length + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
-  //console.log("added "+addedRecords);
+  console.log("added "+addedRecords);
 
 }
 
@@ -207,6 +221,13 @@ function resizeHomePoints(d) {
 	});
 }
 
+function highlightSpot(id) {
+	var point = pointLoadedMap.get(id);
+	infoPanel.text = "spot nr. " + id + "\n" + point.name + "\n" + point.fields[7] + "\n" + point.fields[14] + "\n" + point.fields[15];
+	selectedSpot.position.x=point.pointX;
+	selectedSpot.position.z=point.pointY;
+}
+
 function updateScene() {
 	if(state=='rate') {
 		statusPanel2.text = "rate spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
@@ -215,23 +236,78 @@ function updateScene() {
 	} else if(state=='loading') {
 		statusPanel2.text = " loading spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
 	} else if(state=='server error') {
-		statusPanel2.text = " server error !!! spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
-	} else if(music1!=undefined) {
-		var t = Math.round( music1.currentTime );
+		statusPanel2.text = " server error !!! spot nr: " + selectedRecord[5] + " " + selectedRecord[6];		
+	}
+	if(trackStateUpdated) {
+		trackStateUpdated=false;
+		const multitrackPlayerControl = document.getElementById('multitrackPlayerControl');
+		multitrackPlayerControl.innerHTML = "";
+		var trackNr = 0;
+		sounds.forEach(element => {
+			var t = Math.round( element.currentTime );
+			var tsec = t % 60;
+			var tmin = Math.floor( t / 60 );
+			if(element.getAudioBuffer()!=undefined) {
+				var d = Math.round( element.getAudioBuffer().duration );
+				var dsec = d % 60;
+				var dmin = Math.floor( d / 60 );
+				var pointId=name2Id(element.name);
+				multitrackPlayerControl.innerHTML += "<span>" + trackNr + "</span> ";
+				if(element.isPlaying) {
+					multitrackPlayerControl.innerHTML += "<a onclick=\"pauseSoundTrack("+trackNr+");\">pause</a> ";
+				} else {
+					multitrackPlayerControl.innerHTML += "<a onclick=\"playSoundTrack("+trackNr+");\">play</a> ";
+				}
+				multitrackPlayerControl.innerHTML += "<a onclick=\"disposeSoundTrack("+trackNr+");\">dispose</a> ";
+				multitrackPlayerControl.innerHTML += "<a onclick=\"highlightSpot('"+pointId+"');\">show</a> ";
+				multitrackPlayerControl.innerHTML += "<a href=\""+element.name+"\" target=\"_blank\">download</a><br/>";
+			}
+			trackNr++;
+		});
+	}
+	const multitrackPlayer = document.getElementById('multitrackPlayerList');
+	multitrackPlayer.innerHTML = "";
+	var trackNr = 0;
+	sounds.forEach(element => {
+		var t = Math.round( element.currentTime );
 		var tsec = t % 60;
 		var tmin = Math.floor( t / 60 );
-		if(music1.getAudioBuffer()!=undefined) {
-			var d = Math.round( music1.getAudioBuffer().duration );
+		if(element.getAudioBuffer()!=undefined) {
+			var d = Math.round( element.getAudioBuffer().duration );
 			var dsec = d % 60;
-			var dmin = Math.floor( d / 60 );		
-			statusPanel2.text  = state + " " + tmin + ":" + tsec + " (" + dmin + ":" + dsec + ") | spot nr: " + selectedRecord[5] + " " + selectedRecord[6] + " ( " + playingTrack + ")";
+			var dmin = Math.floor( d / 60 );	
+			var pointId=name2Id(element.name);
+			var point=pointLoadedMap.get(pointId)
+			var playState = "pause";
+			if(element.isPlaying) {
+				playState = "play";
+			}
+			multitrackPlayer.innerHTML += "<span>" + playState + " " + tmin + ":" + tsec + " (" + dmin + ":" + dsec + ") | spot nr: " + pointId + " " + point.name + "</span><br/>";
 		}
-	}
-	
+		trackNr++;
+	});
+
 	resizeHomePoints(camera.radius * 0.02);
 	var d=camera.radius * 0.1;
 	selectedSpot.scaling = new BABYLON.Vector3(d,d,d);
 	
+	if(camera.target.x!=selectedSpot.position.x || camera.target.z!=selectedSpot.position.z) {
+		cameraDeltaX = (selectedSpot.position.x - camera.target.x);
+		cameraDeltaZ = (selectedSpot.position.z - camera.target.z);
+		cameraDeltaRadius = 2 - camera.radius;
+		var distanceCameraSelectedSpot = Math.sqrt( cameraDeltaX ** 2 + cameraDeltaZ ** 2);
+		if(distanceCameraSelectedSpot<0.02) {
+			camera.target.x = selectedSpot.position.x;
+			camera.target.z = selectedSpot.position.z;
+			camera.radius = 2;
+		} else {
+			camera.target.x+=cameraDeltaX/distanceCameraSelectedSpot/50;
+			camera.target.z+=cameraDeltaZ/distanceCameraSelectedSpot/50;
+			camera.radius+=cameraDeltaRadius/distanceCameraSelectedSpot/50;
+		}
+	}
+	
+	/*
 	if(camera.target.x!=selectedSpot.position.x || camera.target.z!=selectedSpot.position.z) {
 		if(cameraDeltaX==0) {
 			cameraDeltaX = (selectedSpot.position.x - camera.target.x)/200;
@@ -252,22 +328,45 @@ function updateScene() {
 		cameraDeltaX=0;
 		cameraDeltaZ=0;
 	}
+	*/
 	
 	camera.alpha+=0.00005;
 }
 
 
+var requestFilesFromList = function( sector, spotId ) {
+	// filter current sector
+	filterCsv(sector);
+	highlightSpot(spotId)
+	/*
+	const point = pointLoadedMap.get(spotId);
+	infoPanel.text = "spot nr. " + spotId + "\n" + point.name + "\n" + point.fields[7] + "\n" + point.fields[14] + "\n" + point.fields[15];
+	selectedSpot.position.x = point.pointX;
+	selectedSpot.position.z = point.pointY;
+	console.log("requestFilesFromList spotId " + spotId + " sector " + sector + " name " + point.name + " x: " + point.pointX + " y: " + point.pointY);// + fields[7] + "\n" + fields[14] + "\n" + fields[15];
+	*/
+	//recordIndex = csvIndex;
+	//selectedRecord = fields;
+	//requestFiles(fields[4] + '_' + fields[5]);
+	requestFiles(sector+"_"+spotId);	
+}
+
 var requestFiles = function( spotId ) {
 	var oReq = new XMLHttpRequest();
 	oReq.addEventListener("load", function() {
-		if(this.response.includes("Error")) {
+		var files=this.response.split('\n');
+		if(files.length<=1) {
 			infoPanel.text += "\n\nFiles: 0";
-			randomSound();
+			if(assignNext==true) {
+				assignNext=false;
+			} else {
+				randomSound();
+			}
 			triggerNewSound(spotId);
 		} else {
-			var files=this.response.split('\n');
 			infoPanel.text += "\n\nFiles: " + files.length;
-			playTrack("loops/"+files[0]);
+			if(loopPlay) playTrack("loops/"+files[0]+"-loop.mp3");
+			else playTrack("loops/"+files[0]+".mp3");
 			console.log("got file response " + this.response );
 		}
 	});
@@ -467,8 +566,8 @@ var createScene = function () {
 	replayPanel=createReplayPanel();
 	replayPanel.isVisible=false;
 	
-	playControlPanel=createPlayControlPanel();
-	playControlPanel.isVisible=false;
+//	playControlPanel=createPlayControlPanel();
+//	playControlPanel.isVisible=false;
 
 	var advancedTexture2 = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
     
@@ -530,7 +629,7 @@ camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, new 
 // 0.00637
 //camera = new BABYLON.StereoscopicArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,50), 0.00137, 1, scene);
 camera.target.x = 0;
-camera.target.y = 0.3;
+camera.target.y = 0.1;
 camera.target.z = 0;
 camera.radius=50;
 camera.beta=0;
@@ -539,7 +638,7 @@ camera.beta=0;
 //console.log("camera.minZ " + camera.minZ + " camera.maxZ " + camera.maxZ );
 
 camera.upperRadiusLimit=60;
-camera.lowerRadiusLimit=2;
+camera.lowerRadiusLimit=1;
 camera.lowerBetaLimit=0;
 camera.upperBetaLimit=Math.PI/2;
 camera.angularSensibilityX=1000;
