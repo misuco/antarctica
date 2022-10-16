@@ -20,7 +20,7 @@ app.get('/newclip', function(req, res) {
 app.get('/rate', function(req, res) {
   console.log("got rating " + req.query.rating + " for " + req.query.trackId);
   var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress  
-  proc.execSync('echo $(date +%Y-%m-%d-%H-%M-%S) '+ip+' >> '+config.app.web_path+'/'+req.query.trackId+'-r-'+req.query.rating);
+  proc.execSync('echo $(date +%Y-%m-%d-%H-%M-%S) '+ip+' >> '+config.app.web_path+'/loops/'+req.query.trackId+'-r-'+req.query.rating);
   res.send("Thanks for your rating for "+req.query.trackId);
 });
 
@@ -41,7 +41,7 @@ app.get('/rating', function(req, res) {
   var response = "<span>\nrating 3</span><br/>\n";
   
   
-  var files = fs.readdirSync(config.app.web_path+'/loops.bck/').filter(fn => fn.endsWith('-r-3'));
+  var files = fs.readdirSync(config.app.web_path+'/loops/').filter(fn => fn.endsWith('-r-3'));
   files.forEach(file => { 
 	  const p = file.split("_");
 	  const sector = p[0]+"_"+p[1];
@@ -49,9 +49,9 @@ app.get('/rating', function(req, res) {
 	  response += "<span onclick=\"requestFilesFromList('"+sector+"','"+spotId+"')\">" + file + "</span><br/>\n" }
   );
   
-  response += "\n<span>rating 2</span><br/>\n";
+  response += "\n\n<span>rating 2</span><br/>\n";
 
-  var files = fs.readdirSync(config.app.web_path+'/loops.bck/').filter(fn => fn.endsWith('-r-2'));
+  var files = fs.readdirSync(config.app.web_path+'/loops/').filter(fn => fn.endsWith('-r-2'));
   files.forEach(file => { 
 	  const p = file.split("_");
 	  const sector = p[0]+"_"+p[1];
@@ -59,9 +59,9 @@ app.get('/rating', function(req, res) {
 	  response += "<span onclick=\"requestFilesFromList('"+sector+"','"+spotId+"')\">" + file + "</span><br/>\n" }
   );
   
-  response += "\n<span>rating 1</span><br/>\n";
+  response += "\n\n<span>rating 1</span><br/>\n";
 
-  var files = fs.readdirSync(config.app.web_path+'/loops.bck/').filter(fn => fn.endsWith('-r-1'));
+  var files = fs.readdirSync(config.app.web_path+'/loops/').filter(fn => fn.endsWith('-r-1'));
   files.forEach(file => { 
 	  const p = file.split("_");
 	  const sector = p[0]+"_"+p[1];
@@ -69,9 +69,9 @@ app.get('/rating', function(req, res) {
 	  response += "<span onclick=\"requestFilesFromList('"+sector+"','"+spotId+"')\">" + file + "</span><br/>\n" }
   );
   
-  response += "\n<span>all tracks</span><br/>\n";
+  response += "\n\n<span>all tracks</span><br/>\n";
 
-  var files = fs.readdirSync(config.app.web_path+'/loops.bck/');
+  var files = fs.readdirSync(config.app.web_path+'/loops/');
   files.forEach(file => { 
 	  const p = file.split("_");
 	  const sector = p[0]+"_"+p[1];
@@ -79,7 +79,6 @@ app.get('/rating', function(req, res) {
 	  response += "<span onclick=\"requestFilesFromList('"+sector+"','"+spotId+"')\">" + file + "</span><br/>\n" }
   );
 
-  console.log(response);
   res.send(response);
 });
 

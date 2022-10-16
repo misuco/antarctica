@@ -12,12 +12,8 @@ var loopPlay = true;
 var infoPanel;
 var statusPanel;
 var statusPanel2;
-var ratePanel;
 var replayPanel;
-//var playControlPanel;
 var soundPanel;
-
-//var playButton;
 
 var spheres = [];
 var sp=0;
@@ -260,7 +256,12 @@ function updateScene() {
 				}
 				multitrackPlayerControl.innerHTML += "<a onclick=\"disposeSoundTrack("+trackNr+");\">dispose</a> ";
 				multitrackPlayerControl.innerHTML += "<a onclick=\"highlightSpot('"+pointId+"');\">show</a> ";
-				multitrackPlayerControl.innerHTML += "<a href=\""+element.name+"\" target=\"_blank\">download</a><br/>";
+				multitrackPlayerControl.innerHTML += "<a href=\""+element.name+"\" target=\"_blank\">download</a>";
+				
+				const trackId=element.name.replace("loops/","").replace("-loop.mp3","");
+				multitrackPlayerControl.innerHTML += " Rate  <a onclick=\"sendRate('"+trackId+"',1);\"> [1] </a>";
+				multitrackPlayerControl.innerHTML += " <a onclick=\"sendRate('"+trackId+"',2);\"> [2] </a>";
+				multitrackPlayerControl.innerHTML += " <a onclick=\"sendRate('"+trackId+"',3);\"> [3] </a> <br/>";
 			}
 			trackNr++;
 		});
@@ -282,7 +283,8 @@ function updateScene() {
 			if(element.isPlaying) {
 				playState = "play";
 			}
-			multitrackPlayer.innerHTML += "<span>" + playState + " " + tmin + ":" + tsec + " (" + dmin + ":" + dsec + ") | spot nr: " + pointId + " " + point.name + "</span><br/>";
+			multitrackPlayer.innerHTML += "<span>" + playState + " " + tmin + ":" + tsec + " (" + dmin + ":" + dsec + ") | spot nr: " + pointId + " " + point.name;
+			multitrackPlayer.innerHTML += "</span><br/>";
 		}
 		trackNr++;
 	});
@@ -335,19 +337,8 @@ function updateScene() {
 
 
 var requestFilesFromList = function( sector, spotId ) {
-	// filter current sector
 	filterCsv(sector);
 	highlightSpot(spotId)
-	/*
-	const point = pointLoadedMap.get(spotId);
-	infoPanel.text = "spot nr. " + spotId + "\n" + point.name + "\n" + point.fields[7] + "\n" + point.fields[14] + "\n" + point.fields[15];
-	selectedSpot.position.x = point.pointX;
-	selectedSpot.position.z = point.pointY;
-	console.log("requestFilesFromList spotId " + spotId + " sector " + sector + " name " + point.name + " x: " + point.pointX + " y: " + point.pointY);// + fields[7] + "\n" + fields[14] + "\n" + fields[15];
-	*/
-	//recordIndex = csvIndex;
-	//selectedRecord = fields;
-	//requestFiles(fields[4] + '_' + fields[5]);
 	requestFiles(sector+"_"+spotId);	
 }
 
@@ -508,10 +499,6 @@ function addNextPoint() {
 						filterCsv(sectorId[0]+"_"+eastSector);
 						filterCsv(sectorId[0]+"_"+westSector);
 											
-//						randomSound();
-//						triggerNewSound(fields[4]+"_"+fields[5]);
-						
-						if(ratePanel!=undefined) ratePanel.isVisible=false;
 						state='loading';
 					 }
 				)
@@ -560,8 +547,8 @@ var createScene = function () {
 	//soundPanel = createSoundPanel();
 	//createCamSliders(panel);
 	
-	ratePanel=createRatePanel();
-	ratePanel.isVisible=false;
+	//ratePanel=createRatePanel();
+	//ratePanel.isVisible=false;
 	
 	replayPanel=createReplayPanel();
 	replayPanel.isVisible=false;
