@@ -49,7 +49,7 @@ app.get('/rating', function(req, res) {
 	  response += "<span onclick=\"requestFilesFromList('"+sector+"','"+spotId+"')\">" + file + "</span><br/>\n" }
   );
   
-  response += "\n\n<span>rating 2</span><br/>\n";
+  response += "\n<br/><span>rating 2</span><br/>\n";
 
   var files = fs.readdirSync(config.app.web_path+'/loops/').filter(fn => fn.endsWith('-r-2'));
   files.forEach(file => { 
@@ -59,7 +59,7 @@ app.get('/rating', function(req, res) {
 	  response += "<span onclick=\"requestFilesFromList('"+sector+"','"+spotId+"')\">" + file + "</span><br/>\n" }
   );
   
-  response += "\n\n<span>rating 1</span><br/>\n";
+  response += "\n<br/><span>rating 1</span><br/>\n";
 
   var files = fs.readdirSync(config.app.web_path+'/loops/').filter(fn => fn.endsWith('-r-1'));
   files.forEach(file => { 
@@ -69,7 +69,7 @@ app.get('/rating', function(req, res) {
 	  response += "<span onclick=\"requestFilesFromList('"+sector+"','"+spotId+"')\">" + file + "</span><br/>\n" }
   );
   
-  response += "\n\n<span>all tracks</span><br/>\n";
+  response += "\n<br/><span>all tracks</span><br/>\n";
 
   var files = fs.readdirSync(config.app.web_path+'/loops/');
   files.forEach(file => { 
