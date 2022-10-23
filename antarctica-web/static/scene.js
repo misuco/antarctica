@@ -5,9 +5,16 @@ var canvas = document.getElementById("renderCanvas"); // Get the canvas element
 var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
 var scene = new BABYLON.Scene(engine);
 
+var records = [];
+var sectorCountMap = new Map();
+var pointLoadedMap = new Map();
+var homePonits = [];
+
 var state = 'select';
 var playingTrack = '';
-var loopPlay = true;
+var loopPlay = false;
+var autoPilot = true;
+var maxSounds = 1;
 
 var infoPanel;
 var statusPanel;
@@ -36,14 +43,10 @@ var cameraDeltaSteps = 0;
 
 var csvLoaded = false;
 var csvIndex = 1;
-var recordIndex = 0;
+//var recordIndex = 0;
 var selectedRecord;
 var lines;
-var records = [];
 var fieldId;
-var sectorCountMap = new Map();
-var pointLoadedMap = new Map();
-var homePonits = [];
 
 var xmin=0;
 var ymin=0;
@@ -154,7 +157,7 @@ function createSectorMap() {
 }
   
 function filterCsv(filter) {		
-  console.log("filterCsv "+filter);
+  //console.log("filterCsv "+filter);
   var addedRecords=0;
   
   for(var i=1;i<lines.length;i++) {
@@ -189,7 +192,7 @@ function filterCsv(filter) {
 						records.push(fields);
 						pointLoadedMap.set(fields[5],point);
 						addedRecords++;
-						console.log("added "+point.sectorId+"_"+fields[5]);
+						//console.log("added "+point.sectorId+"_"+fields[5]);
 					}				
 				} else if(filter!="") {
 					if(fields[7] == filter) {
@@ -197,7 +200,7 @@ function filterCsv(filter) {
 						records.push(fields);
 						pointLoadedMap.set(fields[5],point);
 						addedRecords++;
-						console.log("added "+point.sectorId+"_"+fields[5]);
+						//console.log("added "+point.sectorId+"_"+fields[5]);
 					}
 				}
 			}
@@ -206,7 +209,7 @@ function filterCsv(filter) {
 		}
   }  
   //console.log("filtered csv records " + lines.length + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
-  console.log("added "+addedRecords);
+  //console.log("added "+addedRecords);
 
 }
 
@@ -476,30 +479,7 @@ function addNextPoint() {
 						trigger: BABYLON.ActionManager.OnPickTrigger
 					},
 					function (event) { 
-						//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );						
-						infoPanel.text = "spot nr. " + fields[5] + "\n" + fields[6] + "\n" + fields[7] + "\n" + fields[14] + "\n" + fields[15];
-						selectedSpot.position.x = fields[2];
-						selectedSpot.position.z = fields[3];
-						recordIndex = csvIndex;
-						selectedRecord = fields;
-						requestFiles(fields[4] + '_' + fields[5]);
-						
-						// filter current sector
-						filterCsv(fields[4]);	
-						
-						// filter neighbour sectors					
-						var sectorId = fields[4].split('_');
-						var northSector=parseInt(sectorId[0])+1;
-						var southSector=parseInt(sectorId[0])-1;
-						var eastSector=parseInt(sectorId[1])+1;
-						var westSector=parseInt(sectorId[1])-1;
-
-						filterCsv(northSector+"_"+sectorId[1]);
-						filterCsv(southSector+"_"+sectorId[1]);
-						filterCsv(sectorId[0]+"_"+eastSector);
-						filterCsv(sectorId[0]+"_"+westSector);
-											
-						state='loading';
+						selectSpot(fields);
 					 }
 				)
 			);					
@@ -509,6 +489,35 @@ function addNextPoint() {
 		statusPanel.text = "loaded " + csvIndex + " spots";		 
 	 }
 	 
+}
+
+var selectSpot = function(fields) {
+	//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );						
+	infoPanel.text = "spot nr. " + fields[5] + "\n" + fields[6] + "\n" + fields[7] + "\n" + fields[14] + "\n" + fields[15];
+	selectedSpot.position.x = fields[2];
+	selectedSpot.position.z = fields[3];
+	//recordIndex = csvIndex;
+	selectedRecord = fields;
+	requestFiles(fields[4] + '_' + fields[5]);
+							
+	// filter current sector
+	filterCsv(fields[4]);	
+	
+	// filter neighbour sectors					
+	var sectorId = fields[4].split('_');
+	var northSector=parseInt(sectorId[0])+1;
+	var southSector=parseInt(sectorId[0])-1;
+	var eastSector=parseInt(sectorId[1])+1;
+	var westSector=parseInt(sectorId[1])-1;
+
+	filterCsv(northSector+"_"+sectorId[1]);
+	filterCsv(southSector+"_"+sectorId[1]);
+	filterCsv(sectorId[0]+"_"+eastSector);
+	filterCsv(sectorId[0]+"_"+westSector);
+
+	getClosestUnvisited(fields[5]);
+
+	state='loading';
 }
 
 var oReq = new XMLHttpRequest();

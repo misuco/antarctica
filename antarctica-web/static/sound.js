@@ -43,6 +43,13 @@ var randomSound = function() {
 	value8.setRandomValue();
 }
 
+var checkMaxSounds = function() {
+	while(sounds.length>maxSounds) {
+		console.log("dispose sound 0 " + sounds.length + " > " + maxSounds );
+		disposeSoundTrack(0);
+	}
+}
+
 var playTrack = function(trackId) {
 	console.log("play track: "+trackId);
 	playingTrack=trackId;
@@ -68,12 +75,17 @@ var playTrack = function(trackId) {
 			console.log("music 1 ended at state " + state);
 			if(loopPlay!=true) {
 				music1.stop();
-				state='rate';
+				//state='rate';
 				//if(playControlPanel!=undefined) playControlPanel.isVisible=false;						
 				//ratePanel = createRatePanel();
 				//ratePanel.isVisible=true;
 			}
+			if(autoPilot==true) {
+				selectSpot(nextPointFields);
+			}
 		});
+		
+		checkMaxSounds();
 		
 		music1.setVolume(1);
 		music1.play();
