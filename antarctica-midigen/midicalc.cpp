@@ -309,9 +309,14 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
 
     midiOutLoop = midiOut;
 
-    // fade out 10s (at 120 bpm 40 quarter = 10 s)
+    // fade out 10s
+    double secPerQuarter = 60.0 / tempoEvent.getTempoBPM();
+    double nQuarters = 10 / secPerQuarter;
+    int totalTicks = nQuarters * tpq;
+    int stepTicks = totalTicks / 60;
+
     for(int i=120;i>=0;i-=2) {
-        loopOffset += tpq /  3 * 2 * tempoEvent.getTempoBPM() / 120;
+        loopOffset += stepTicks;
         midievent[0] = 0xB0;
         midievent[1] = 0x07;
         midievent[2] = i;
