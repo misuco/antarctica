@@ -13,7 +13,7 @@ var homePonits = [];
 var state = 'select';
 var playingTrack = '';
 var loopPlay = false;
-var autoPilot = true;
+var autoPilot = false;
 var maxSounds = 1;
 
 var infoPanel;
