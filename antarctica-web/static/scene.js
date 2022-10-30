@@ -90,7 +90,7 @@ mGray.freeze();
 
 // Watch for browser/canvas resize events
 window.addEventListener("resize", function () {
-		engine.resize();
+	engine.resize();
 });
 
 function name2Id(name) {
@@ -101,37 +101,37 @@ function name2Id(name) {
 }
 
 function createButton(id,name) {
-    var button = BABYLON.GUI.Button.CreateSimpleButton(id, name);
-    button.width = "150px"
-    button.height = "40px";
-    button.color = "white";
-    button.cornerRadius = 20;
-    button.background = "green";
-    return button;
+	var button = BABYLON.GUI.Button.CreateSimpleButton(id, name);
+	button.width = "150px"
+	button.height = "40px";
+	button.color = "white";
+	button.cornerRadius = 20;
+	button.background = "green";
+	return button;
 }
 
-function processCsv(csv) {		
-  csv = csv.replace(/\r/g, '');
-  lines = csv.split('\n');
-  fieldId = lines[0].split(';');
-  createSectorMap();
-  filterCsv("Airport");
-  filterCsv("Building");
+function processCsv(csv) {
+	csv = csv.replace(/\r/g, '');
+	lines = csv.split('\n');
+	fieldId = lines[0].split(';');
+	createSectorMap();
+	filterCsv("Airport");
+	filterCsv("Building");
 }
 
-function createSectorMap() {		
-  for(var i=1;i<lines.length;i++) {
+function createSectorMap() {
+	for(var i=1;i<lines.length;i++) {
 		var line = lines[i];
 		var fields = line.split('|');
-		
+
 		if(fields.length > 6) {
-		
+
 			var alpha = parseFloat(fields[6]);
 			var hypotenuse = parseFloat(fields[5]) + 90;
-		
+
 			var pointX = Math.sin( Math.PI * alpha / 180 ) * hypotenuse * 1.8667;
 			var pointY = Math.cos( Math.PI * alpha / 180 ) * hypotenuse * 1.8667;
-			
+
 			var sectorX = Math.floor(pointX/2);
 			var sectorY = Math.floor(pointY/2);
 			var sectorId = sectorX + "_" + sectorY;
@@ -141,51 +141,51 @@ function createSectorMap() {
 				sectorCountMap.set(sectorId,sectorCount);
 			} else {
 				sectorCountMap.set(sectorId,1);
-			}			
-			
+			}
+
 			pointLoadedMap.set(fields[0],0);
 		}
-  }
-  
-  var sectorEntryCount = 0;
-  for (const [key, value] of sectorCountMap) {
+	}
+
+	var sectorEntryCount = 0;
+	for (const [key, value] of sectorCountMap) {
 		//console.log(key + ' = ' + value)
 		sectorEntryCount += value;
-  }  
-  console.log("populated sectors " + sectorCountMap.size + " total entries " + sectorEntryCount );
-  csvLoaded = true;
+	}
+	console.log("populated sectors " + sectorCountMap.size + " total entries " + sectorEntryCount );
+	csvLoaded = true;
 }
-  
-function filterCsv(filter) {		
-  //console.log("filterCsv "+filter);
-  var addedRecords=0;
-  
-  for(var i=1;i<lines.length;i++) {
+
+function filterCsv(filter) {
+	//console.log("filterCsv "+filter);
+	var addedRecords=0;
+
+	for(var i=1;i<lines.length;i++) {
 		var line = lines[i];
 		var fields = line.split('|');
-		
+
 		if(fields.length > 6) {
 			var point = {};
-			
+
 			point.name=fields[1];
 			point.alpha = parseFloat(fields[6]);
 			point.hypotenuse = parseFloat(fields[5]) + 90;
-		
+
 			point.pointX = Math.sin( Math.PI * point.alpha / 180 ) * point.hypotenuse * 1.8667;
 			point.pointY = Math.cos( Math.PI * point.alpha / 180 ) * point.hypotenuse * 1.8667;
-			
+
 			point.sectorX = Math.floor(point.pointX/2);
 			point.sectorY = Math.floor(point.pointY/2);
 			point.sectorId = point.sectorX + "_" + point.sectorY;
-			
+
 			xmin = Math.min( point.pointX , xmin );
-			ymin = Math.min( point.pointY , ymin );		
+			ymin = Math.min( point.pointY , ymin );
 			xmax = Math.max( point.pointX , xmax );
 			ymax = Math.max( point.pointY , ymax );
-			
+
 			fields.unshift(point.alpha,point.hypotenuse,point.pointX,point.pointY,point.sectorId);
-			
-			if(pointLoadedMap.get(fields[5])==0) {				
+
+			if(pointLoadedMap.get(fields[5])==0) {
 				if(filter.includes("_")) {
 					if(point.sectorId==filter) {
 						point.fields=fields;
@@ -193,7 +193,7 @@ function filterCsv(filter) {
 						pointLoadedMap.set(fields[5],point);
 						addedRecords++;
 						//console.log("added "+point.sectorId+"_"+fields[5]);
-					}				
+					}
 				} else if(filter!="") {
 					if(fields[7] == filter) {
 						point.fields=fields;
@@ -204,12 +204,12 @@ function filterCsv(filter) {
 					}
 				}
 			}
-			
+
 			//console.log("scanning point " + i + " x " + point.pointX + " y "+ point.pointY + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
 		}
-  }  
-  //console.log("filtered csv records " + lines.length + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
-  //console.log("added "+addedRecords);
+	}
+	//console.log("filtered csv records " + lines.length + " x min " + xmin + " max " + xmax + " y min " + ymin + " max " + ymax );
+	//console.log("added "+addedRecords);
 
 }
 
@@ -235,7 +235,7 @@ function updateScene() {
 	} else if(state=='loading') {
 		statusPanel2.text = " loading spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
 	} else if(state=='server error') {
-		statusPanel2.text = " server error !!! spot nr: " + selectedRecord[5] + " " + selectedRecord[6];		
+		statusPanel2.text = " server error !!! spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
 	}
 	if(trackStateUpdated) {
 		trackStateUpdated=false;
@@ -260,7 +260,7 @@ function updateScene() {
 				multitrackPlayerControl.innerHTML += "<a onclick=\"disposeSoundTrack("+trackNr+");\">dispose</a> ";
 				multitrackPlayerControl.innerHTML += "<a onclick=\"highlightSpot('"+pointId+"');\">show</a> ";
 				multitrackPlayerControl.innerHTML += "<a href=\""+element.name+"\" target=\"_blank\">download</a>";
-				
+
 				const trackId=element.name.replace("loops/","").replace("-loop.mp3","");
 				multitrackPlayerControl.innerHTML += " Rate  <a onclick=\"sendRate('"+trackId+"',1);\"> [1] </a>";
 				multitrackPlayerControl.innerHTML += " <a onclick=\"sendRate('"+trackId+"',2);\"> [2] </a>";
@@ -279,7 +279,7 @@ function updateScene() {
 		if(element.getAudioBuffer()!=undefined) {
 			var d = Math.round( element.getAudioBuffer().duration );
 			var dsec = d % 60;
-			var dmin = Math.floor( d / 60 );	
+			var dmin = Math.floor( d / 60 );
 			var pointId=name2Id(element.name);
 			var point=pointLoadedMap.get(pointId)
 			var playState = "pause";
@@ -295,7 +295,7 @@ function updateScene() {
 	resizeHomePoints(camera.radius * 0.02);
 	var d=camera.radius * 0.1;
 	selectedSpot.scaling = new BABYLON.Vector3(d,d,d);
-	
+
 	if(camera.target.x!=selectedSpot.position.x || camera.target.z!=selectedSpot.position.z) {
 		cameraDeltaX = (selectedSpot.position.x - camera.target.x);
 		cameraDeltaZ = (selectedSpot.position.z - camera.target.z);
@@ -311,38 +311,38 @@ function updateScene() {
 			camera.radius+=cameraDeltaRadius/distanceCameraSelectedSpot/50;
 		}
 	}
-	
+
 	/*
 	if(camera.target.x!=selectedSpot.position.x || camera.target.z!=selectedSpot.position.z) {
-		if(cameraDeltaX==0) {
-			cameraDeltaX = (selectedSpot.position.x - camera.target.x)/200;
-			cameraDeltaZ = (selectedSpot.position.z - camera.target.z)/200;
-			cameraDeltaRadius = (2 - camera.radius)/200;
-			cameraDeltaSteps = 200;
-		}
-	}
-	
-	if(cameraDeltaSteps>0) {		
-		camera.target.x+=cameraDeltaX;
-		camera.target.z+=cameraDeltaZ;
-		camera.radius+=cameraDeltaRadius;
-		cameraDeltaSteps--;
-	} else {
-		camera.target.x = selectedSpot.position.x;
-		camera.target.z = selectedSpot.position.z;
-		cameraDeltaX=0;
-		cameraDeltaZ=0;
-	}
-	*/
-	
-	camera.alpha+=0.00005;
+	if(cameraDeltaX==0) {
+	cameraDeltaX = (selectedSpot.position.x - camera.target.x)/200;
+	cameraDeltaZ = (selectedSpot.position.z - camera.target.z)/200;
+	cameraDeltaRadius = (2 - camera.radius)/200;
+	cameraDeltaSteps = 200;
+}
+}
+
+if(cameraDeltaSteps>0) {
+camera.target.x+=cameraDeltaX;
+camera.target.z+=cameraDeltaZ;
+camera.radius+=cameraDeltaRadius;
+cameraDeltaSteps--;
+} else {
+camera.target.x = selectedSpot.position.x;
+camera.target.z = selectedSpot.position.z;
+cameraDeltaX=0;
+cameraDeltaZ=0;
+}
+*/
+
+camera.alpha+=0.00005;
 }
 
 
 var requestFilesFromList = function( sector, spotId ) {
 	filterCsv(sector);
 	highlightSpot(spotId)
-	requestFiles(sector+"_"+spotId);	
+	requestFiles(sector+"_"+spotId);
 }
 
 var requestFiles = function( spotId ) {
@@ -364,70 +364,70 @@ var requestFiles = function( spotId ) {
 			console.log("got file response " + this.response );
 		}
 	});
-	
+
 	var getUrl = window.location;
 	var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ;
 	console.log("request files for spot " + spotId);
-	
+
 	oReq.open("GET", baseUrl + "files?spotId="+spotId);
-	oReq.send();	
+	oReq.send();
 }
 
 function addNextPoint() {
-	
-	//console.log("selectedSpot.position.x " + selectedSpot.position.x + " camera.target.x " + camera.target.x + " cameraDeltaX " + cameraDeltaX ); 
-	//console.log("selectedSpot.position.z " + selectedSpot.position.z + " camera.target.z " + camera.target.z + " cameraDeltaZ " + cameraDeltaZ ); 
-	//console.log("camera.position.y " + camera.position.y + " beta " + camera.beta + " diff " + ( camera.beta - Math.PI / 2 ) ); 
-	//console.log("distance " + distance + " alphashift " + alphashift ); 
-	
+
+	//console.log("selectedSpot.position.x " + selectedSpot.position.x + " camera.target.x " + camera.target.x + " cameraDeltaX " + cameraDeltaX );
+	//console.log("selectedSpot.position.z " + selectedSpot.position.z + " camera.target.z " + camera.target.z + " cameraDeltaZ " + cameraDeltaZ );
+	//console.log("camera.position.y " + camera.position.y + " beta " + camera.beta + " diff " + ( camera.beta - Math.PI / 2 ) );
+	//console.log("distance " + distance + " alphashift " + alphashift );
+
 	if(csvLoaded == true && csvIndex < records.length) {
-		var fields = records[csvIndex];		
-				
+		var fields = records[csvIndex];
+
 		statusPanel.text = csvIndex + " ("  + records.length  + ") "  + fields[6] + " loading ...";
 
 		if (fields.length > 8) {
-						
+
 			var sHeight = 0.05;
-			
+
 			if( fields[7] == "Summit"  ) {
-				
+
 				if( fields[15].includes(" m,") ) {
 					var words = fields[15].split(" m,");
 					var number = words[0].substring(words[0].length-5);
-					
+
 					if(number.charAt(1)==",") {
 						number=number.replace(",",number.charAt(0));
 						number=number.substring(number.length-4);
 					} else {
 						number=number.substring(number.length-3);
 					}
-					
+
 					//console.log( "have height " + number + " " + parseInt(number) );
 					sHeight = parseInt(number) / 6000;
 				}
-				
+
 			}
-						
+
 
 			var sphere;
-			
+
 			var sectorX = Math.floor(fields[2]/2);
 			var sectorY = Math.floor(fields[3]/2);
-			var sectorId = sectorX + "_" + sectorY;			
+			var sectorId = sectorX + "_" + sectorY;
 			var sWidth = 0.01 + ( 400 - sectorCountMap.get(sectorId) ) / 10000;
 			//console.log("sWidth " + sWidth + " sectorId " + sectorId + " count " + sectorCountMap.get(sectorId) );
-			
+
 			if( fields[7] == "Summit"  ) {
-				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);    
+				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);
 			} else if( fields[7] == "Building" ) {
-				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);    
+				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);
 				homePonits.push(sphere);
 			} else if( fields[7] == "Airport" ){
-				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.8,height:0.4,depth:2}, scene);    
+				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.8,height:0.4,depth:2}, scene);
 				homePonits.push(sphere);
 			} else {
-				//sphere = BABYLON.MeshBuilder.CreateBox("box", {width:sWidth,height:sHeight,depth:sWidth}, scene);    
-				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);    
+				//sphere = BABYLON.MeshBuilder.CreateBox("box", {width:sWidth,height:sHeight,depth:sWidth}, scene);
+				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);
 			}
 			sphere.position.x = fields[2];
 			sphere.position.z = fields[3];
@@ -466,44 +466,44 @@ function addNextPoint() {
 			} else if( fields[7] == "Cliff"  ) {
 				sphere.material = mMagenta;
 			} else if( fields[7] == "Summit"  ) {
-				sphere.material = mWhite;				
+				sphere.material = mWhite;
 			} else {
 				sphere.material = mGreen;
 			}
 
 			sphere.actionManager = new BABYLON.ActionManager(scene);
-			
+
 			sphere.actionManager.registerAction(
 				new BABYLON.ExecuteCodeAction(
 					{
 						trigger: BABYLON.ActionManager.OnPickTrigger
 					},
-					function (event) { 
+					function (event) {
 						selectSpot(fields);
-					 }
+					}
 				)
-			);					
+			);
 			csvIndex++;
 		}
-	 } else {
-		statusPanel.text = "loaded " + csvIndex + " spots";		 
-	 }
-	 
+	} else {
+		statusPanel.text = "loaded " + csvIndex + " spots";
+	}
+
 }
 
 var selectSpot = function(fields) {
-	//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );						
+	//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );
 	infoPanel.text = "spot nr. " + fields[5] + "\n" + fields[6] + "\n" + fields[7] + "\n" + fields[14] + "\n" + fields[15];
 	selectedSpot.position.x = fields[2];
 	selectedSpot.position.z = fields[3];
 	//recordIndex = csvIndex;
 	selectedRecord = fields;
 	requestFiles(fields[4] + '_' + fields[5]);
-							
+
 	// filter current sector
-	filterCsv(fields[4]);	
-	
-	// filter neighbour sectors					
+	filterCsv(fields[4]);
+
+	// filter neighbour sectors
 	var sectorId = fields[4].split('_');
 	var northSector=parseInt(sectorId[0])+1;
 	var southSector=parseInt(sectorId[0])-1;
@@ -522,56 +522,56 @@ var selectSpot = function(fields) {
 
 var oReq = new XMLHttpRequest();
 oReq.addEventListener("load", function() {
-	processCsv(this.responseText);	
+	processCsv(this.responseText);
 	console.log("processed csv");
 });
 
 var createScene = function () {
 
 	console.log("createScene");
-	
-    // Add lights to the scene
-    var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
-    var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 1, -1), scene);
 
-    // The south pole
-    //var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:2}, scene);
+	// Add lights to the scene
+	var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
+	var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 1, -1), scene);
+
+	// The south pole
+	//var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:2}, scene);
 	//var mat = new BABYLON.StandardMaterial("mat", scene);
 	//mat.diffuseColor = BABYLON.Color3.Blue();
 	//mat.alpha = 0.5;
 	//sphere.material=mat;
 
-    // The selected spot
-    selectedSpot = BABYLON.MeshBuilder.CreateSphere("selectedSpot", {diameter:0.5}, scene);
+	// The selected spot
+	selectedSpot = BABYLON.MeshBuilder.CreateSphere("selectedSpot", {diameter:0.5}, scene);
 	var mat2 = new BABYLON.StandardMaterial("mat2", scene);
 	mat2.diffuseColor = BABYLON.Color3.Green();
 	mat2.alpha = 0.5;
 	mat2.freeze();
-	
+
 	selectedSpot.material=mat2;
-	       
+
 	createSoundTrack(scene);
 	//createAudioAnalyser(scene);
-	
+
 	//soundPanel = createSoundPanel();
 	//createCamSliders(panel);
-	
+
 	//ratePanel=createRatePanel();
 	//ratePanel.isVisible=false;
-	
+
 	replayPanel=createReplayPanel();
 	replayPanel.isVisible=false;
-	
-//	playControlPanel=createPlayControlPanel();
-//	playControlPanel.isVisible=false;
+
+	//	playControlPanel=createPlayControlPanel();
+	//	playControlPanel.isVisible=false;
 
 	var advancedTexture2 = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-    
+
 	var panel2 = new BABYLON.GUI.Grid();
-    panel2.addColumnDefinition(0.8);
-    panel2.addColumnDefinition(0.2);
-    panel2.addRowDefinition(1);
-	
+	panel2.addColumnDefinition(0.8);
+	panel2.addColumnDefinition(0.2);
+	panel2.addRowDefinition(1);
+
 	infoPanel = new BABYLON.GUI.TextBlock();
 	infoPanel.text = "--- Hello Antarctica ---";
 	infoPanel.textWrapping=true;
@@ -579,14 +579,14 @@ var createScene = function () {
 	//infoPanel.fontSize=10;
 	infoPanel.color = "white";
 	panel2.addControl(infoPanel, 0, 1);
-	
+
 	statusPanel = new BABYLON.GUI.TextBlock();
 	statusPanel.text = "--- loading ---";
 	statusPanel.textWrapping=true;
 	statusPanel.textVerticalAlignment=BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM
 	statusPanel.color = "white";
 	panel2.addControl(statusPanel, 1, 1);
-	
+
 	statusPanel2 = new BABYLON.GUI.TextBlock();
 	statusPanel2.text = "Please select objects to load sound.";
 	statusPanel2.textWrapping=true;
@@ -594,27 +594,27 @@ var createScene = function () {
 	statusPanel2.textVerticalAlignment=BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM
 	statusPanel2.color = "white";
 	panel2.addControl(statusPanel2, 1, 0);
-	
+
 	advancedTexture2.addControl(panel2);
 
 
-    const env = scene.createDefaultEnvironment();
+	const env = scene.createDefaultEnvironment();
 
-    var skybox = BABYLON.Mesh.CreateBox("BackgroundSkybox", 100, scene, undefined, BABYLON.Mesh.BACKSIDE);
-    skybox.position.y=50;
-    
-    // Create and tweak the background material.
-    var backgroundMaterial = new BABYLON.BackgroundMaterial("backgroundMaterial", scene);
-    backgroundMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/TropicalSunnyDay", scene);
-    backgroundMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-    backgroundMaterial.freeze();
-    skybox.material = backgroundMaterial;
-    
-/*
-    const xr = scene.createDefaultXRExperienceAsync({
-        floorMeshes: [env.ground]
-    });
-*/			
+	var skybox = BABYLON.Mesh.CreateBox("BackgroundSkybox", 100, scene, undefined, BABYLON.Mesh.BACKSIDE);
+	skybox.position.y=50;
+
+	// Create and tweak the background material.
+	var backgroundMaterial = new BABYLON.BackgroundMaterial("backgroundMaterial", scene);
+	backgroundMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/TropicalSunnyDay", scene);
+	backgroundMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+	backgroundMaterial.freeze();
+	skybox.material = backgroundMaterial;
+
+	/*
+	const xr = scene.createDefaultXRExperienceAsync({
+	floorMeshes: [env.ground]
+});
+*/
 };
 
 

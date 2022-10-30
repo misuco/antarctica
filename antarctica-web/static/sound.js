@@ -1,5 +1,5 @@
 /* 6 370 099 200 combinations
- */
+*/
 var clipId = 50;
 var tempo = 100;
 var loopLength = 1;
@@ -8,7 +8,7 @@ var pitch = 0;
 var basenote = 0;
 var scale = 32;
 var arrange = 1;
-	
+
 var sounds = [];
 var trackStateUpdated = false;
 
@@ -55,28 +55,28 @@ var playTrack = function(trackId) {
 	playingTrack=trackId;
 
 	var music1 = new BABYLON.Sound(
-	  trackId,
-	  trackId,
-	  scene,
-	  function() {
-		console.log("music 1 ready... play");
-		
-		/* DONT STOP
-		if(music2!=undefined) {
+		trackId,
+		trackId,
+		scene,
+		function() {
+			console.log("music 1 ready... play");
+
+			/* DONT STOP
+			if(music2!=undefined) {
 			music2.stop();
 			soundTrack1.removeSound(music2);
 			music2.dispose();
 		}
 		*/
-							
+
 		soundTrack1.addSound(music1);
-		
+
 		music1.onEndedObservable.add(() => {
 			console.log("music 1 ended at state " + state);
 			if(loopPlay!=true) {
 				music1.stop();
 				//state='rate';
-				//if(playControlPanel!=undefined) playControlPanel.isVisible=false;						
+				//if(playControlPanel!=undefined) playControlPanel.isVisible=false;
 				//ratePanel = createRatePanel();
 				//ratePanel.isVisible=true;
 			}
@@ -84,9 +84,9 @@ var playTrack = function(trackId) {
 				selectSpot(nextPointFields);
 			}
 		});
-		
+
 		checkMaxSounds();
-		
+
 		music1.setVolume(1);
 		music1.play();
 		state='play';
@@ -94,55 +94,54 @@ var playTrack = function(trackId) {
 		//playButton.setText("Pause");
 		//playControlPanel.isVisible=true;
 		//ratePanel.isVisible=false;
-	  },
-	  { 
-		  loop: loopPlay, 
-		  spatialSound: true, 
-		  distanceModel: "exponential", 
-		  rolloffFactor: 1.5 
-	  }
-	);
-	
-	music1.setPosition(new BABYLON.Vector3(selectedSpot.position.x, selectedSpot.position.y, selectedSpot.position.z));
-	
-	sounds.push(music1);
-	
-	console.log("loading sound:"+this.responseText);
-	statusPanel2.text = "loading sound:"+this.responseText;
+	},
+	{
+		loop: loopPlay,
+		spatialSound: true,
+		distanceModel: "exponential",
+		rolloffFactor: 1.5
+	}
+);
+
+music1.setPosition(new BABYLON.Vector3(selectedSpot.position.x, selectedSpot.position.y, selectedSpot.position.z));
+
+sounds.push(music1);
+
+console.log("loading sound:"+this.responseText);
+statusPanel2.text = "loading sound:"+this.responseText;
 }
 
 var triggerNewSound = function(trackId) {
-		
-		var oReq = new XMLHttpRequest();
-		oReq.addEventListener("load", function() {
-			if(this.response.includes("Error")) {
-				console.log("server error!!!");
-				state='server error';
-				if(soundPanel==undefined) soundPanel = createSoundPanel();
-				soundPanel.isVisible=true;
-			} else {
-				if(loopPlay) playTrack(this.response + "-loop.mp3");
-				else playTrack(this.response + ".mp3");
-			}
-		});
-		
-		var getUrl = window.location;
-		var baseUrl = getUrl.protocol + "//" + getUrl.host + "/";
-		
-		console.log("trigger new sound trackId " + trackId);
-		//if(playControlPanel!=undefined) playControlPanel.isVisible=false;						
 
-		statusPanel2.text = "downloading " + getUrl + "/" + clipId;
-		var queryId=trackId+"_"+clipId+"_"+tempo+"_"+loopLength+"_"+repeat+"_"+pitch+"_"+basenote+"_"+scale+"_"+arrange+"_"+Date.now();
-		oReq.open("GET", baseUrl + "newclip?id="+queryId+"&clipId="+clipId+"&tempo="+tempo+"&loopLength="+loopLength+"&repeat="+repeat+"&pitch="+pitch+"&basenote="+basenote+"&scale="+scale+"&arrange="+arrange);
-		oReq.send();
-    }
-    
+	var oReq = new XMLHttpRequest();
+	oReq.addEventListener("load", function() {
+		if(this.response.includes("Error")) {
+			console.log("server error!!!");
+			state='server error';
+			if(soundPanel==undefined) soundPanel = createSoundPanel();
+			soundPanel.isVisible=true;
+		} else {
+			if(loopPlay) playTrack(this.response + "-loop.mp3");
+			else playTrack(this.response + ".mp3");
+		}
+	});
+
+	var getUrl = window.location;
+	var baseUrl = getUrl.protocol + "//" + getUrl.host + "/";
+
+	console.log("trigger new sound trackId " + trackId);
+	//if(playControlPanel!=undefined) playControlPanel.isVisible=false;
+
+	statusPanel2.text = "downloading " + getUrl + "/" + clipId;
+	var queryId=trackId+"_"+clipId+"_"+tempo+"_"+loopLength+"_"+repeat+"_"+pitch+"_"+basenote+"_"+scale+"_"+arrange+"_"+Date.now();
+	oReq.open("GET", baseUrl + "newclip?id="+queryId+"&clipId="+clipId+"&tempo="+tempo+"&loopLength="+loopLength+"&repeat="+repeat+"&pitch="+pitch+"&basenote="+basenote+"&scale="+scale+"&arrange="+arrange);
+	oReq.send();
+}
+
 var createSoundTrack = function (scene) {
 	soundTrack1 = new BABYLON.SoundTrack(scene);
-	BABYLON.Engine.audioEngine.setGlobalVolume(1);	
-
-
+	BABYLON.Engine.audioEngine.setGlobalVolume(1);
+	
 	value1 = new valuePlus( 0, 1, 185, clipId );
 	value1.setValueFunction( function(value) {
 		clipId = value;
@@ -190,9 +189,9 @@ var createSoundTrack = function (scene) {
 		arrange = value;
 		if(row8!=undefined) row8.setValue(value);
 	} );
-	
+
 }
-    
+
 var disposeSoundTrack = function ( trackNr ) {
 	if(trackNr<sounds.length) {
 		sounds[trackNr].stop();
@@ -201,14 +200,14 @@ var disposeSoundTrack = function ( trackNr ) {
 		trackStateUpdated=true;
 	}
 }
-    
+
 var pauseSoundTrack = function ( trackNr ) {
 	if(trackNr<sounds.length) {
 		sounds[trackNr].pause();
 		trackStateUpdated=true;
 	}
 }
-    
+
 var playSoundTrack = function ( trackNr ) {
 	if(trackNr<sounds.length) {
 		sounds[trackNr].play();
@@ -217,55 +216,55 @@ var playSoundTrack = function ( trackNr ) {
 }
 
 var createSoundPanel = function () {
-        
+
 	var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
 	var panel = new BABYLON.GUI.Grid();
-    panel.addColumnDefinition(0.05);
-    panel.addColumnDefinition(0.05);
-    panel.addColumnDefinition(0.1);
-    panel.addColumnDefinition(0.05);
-    panel.addColumnDefinition(0.80);
-    panel.addRowDefinition(0.2);
-    panel.addRowDefinition(0.08);
-    panel.addRowDefinition(0.08);
-    panel.addRowDefinition(0.08);
-    panel.addRowDefinition(0.08);
-    panel.addRowDefinition(0.08);
-    panel.addRowDefinition(0.08);
-    panel.addRowDefinition(0.08);
-    panel.addRowDefinition(0.08);
-    panel.addRowDefinition(0.08);
-    panel.addRowDefinition(0.08);
+	panel.addColumnDefinition(0.05);
+	panel.addColumnDefinition(0.05);
+	panel.addColumnDefinition(0.1);
+	panel.addColumnDefinition(0.05);
+	panel.addColumnDefinition(0.80);
+	panel.addRowDefinition(0.2);
+	panel.addRowDefinition(0.08);
+	panel.addRowDefinition(0.08);
+	panel.addRowDefinition(0.08);
+	panel.addRowDefinition(0.08);
+	panel.addRowDefinition(0.08);
+	panel.addRowDefinition(0.08);
+	panel.addRowDefinition(0.08);
+	panel.addRowDefinition(0.08);
+	panel.addRowDefinition(0.08);
+	panel.addRowDefinition(0.08);
 
 	advancedTexture.addControl(panel);
-	
-    var closeButton = BABYLON.GUI.Button.CreateSimpleButton("closeButton", "close");
-    closeButton.width = "250px"
-    closeButton.height = "200px";
-    closeButton.color = "white";
-    closeButton.cornerRadius = 20;
-    closeButton.background = "green";
-    closeButton.onPointerUpObservable.add( function() { soundPanel.isVisible=false; } );
-    panel.addControl(closeButton, 9, 3);    
-	
-    var playButton = BABYLON.GUI.Button.CreateSimpleButton("playButton", "play");
-    playButton.width = "250px"
-    playButton.height = "200px";
-    playButton.color = "white";
-    playButton.cornerRadius = 20;
-    playButton.background = "green";
-    playButton.onPointerUpObservable.add( function() { 
+
+	var closeButton = BABYLON.GUI.Button.CreateSimpleButton("closeButton", "close");
+	closeButton.width = "250px"
+	closeButton.height = "200px";
+	closeButton.color = "white";
+	closeButton.cornerRadius = 20;
+	closeButton.background = "green";
+	closeButton.onPointerUpObservable.add( function() { soundPanel.isVisible=false; } );
+	panel.addControl(closeButton, 9, 3);
+
+	var playButton = BABYLON.GUI.Button.CreateSimpleButton("playButton", "play");
+	playButton.width = "250px"
+	playButton.height = "200px";
+	playButton.color = "white";
+	playButton.cornerRadius = 20;
+	playButton.background = "green";
+	playButton.onPointerUpObservable.add( function() {
 		/*
 		music1.pause();
 		state='pause';
 		playControlPanel.isVisible=false;
-		triggerNewSound(selectedRecord[4]); 
+		triggerNewSound(selectedRecord[4]);
 		*/
 		assignNext = true;
 	} );
-    panel.addControl(playButton, 9, 0);    
-   	
+	panel.addControl(playButton, 9, 0);
+
 	row1 = new sliderPlus( panel, 1, "Clip", 0, 1, 185, clipId );
 	row1.setValueFunction( function(value) {
 		clipId = value;
@@ -305,6 +304,6 @@ var createSoundPanel = function () {
 	row8.setValueFunction( function(value) {
 		arrange = value;
 	} );
-    
-    return panel;
+
+	return panel;
 };

@@ -1,63 +1,63 @@
 <!DOCTYPE html>
 <html lang="en"  style="height: 100%; margin: 0;">
 <head>
-  <meta charset="UTF-8">
-  <title>Hello Antarctica 2022</title>
+   <meta charset="UTF-8">
+   <title>Hello Antarctica 2022</title>
 
-  <style>
-    span {
+   <style>
+   span {
       color: red;
       background-color: black;
-    }
-    a {
+   }
+   a {
       color: red;
       background-color: black;
-    }
-  </style>
+   }
+   </style>
 
 </head>
 <body style="height: 100%; margin: 0; overflow: hidden;">
-  <canvas style="min-width: 100%; max-width: 100%; min-height: 100%; max-height: 100%;" id="renderCanvas"></canvas>
+   <canvas style="min-width: 100%; max-width: 100%; min-height: 100%; max-height: 100%;" id="renderCanvas"></canvas>
 
-<!--
-  <script src="//preview.babylonjs.com/babylon.js"></script>
-  <!-- <script src="https://cdn.babylonjs.com/babylon.js"></script> 
-  <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-  <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
-  <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+   <!--
+   <script src="//preview.babylonjs.com/babylon.js"></script>
+   <!-- <script src="https://cdn.babylonjs.com/babylon.js"></script>
+   <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+   <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+   <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
 -->
-  
-  <script src="babylon/babylon.js"></script>
-  <script src="babylon/babylonjs.loaders.min.js"></script>
-  <script src="babylon/babylon.gui.min.js"></script>
-  <script src="babylon/pep.js"></script>
-  
-  <script type="text/javascript" src="audioAnalyser.js"></script>
-  <script type="text/javascript" src="sliderPlus.js"></script>
-  <script type="text/javascript" src="buttonPlus.js"></script>
-  <script type="text/javascript" src="valuePlus.js"></script>
-  <script type="text/javascript" src="sound.js"></script>
-  <script type="text/javascript" src="camSliders.js"></script>
-  <script type="text/javascript" src="rating.js"></script>
-  <script type="text/javascript" src="replayPanel.js"></script>
+
+<script src="babylon/babylon.js"></script>
+<script src="babylon/babylonjs.loaders.min.js"></script>
+<script src="babylon/babylon.gui.min.js"></script>
+<script src="babylon/pep.js"></script>
+
+<script type="text/javascript" src="audioAnalyser.js"></script>
+<script type="text/javascript" src="sliderPlus.js"></script>
+<script type="text/javascript" src="buttonPlus.js"></script>
+<script type="text/javascript" src="valuePlus.js"></script>
+<script type="text/javascript" src="sound.js"></script>
+<script type="text/javascript" src="camSliders.js"></script>
+<script type="text/javascript" src="rating.js"></script>
+<script type="text/javascript" src="replayPanel.js"></script>
 <!--  <script type="text/javascript" src="playControl.js"></script> -->
-  <script type="text/javascript" src="cameraAnimation.js"></script>
-  <script type="text/javascript" src="scene.js"></script>
-  <script type="text/javascript" src="autoPilot.js"></script>
+<script type="text/javascript" src="cameraAnimation.js"></script>
+<script type="text/javascript" src="scene.js"></script>
+<script type="text/javascript" src="autoPilot.js"></script>
 
-  <div style="top:0px;left:0;position:absolute;z-index:1000" id="menu">
-  <a onclick="showPlayer()">Play Control</a> | <a onclick="showRating()">Rating</a> | <a onclick="">Sessions</a> 
-  <input type="text" id="maxSounds"> 
-  <input type="button" value="set max sounds" onclick="maxSounds = document.getElementById('maxSounds').value; checkMaxSounds();" />
-  <input type="checkbox" id="autoPilot" onclick="autoPilot = document.getElementById('autoPilot').checked;"> <span>autopilot</span>
-  <input type="checkbox" id="loopPlay" onclick="loopPlay = document.getElementById('loopPlay').checked;"> <span>loop</span>
-  </div>
-  
-  <div style="top:100px;left:0;position:absolute;z-index:1000" id="multitrackPlayerControl"><span>Player Control</span></div>
-  <div style="top:100px;left:500px;position:absolute;z-index:1000" id="multitrackPlayerList"><span></span></div>
-  <div style="top:100px;left:0;position:absolute;z-index:1000;" id="ratingList"><span></span></div>
+<div style="top:0px;left:0;position:absolute;z-index:1000" id="menu">
+   <a onclick="showPlayer()">Play Control</a> | <a onclick="showRating()">Rating</a> | <a onclick="">Sessions</a>
+   <input type="text" id="maxSounds">
+   <input type="button" value="set max sounds" onclick="maxSounds = document.getElementById('maxSounds').value; checkMaxSounds();" />
+   <input type="checkbox" id="autoPilot" onclick="autoPilot = document.getElementById('autoPilot').checked;"> <span>autopilot</span>
+   <input type="checkbox" id="loopPlay" onclick="loopPlay = document.getElementById('loopPlay').checked;"> <span>loop</span>
+</div>
 
-  <script type="text/javascript" src="htmlViewControl.js"></script>
+<div style="top:100px;left:0;position:absolute;z-index:1000" id="multitrackPlayerControl"><span>Player Control</span></div>
+<div style="top:100px;left:500px;position:absolute;z-index:1000" id="multitrackPlayerList"><span></span></div>
+<div style="top:100px;left:0;position:absolute;z-index:1000;" id="ratingList"><span></span></div>
+
+<script type="text/javascript" src="htmlViewControl.js"></script>
 <!--  <script type="text/javascript" src="joysticks.js"></script>  -->
 
 </body>
