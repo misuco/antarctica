@@ -306,43 +306,26 @@ function updateScene() {
 	if(camera.target.x!=selectedSpot.position.x || camera.target.z!=selectedSpot.position.z) {
 		cameraDeltaX = (selectedSpot.position.x - camera.target.x);
 		cameraDeltaZ = (selectedSpot.position.z - camera.target.z);
-		cameraDeltaRadius = 2 - camera.radius;
+		cameraDeltaRadius = 0.5 - camera.radius;
 		var distanceCameraSelectedSpot = Math.sqrt( cameraDeltaX ** 2 + cameraDeltaZ ** 2);
 		if(distanceCameraSelectedSpot<0.02) {
 			camera.target.x = selectedSpot.position.x;
 			camera.target.z = selectedSpot.position.z;
-			camera.radius = 2;
+			camera.radius = 0.5;
 		} else {
-			camera.target.x+=cameraDeltaX/distanceCameraSelectedSpot/50;
-			camera.target.z+=cameraDeltaZ/distanceCameraSelectedSpot/50;
-			camera.radius+=cameraDeltaRadius/distanceCameraSelectedSpot/50;
+			const factor = Math.log(distanceCameraSelectedSpot);
+
+			camera.target.x+=cameraDeltaX/distanceCameraSelectedSpot/50;//*factor;
+			camera.target.z+=cameraDeltaZ/distanceCameraSelectedSpot/50;//*factor;
+			if(camera.radius > 0.5) {
+				camera.radius+=cameraDeltaRadius/50;//*factor;
+			} else {
+				camera.radius = 0.5;
+			}
 		}
 	}
 
-	/*
-	if(camera.target.x!=selectedSpot.position.x || camera.target.z!=selectedSpot.position.z) {
-	if(cameraDeltaX==0) {
-	cameraDeltaX = (selectedSpot.position.x - camera.target.x)/200;
-	cameraDeltaZ = (selectedSpot.position.z - camera.target.z)/200;
-	cameraDeltaRadius = (2 - camera.radius)/200;
-	cameraDeltaSteps = 200;
-}
-}
-
-if(cameraDeltaSteps>0) {
-camera.target.x+=cameraDeltaX;
-camera.target.z+=cameraDeltaZ;
-camera.radius+=cameraDeltaRadius;
-cameraDeltaSteps--;
-} else {
-camera.target.x = selectedSpot.position.x;
-camera.target.z = selectedSpot.position.z;
-cameraDeltaX=0;
-cameraDeltaZ=0;
-}
-*/
-
-camera.alpha+=0.00005;
+	camera.alpha+=0.00005;
 }
 
 
@@ -560,18 +543,6 @@ var createScene = function () {
 	createSoundTrack(scene);
 	//createAudioAnalyser(scene);
 
-	//soundPanel = createSoundPanel();
-	//createCamSliders(panel);
-
-	//ratePanel=createRatePanel();
-	//ratePanel.isVisible=false;
-
-	//replayPanel=createReplayPanel();
-	//replayPanel.isVisible=false;
-
-	//	playControlPanel=createPlayControlPanel();
-	//	playControlPanel.isVisible=false;
-
 	var advancedTexture2 = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
 	var panel2 = new BABYLON.GUI.Grid();
@@ -641,7 +612,7 @@ camera.beta=0;
 //console.log("camera.minZ " + camera.minZ + " camera.maxZ " + camera.maxZ );
 
 camera.upperRadiusLimit=60;
-camera.lowerRadiusLimit=1;
+camera.lowerRadiusLimit=0.5;
 camera.lowerBetaLimit=0;
 camera.upperBetaLimit=Math.PI/2;
 camera.angularSensibilityX=1000;
@@ -652,6 +623,7 @@ camera.wheelPresision=0.01;
 //camera.pinchDeltaPercentage=0.001;
 //camera.pinchPresision=0.01;
 camera.useNaturalPinchZoom=true;
+camera.minZ=0.1;
 
 camera.attachControl(canvas, true);
 
