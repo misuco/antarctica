@@ -240,7 +240,7 @@ function updateScene() {
 	if(trackStateUpdated) {
 		trackStateUpdated=false;
 		const multitrackPlayerControl = document.getElementById('multitrackPlayerControl');
-		multitrackPlayerControl.innerHTML = "";
+		var htmlTable = "<table><tr><td> Track </td><td>Point</td><td> Control </td><td> Manage </td><td> Rate </td><td> Status </td><td> Name </td></tr>";
 		var trackNr = 0;
 		sounds.forEach(element => {
 			var t = Math.round( element.currentTime );
@@ -251,26 +251,30 @@ function updateScene() {
 				var dsec = d % 60;
 				var dmin = Math.floor( d / 60 );
 				var pointId=name2Id(element.name);
-				multitrackPlayerControl.innerHTML += "<span>" + trackNr + "</span> ";
+				var point=pointLoadedMap.get(pointId)
+				htmlTable += "<tr><td>" + trackNr + "</td><td>" + pointId + "</td><td>";
 				if(element.isPlaying) {
-					multitrackPlayerControl.innerHTML += "<a onclick=\"pauseSoundTrack("+trackNr+");\">pause</a> ";
+					htmlTable += "<input type=\"button\" onclick=\"pauseSoundTrack("+trackNr+");\" value=\"pause\"/> ";
 				} else {
-					multitrackPlayerControl.innerHTML += "<a onclick=\"playSoundTrack("+trackNr+");\">play</a> ";
+					htmlTable += "<input type=\"button\" onclick=\"playSoundTrack("+trackNr+");\" value=\"play\"/> ";
 				}
-				multitrackPlayerControl.innerHTML += "<a onclick=\"disposeSoundTrack("+trackNr+");\">dispose</a> ";
-				multitrackPlayerControl.innerHTML += "<a onclick=\"highlightSpot('"+pointId+"');\">show</a> ";
-				multitrackPlayerControl.innerHTML += "<a href=\""+element.name+"\" target=\"_blank\">download</a>";
+				htmlTable += "</td><td><input type=\"button\" onclick=\"disposeSoundTrack("+trackNr+");\" value=\"dispose\"/> ";
+				htmlTable += "<input type=\"button\" onclick=\"highlightSpot("+pointId+");\" value=\"show\"/> ";
+				htmlTable += "<a href=\""+element.name+"\" target=\"_blank\">download</a>";
 
-				const trackId=element.name.replace("loops/","").replace("-loop.mp3","");
-				multitrackPlayerControl.innerHTML += " Rate  <a onclick=\"sendRate('"+trackId+"',1);\"> [1] </a>";
-				multitrackPlayerControl.innerHTML += " <a onclick=\"sendRate('"+trackId+"',2);\"> [2] </a>";
-				multitrackPlayerControl.innerHTML += " <a onclick=\"sendRate('"+trackId+"',3);\"> [3] </a> <br/>";
+				const trackId=element.name.replace("loops/","").replace("-loop","").replace(".mp3","");
+				htmlTable += " </td><td>  <a onclick=\"sendRate('"+trackId+"',1);\"> [1] </a>";
+				htmlTable += " <a onclick=\"sendRate('"+trackId+"',2);\"> [2] </a>";
+				htmlTable += " <a onclick=\"sendRate('"+trackId+"',3);\"> [3] </a> </td>";
+				htmlTable += " <td id=\"status_"+trackId+"\"> </td>";
+				htmlTable += " <td> " +point.name + " </td></tr>";
 			}
 			trackNr++;
 		});
+		htmlTable += "</table>";
+		multitrackPlayerControl.innerHTML = htmlTable;
 	}
-	const multitrackPlayer = document.getElementById('multitrackPlayerList');
-	multitrackPlayer.innerHTML = "";
+
 	var trackNr = 0;
 	sounds.forEach(element => {
 		var t = Math.round( element.currentTime );
@@ -280,13 +284,16 @@ function updateScene() {
 			var d = Math.round( element.getAudioBuffer().duration );
 			var dsec = d % 60;
 			var dmin = Math.floor( d / 60 );
-			var pointId=name2Id(element.name);
-			var point=pointLoadedMap.get(pointId)
+			//var pointId=name2Id(element.name);
+			//var point=pointLoadedMap.get(pointId)
 			var playState = "pause";
+			const trackId=element.name.replace("loops/","").replace("-loop","").replace(".mp3","");
+			const multitrackPlayer = document.getElementById('status_'+trackId);
+			multitrackPlayer.innerHTML = "";
 			if(element.isPlaying) {
 				playState = "play";
 			}
-			multitrackPlayer.innerHTML += "<span>" + playState + " " + tmin + ":" + tsec + " (" + dmin + ":" + dsec + ") | spot nr: " + pointId + " " + point.name;
+			multitrackPlayer.innerHTML += "<span>" + playState + " " + tmin + ":" + tsec + " (" + dmin + ":" + dsec + ")";
 			multitrackPlayer.innerHTML += "</span><br/>";
 		}
 		trackNr++;
@@ -559,8 +566,8 @@ var createScene = function () {
 	//ratePanel=createRatePanel();
 	//ratePanel.isVisible=false;
 
-	replayPanel=createReplayPanel();
-	replayPanel.isVisible=false;
+	//replayPanel=createReplayPanel();
+	//replayPanel.isVisible=false;
 
 	//	playControlPanel=createPlayControlPanel();
 	//	playControlPanel.isVisible=false;

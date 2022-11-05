@@ -37,7 +37,7 @@ var createPlayControlPanel = function () {
 
 	createRateButton(panel,"change",4,function() {
 		console.log("change");
-		if(soundPanel==undefined) soundPanel = createSoundPanel();
+		//if(soundPanel==undefined) soundPanel = createSoundPanel();
 		soundPanel.isVisible=true;
 	});
 

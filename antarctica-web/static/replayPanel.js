@@ -22,7 +22,7 @@ var createReplayPanel = function () {
 	});
 
 	createRateButton(panel,"change",4,function() {
-		if(soundPanel==undefined) soundPanel = createSoundPanel();
+		//if(soundPanel==undefined) soundPanel = createSoundPanel();
 		//playControlPanel.isVisible=true;
 	});
 

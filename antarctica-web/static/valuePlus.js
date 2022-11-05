@@ -19,6 +19,13 @@ class valuePlus {
 		this.valueFunction(this.value);
 	}
 
+	add(v) {
+		this.value+=v;
+		if(this.value>this.max) this.value=this.min;
+		if(this.value<this.min) this.value=this.max;
+		this.valueFunction(this.value);
+	}
+
 	inc() {
 		this.value+=this.step;
 		if(this.value>this.max) this.value=this.max;
