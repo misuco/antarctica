@@ -80,7 +80,7 @@ var playTrack = function(trackId) {
 	sounds.push(music1);
 
 	console.log("loading sound:"+trackId);
-	statusPanel2.text = "loading sound:"+this.responseText;
+	statusPanel.text = "loading sound:"+this.responseText;
 }
 
 var triggerNewSound = function(trackId) {
@@ -103,7 +103,7 @@ var triggerNewSound = function(trackId) {
 
 	console.log("trigger new sound trackId " + trackId);
 
-	statusPanel2.text = "downloading " + getUrl + "/" + clipId;
+	statusPanel.text = "downloading " + getUrl + "/" + clipId;
 
 	var queryId=trackId+"_"+clipId+"_"+tempo+"_"+loopLength+"_"+repeat+"_"+pitch+"_"+basenote+"_"+scale+"_"+arrange+"_"+Date.now();
 	oReq.open("GET", baseUrl + "newclip?id="+queryId+"&clipId="+clipId+"&tempo="+tempo+"&loopLength="+loopLength+"&repeat="+repeat+"&pitch="+pitch+"&basenote="+basenote+"&scale="+scale+"&arrange="+arrange);

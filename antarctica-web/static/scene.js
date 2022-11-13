@@ -32,15 +32,6 @@ function highlightSpot(id) {
 const zeroPad = (num, places) => String(num).padStart(places, '0')
 
 function updateScene() {
-	if(state=='rate') {
-		statusPanel2.text = "rate spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
-	} else if(state=='rated') {
-		statusPanel2.text = "rated spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
-	} else if(state=='loading') {
-		statusPanel2.text = " loading spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
-	} else if(state=='server error') {
-		statusPanel2.text = " server error !!! spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
-	}
 	if(trackStateUpdated) {
 		trackStateUpdated=false;
 		const multitrackPlayerControl = document.getElementById('multitrackPlayerControl');
@@ -148,11 +139,7 @@ var requestFiles = function( spotId ) {
 		var files=this.response.split('\n');
 		if(files.length<=1) {
 			infoPanel.text += "\n\nFiles: 0";
-			if(assignNext==true) {
-				assignNext=false;
-			} else {
-				randomSound();
-			}
+			randomSound();
 			triggerNewSound(spotId);
 		} else {
 			infoPanel.text += "\n\nFiles: " + files.length;
@@ -293,8 +280,6 @@ var selectSpot = function(fields) {
 	infoPanel.text = "spot nr. " + fields[5] + "\n" + fields[6] + "\n" + fields[7] + "\n" + fields[14] + "\n" + fields[15];
 	selectedSpot.position.x = fields[2];
 	selectedSpot.position.z = fields[3];
-	//recordIndex = csvIndex;
-	selectedRecord = fields;
 	requestFiles(fields[4] + '_' + fields[5]);
 
 	// filter current sector
@@ -372,16 +357,7 @@ var createScene = function () {
 	statusPanel.color = "white";
 	panel2.addControl(statusPanel, 1, 1);
 
-	statusPanel2 = new BABYLON.GUI.TextBlock();
-	statusPanel2.text = "Please select objects to load sound.";
-	statusPanel2.textWrapping=true;
-	//statusPanel2.fontSize=10;
-	statusPanel2.textVerticalAlignment=BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM
-	statusPanel2.color = "white";
-	panel2.addControl(statusPanel2, 1, 0);
-
 	advancedTexture2.addControl(panel2);
-
 
 	const env = scene.createDefaultEnvironment();
 

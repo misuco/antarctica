@@ -16,22 +16,5 @@ var maxSounds = 1;
 
 var infoPanel;
 var statusPanel;
-var statusPanel2;
-var replayPanel;
-var soundPanel;
-
-var spheres = [];
-var sp=0;
 
 var selectedSpot;
-var assignNext = false;
-
-var angel = 0;
-var distance = 5;
-var speed = -0.001;
-
-var alphashift = 0.0;
-var alphaoffset = 0.0;
-var betashift = 0.0;
-
-var selectedRecord;
