@@ -221,7 +221,7 @@ function resizeHomePoints(d) {
 }
 
 function highlightSpot(id) {
-	var point = pointLoadedMap.get(id);
+	var point = pointLoadedMap.get(id.toString());
 	infoPanel.text = "spot nr. " + id + "\n" + point.name + "\n" + point.fields[7] + "\n" + point.fields[14] + "\n" + point.fields[15];
 	selectedSpot.position.x=point.pointX;
 	selectedSpot.position.z=point.pointY;
@@ -240,7 +240,7 @@ function updateScene() {
 	if(trackStateUpdated) {
 		trackStateUpdated=false;
 		const multitrackPlayerControl = document.getElementById('multitrackPlayerControl');
-		var htmlTable = "<table><tr><td> Track </td><td>Point</td><td> Control </td><td> Manage </td><td> Rate </td><td> Status </td><td> Name </td></tr>";
+		var htmlTable = "<table><tr><td> Track </td><td>Point</td><td> Control </td><td> Manage </td><td> Rate </td><td> Status </td><td> Play Time </td><td> Duration </td><td> Clip </td><td> Tempo  </td><td> Name </td></tr>";
 		var trackNr = 0;
 		sounds.forEach(element => {
 			var t = Math.round( element.currentTime );
@@ -263,10 +263,15 @@ function updateScene() {
 				htmlTable += "<a href=\""+element.name+"\" target=\"_blank\">download</a>";
 
 				const trackId=element.name.replace("loops/","").replace("-loop","").replace(".mp3","");
+				const trackParams=trackId.split("_");
 				htmlTable += " </td><td>  <a onclick=\"sendRate('"+trackId+"',1);\"> [1] </a>";
 				htmlTable += " <a onclick=\"sendRate('"+trackId+"',2);\"> [2] </a>";
 				htmlTable += " <a onclick=\"sendRate('"+trackId+"',3);\"> [3] </a> </td>";
 				htmlTable += " <td id=\"status_"+trackId+"\"> </td>";
+				htmlTable += " <td id=\"playTime_"+trackId+"\"> </td>";
+				htmlTable += " <td id=\"duration_"+trackId+"\"> </td>";
+				htmlTable += " <td> " +trackParams[3] + " </td>";
+				htmlTable += " <td> " +trackParams[4] + " </td>";
 				htmlTable += " <td> " +point.name + " </td></tr>";
 			}
 			trackNr++;
@@ -284,24 +289,22 @@ function updateScene() {
 			var d = Math.round( element.getAudioBuffer().duration );
 			var dsec = d % 60;
 			var dmin = Math.floor( d / 60 );
-			//var pointId=name2Id(element.name);
-			//var point=pointLoadedMap.get(pointId)
 			var playState = "pause";
-			const trackId=element.name.replace("loops/","").replace("-loop","").replace(".mp3","");
-			const multitrackPlayer = document.getElementById('status_'+trackId);
-			multitrackPlayer.innerHTML = "";
 			if(element.isPlaying) {
 				playState = "play";
 			}
-			multitrackPlayer.innerHTML += "<span>" + playState + " " + tmin + ":" + tsec + " (" + dmin + ":" + dsec + ")";
-			multitrackPlayer.innerHTML += "</span><br/>";
+			const trackId=element.name.replace("loops/","").replace("-loop","").replace(".mp3","");
+			document.getElementById('status_'+trackId).innerHTML = playState;
+			document.getElementById('playTime_'+trackId).innerHTML = tmin + ":" + tsec;
+			document.getElementById('duration_'+trackId).innerHTML = dmin + ":" + dsec;
 		}
 		trackNr++;
 	});
 
-	resizeHomePoints(camera.radius * 0.02);
-	var d=camera.radius * 0.1;
-	selectedSpot.scaling = new BABYLON.Vector3(d,d,d);
+	var newRadius=Math.max(0.2,camera.radius * 0.02);
+	resizeHomePoints(newRadius);
+	//var d=camera.radius * 0.1;
+	selectedSpot.scaling = new BABYLON.Vector3(newRadius,newRadius,newRadius);
 
 	if(camera.target.x!=selectedSpot.position.x || camera.target.z!=selectedSpot.position.z) {
 		cameraDeltaX = (selectedSpot.position.x - camera.target.x);
@@ -325,7 +328,7 @@ function updateScene() {
 		}
 	}
 
-	camera.alpha+=0.00005;
+	camera.alpha+=0.0005;
 }
 
 
