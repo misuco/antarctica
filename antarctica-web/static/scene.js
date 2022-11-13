@@ -98,16 +98,6 @@ function filename2TrackId(filename) {
 	return filename.replace("loops/","").replace("-loop","").replace(".mp3","");
 }
 
-function createButton(id,name) {
-	var button = BABYLON.GUI.Button.CreateSimpleButton(id, name);
-	button.width = "150px"
-	button.height = "40px";
-	button.color = "white";
-	button.cornerRadius = 20;
-	button.background = "green";
-	return button;
-}
-
 function processCsv(csv) {
 	csv = csv.replace(/\r/g, '');
 	lines = csv.split('\n');
