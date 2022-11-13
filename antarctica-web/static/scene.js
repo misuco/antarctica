@@ -157,6 +157,17 @@ var requestFiles = function( spotId ) {
 	oReq.send();
 }
 
+function addSelectedSpot() {
+	var meshName="sp_"+selectedSpot.pointId;
+	if( scene.getMeshByName(meshName)==undefined) {
+		var sphere = BABYLON.MeshBuilder.CreateCylinder(meshName, {width:0.05,height:0.05,depth:0.05, diameterTop: 0.05, diameterBottom: 0, tessellation: 4}, scene);
+		sphere.position.x = selectedSpot.position.x;
+		sphere.position.z = selectedSpot.position.z;
+		sphere.position.y = 0.1;
+		sphere.material = mRed;
+	}
+}
+
 function addNextPoint() {
 
 	//console.log("selectedSpot.position.x " + selectedSpot.position.x + " camera.target.x " + camera.target.x + " cameraDeltaX " + cameraDeltaX );
@@ -280,6 +291,7 @@ var selectSpot = function(fields) {
 	infoPanel.text = "spot nr. " + fields[5] + "\n" + fields[6] + "\n" + fields[7] + "\n" + fields[14] + "\n" + fields[15];
 	selectedSpot.position.x = fields[2];
 	selectedSpot.position.z = fields[3];
+	selectedSpot.pointId = fields[5];
 	requestFiles(fields[4] + '_' + fields[5]);
 
 	// filter current sector
@@ -297,6 +309,9 @@ var selectSpot = function(fields) {
 	filterCsv(sectorId[0]+"_"+eastSector);
 	filterCsv(sectorId[0]+"_"+westSector);
 
+	sessionList.unshift(fields[5]);
+	visitedPoints.set(fields[5]);
+	addSelectedSpot();
 	getClosestUnvisited(fields[5]);
 
 	state='loading';
@@ -309,8 +324,6 @@ oReq.addEventListener("load", function() {
 });
 
 var createScene = function () {
-
-	console.log("createScene");
 
 	// Add lights to the scene
 	var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
