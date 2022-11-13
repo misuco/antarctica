@@ -1,32 +1,44 @@
 const multitrackPlayerControl = document.getElementById('multitrackPlayerControl');
-const multitrackPlayerList = document.getElementById('multitrackPlayerList');
+const sessionStart = document.getElementById('sessionStart');
 const ratingList = document.getElementById('ratingList');
+const sessionControl = document.getElementById('sessionControl');
 
 var requestRating = function() {
 	var oReq = new XMLHttpRequest();
 	oReq.addEventListener("load", function() {
 		ratingList.innerHTML=this.response;
 	});
-	
+
 	var getUrl = window.location;
 	var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ;
-	console.log("GET " + baseUrl + "rating");	
+	console.log("GET " + baseUrl + "rating");
 	oReq.open("GET", baseUrl + "rating");
-	oReq.send();	
+	oReq.send();
 }
 
-
-
 function showRating() {
-	multitrackPlayerControl.hidden=true;
-	multitrackPlayerList.hidden=true;
+	hideAllViews();
 	ratingList.hidden=false;
-	ratingList.innerHTML="<span>Loading rating list</span>";	
+	ratingList.innerHTML="<span>Loading rating list</span>";
 	requestRating();
 }
 
 function showPlayer() {
+	hideAllViews();
 	multitrackPlayerControl.hidden=false;
-	multitrackPlayerList.hidden=false;
-	ratingList.hidden=true;
 }
+
+function showSessionControl() {
+	hideAllViews();
+	sessionControl.hidden=false;
+}
+
+function hideAllViews() {
+	multitrackPlayerControl.hidden=true;
+	ratingList.hidden=true;
+	sessionStart.hidden=true;
+	sessionControl.hidden=true;
+}
+
+hideAllViews();
+sessionStart.hidden=false;

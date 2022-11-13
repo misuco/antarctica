@@ -39,6 +39,7 @@
 <script type="text/javascript" src="audioAnalyser.js"></script>
 <script type="text/javascript" src="valuePlus.js"></script>
 <script type="text/javascript" src="sound.js"></script>
+<script type="text/javascript" src="session.js"></script>
 <script type="text/javascript" src="rating.js"></script>
 <script type="text/javascript" src="sceneInit.js"></script>
 <script type="text/javascript" src="sceneMaterials.js"></script>
@@ -47,19 +48,27 @@
 <script type="text/javascript" src="autoPilot.js"></script>
 
 <div style="top:0px;left:0;position:absolute;z-index:1000" id="menu">
-   <a onclick="showPlayer()">Play Control</a> | <a onclick="showRating()">Rating</a> | <a onclick="">Sessions</a>
+   <a onclick="showSessionControl()">Session Control</a> | <a onclick="showPlayer()">Play Control</a> | <a onclick="showRating()">Rating</a>
    <input type="text" id="maxSounds">
    <input type="button" value="set max sounds" onclick="maxSounds = document.getElementById('maxSounds').value; checkMaxSounds();" />
    <input type="checkbox" id="autoPilot" onclick="autoPilot = document.getElementById('autoPilot').checked;"> <span>autopilot</span>
    <input type="checkbox" id="loopPlay" onclick="loopPlay = document.getElementById('loopPlay').checked;"> <span>loop</span>
+   <span id="sessionNameDisplay">No session</span>
 </div>
 
-<div style="top:100px;left:0;position:absolute;z-index:1000" id="multitrackPlayerControl"><span>Player Control</span></div>
-<div style="top:100px;left:500px;position:absolute;z-index:1000" id="multitrackPlayerList"><span></span></div>
+<div style="top:100px;left:0;position:absolute;z-index:1000;" id="sessionControl"><span>Session Control</span></div>
+<div style="top:100px;left:0;position:absolute;z-index:1000;" id="multitrackPlayerControl"><span>Player Control</span></div>
 <div style="top:100px;left:0;position:absolute;z-index:1000;" id="ratingList"><span></span></div>
+<div style="top:0;left:0;width:100vw;height:100vh;background-color:#ffffff80;position:absolute;z-index:1000;" id="sessionStart">
+   <div style="text-align:center;line-height:100vh;">
+      Session name:
+      <input type="text" id="sessionName" />
+      <input type="button" value="start" onclick="initSession();" />
+
+   </div>
+</div>
 
 <script type="text/javascript" src="htmlViewControl.js"></script>
-<!--  <script type="text/javascript" src="joysticks.js"></script>  -->
 
 </body>
 </html>
