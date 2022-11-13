@@ -7,6 +7,7 @@ var records = [];
 var sectorCountMap = new Map();
 var pointLoadedMap = new Map();
 var homePonits = [];
+var selectedPoints = [];
 
 var state = 'select';
 var playingTrack = '';

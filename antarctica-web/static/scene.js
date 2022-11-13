@@ -17,7 +17,9 @@ function filename2TrackId(filename) {
 
 function resizeHomePoints(d) {
 	homePonits.forEach(element => {
-		//console.log(" resize " + element + " to " + d + " orig " + element.diameter );
+		element.scaling = new BABYLON.Vector3(d,d,d);
+	});
+	selectedPoints.forEach(element => {
 		element.scaling = new BABYLON.Vector3(d,d,d);
 	});
 }
@@ -160,11 +162,12 @@ var requestFiles = function( spotId ) {
 function addSelectedSpot() {
 	var meshName="sp_"+selectedSpot.pointId;
 	if( scene.getMeshByName(meshName)==undefined) {
-		var sphere = BABYLON.MeshBuilder.CreateCylinder(meshName, {width:0.05,height:0.05,depth:0.05, diameterTop: 0.05, diameterBottom: 0, tessellation: 4}, scene);
+		var sphere = BABYLON.MeshBuilder.CreateCylinder(meshName, {width:1,height:1,depth:1, diameterTop: 1, diameterBottom: 0, tessellation: 4}, scene);
 		sphere.position.x = selectedSpot.position.x;
 		sphere.position.z = selectedSpot.position.z;
 		sphere.position.y = 0.1;
 		sphere.material = mRed;
+		selectedPoints.push(sphere);
 	}
 }
 
