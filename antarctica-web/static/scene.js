@@ -36,14 +36,8 @@ var alphashift = 0.0;
 var alphaoffset = 0.0;
 var betashift = 0.0;
 
-var cameraDeltaX = 0;
-var cameraDeltaZ = 0;
-var cameraDeltaRadius = 0;
-var cameraDeltaSteps = 0;
-
 var csvLoaded = false;
 var csvIndex = 1;
-//var recordIndex = 0;
 var selectedRecord;
 var lines;
 var fieldId;
@@ -98,6 +92,10 @@ function name2Id(name) {
 	var id="";
 	if(fields.length>2) id=fields[2];
 	return id;
+}
+
+function filename2TrackId(filename) {
+	return filename.replace("loops/","").replace("-loop","").replace(".mp3","");
 }
 
 function createButton(id,name) {
@@ -227,6 +225,8 @@ function highlightSpot(id) {
 	selectedSpot.position.z=point.pointY;
 }
 
+const zeroPad = (num, places) => String(num).padStart(places, '0')
+
 function updateScene() {
 	if(state=='rate') {
 		statusPanel2.text = "rate spot nr: " + selectedRecord[5] + " " + selectedRecord[6];
@@ -262,7 +262,7 @@ function updateScene() {
 				htmlTable += "<input type=\"button\" onclick=\"highlightSpot("+pointId+");\" value=\"show\"/> ";
 				htmlTable += "<a href=\""+element.name+"\" target=\"_blank\">download</a>";
 
-				const trackId=element.name.replace("loops/","").replace("-loop","").replace(".mp3","");
+				const trackId=filename2TrackId(element.name);
 				const trackParams=trackId.split("_");
 				htmlTable += " </td><td>  <a onclick=\"sendRate('"+trackId+"',1);\"> [1] </a>";
 				htmlTable += " <a onclick=\"sendRate('"+trackId+"',2);\"> [2] </a>";
@@ -293,42 +293,43 @@ function updateScene() {
 			if(element.isPlaying) {
 				playState = "play";
 			}
-			const trackId=element.name.replace("loops/","").replace("-loop","").replace(".mp3","");
+			const trackId=filename2TrackId(element.name);
 			document.getElementById('status_'+trackId).innerHTML = playState;
-			document.getElementById('playTime_'+trackId).innerHTML = tmin + ":" + tsec;
-			document.getElementById('duration_'+trackId).innerHTML = dmin + ":" + dsec;
+			document.getElementById('playTime_'+trackId).innerHTML = zeroPad(tmin,2) + ":" + zeroPad(tsec,2);
+			document.getElementById('duration_'+trackId).innerHTML = zeroPad(dmin,2) + ":" + zeroPad(dsec,2);
 		}
 		trackNr++;
 	});
 
-	var newRadius=Math.max(0.2,camera.radius * 0.02);
+	var newRadius=Math.max(0.1,camera.radius * 0.02);
 	resizeHomePoints(newRadius);
-	//var d=camera.radius * 0.1;
 	selectedSpot.scaling = new BABYLON.Vector3(newRadius,newRadius,newRadius);
 
 	if(camera.target.x!=selectedSpot.position.x || camera.target.z!=selectedSpot.position.z) {
-		cameraDeltaX = (selectedSpot.position.x - camera.target.x);
-		cameraDeltaZ = (selectedSpot.position.z - camera.target.z);
-		cameraDeltaRadius = 0.5 - camera.radius;
-		var distanceCameraSelectedSpot = Math.sqrt( cameraDeltaX ** 2 + cameraDeltaZ ** 2);
-		if(distanceCameraSelectedSpot<0.02) {
-			camera.target.x = selectedSpot.position.x;
-			camera.target.z = selectedSpot.position.z;
-			camera.radius = 0.5;
-		} else {
-			const factor = Math.log(distanceCameraSelectedSpot);
+		var cameraDeltaX = (selectedSpot.position.x - camera.target.x)/20;
+		var cameraDeltaZ = (selectedSpot.position.z - camera.target.z)/20;
+		var cameraDeltaRadius = (0.5 - camera.radius)/20
 
-			camera.target.x+=cameraDeltaX/distanceCameraSelectedSpot/50;//*factor;
-			camera.target.z+=cameraDeltaZ/distanceCameraSelectedSpot/50;//*factor;
-			if(camera.radius > 0.5) {
-				camera.radius+=cameraDeltaRadius/50;//*factor;
-			} else {
-				camera.radius = 0.5;
-			}
+		if(Math.abs(cameraDeltaX)>0.0001) {
+			camera.target.x+=cameraDeltaX;
+		} else {
+			camera.target.x = selectedSpot.position.x;
+		}
+
+		if(Math.abs(cameraDeltaZ)>0.0001) {
+			camera.target.z+=cameraDeltaZ;
+		} else {
+			camera.target.z = selectedSpot.position.z;
+		}
+
+		if(Math.abs(cameraDeltaRadius)>0.0005) {
+			camera.radius+=cameraDeltaRadius;
+		} else {
+			camera.radius = 0.5;
 		}
 	}
 
-	camera.alpha+=0.0005;
+	camera.alpha+=0.00005;
 }
 
 
