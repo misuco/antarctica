@@ -8,10 +8,46 @@ class valuePlus {
 		this.max = max;
 		this.value = initValue;
 		this.valueFunction = function(value) {};
+		this.changeMode = 0;
+		this.changeEvery = 1;
+		this.changeBy = 0;
+		this.changeCounter = 0;
 	}
 
 	setValueFunction(f) {
 		this.valueFunction = f;
+	}
+
+	setChangeMode(m) {
+		this.changeMode=m;
+	}
+
+	setChangeEvery(v) {
+		this.changeEvery=v;
+	}
+
+	setChangeBy(v) {
+		this.changeBy=v;
+	}
+
+	change() {
+		changeCounter++;
+		if(changeCounter==changeEvery) {
+			switch(this.changeMode) {
+				case 1:
+					if(changeBy>0) {
+						for(var i=0;i<changeBy;i++) {
+							this.inc();
+						}
+					}
+					if(changeBy<0) {
+						for(var i=0;i>changeBy;i--) {
+							this.dec();
+						}
+					}
+					break;
+			}
+		}
 	}
 
 	setRandomValue() {
