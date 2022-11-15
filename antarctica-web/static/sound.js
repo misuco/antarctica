@@ -14,20 +14,13 @@ var trackStateUpdated = false;
 
 var soundTrack1;
 
-var value1;
-var value2;
-var value3;
-var value4;
-var value5;
-var value6;
-var value7;
-var value8;
+var soundParams = [];
 
 var randomSound = function() {
 	/*
 	value1.setRandomValue();
 	*/
-	value1.add(2);
+	soundParams[0].add(2);
 }
 
 var checkMaxSounds = function() {
@@ -114,45 +107,54 @@ var createSoundTrack = function (scene) {
 	soundTrack1 = new BABYLON.SoundTrack(scene);
 	BABYLON.Engine.audioEngine.setGlobalVolume(1);
 
-	value1 = new valuePlus( 0, 1, 185, clipId );
+	var value1 = new valuePlus( "Clip ID", 0, 1, 185, clipId );
 	value1.setValueFunction( function(value) {
 		clipId = value;
 	} );
 
-	value2 = new valuePlus( 10, 1, 500, tempo );
+	var value2 = new valuePlus( "Tempo", 10, 1, 500, tempo );
 	value2.setValueFunction( function(value) {
 		tempo = value;
 	} );
 
-	value3 = new valuePlus( 1, 1, 16, loopLength );
+	var value3 = new valuePlus( "Loop len", 1, 1, 16, loopLength );
 	value3.setValueFunction( function(value) {
 		loopLength = value;
 	} );
 
-	value4 = new valuePlus( 1, 1, 16, repeat );
+	var value4 = new valuePlus( "Repeat", 1, 1, 16, repeat );
 	value4.setValueFunction( function(value) {
 		repeat = value;
 	} );
 
-	value5 = new valuePlus( -36, 1, 36, pitch );
+	var value5 = new valuePlus( "Pitch", -36, 1, 36, pitch );
 	value5.setValueFunction( function(value) {
 		pitch = value;
 	} );
 
-	value6 = new valuePlus( 0, 1, 12, basenote );
+	var value6 = new valuePlus( "Basenote", 0, 1, 12, basenote );
 	value6.setValueFunction( function(value) {
 		basenote = value;
 	} );
 
-	value7 = new valuePlus( 1, 1,46, scale );
+	var value7 = new valuePlus( "Scale", 1, 1,46, scale );
 	value7.setValueFunction( function(value) {
 		scale = value;
 	} );
 
-	value8= new valuePlus( 1, 1, 10, arrange );
+	var value8= new valuePlus( "Arrange", 1, 1, 10, arrange );
 	value8.setValueFunction( function(value) {
 		arrange = value;
 	} );
+
+	soundParams.push(value1);
+	soundParams.push(value2);
+	soundParams.push(value3);
+	soundParams.push(value4);
+	soundParams.push(value5);
+	soundParams.push(value6);
+	soundParams.push(value7);
+	soundParams.push(value8);
 }
 
 var disposeSoundTrack = function ( trackNr ) {

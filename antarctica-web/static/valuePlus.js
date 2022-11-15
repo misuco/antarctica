@@ -1,7 +1,8 @@
 
 class valuePlus {
-	constructor( min, step, max, initValue ) {
+	constructor( name, min, step, max, initValue ) {
 		var self = this;
+		this.name = name;
 		this.min = min;
 		this.step = step;
 		this.max = max;

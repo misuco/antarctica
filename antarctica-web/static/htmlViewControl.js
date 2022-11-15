@@ -29,8 +29,22 @@ function showPlayer() {
 }
 
 function showSessionControl() {
+
+	var view = "<table><tr><td>Session Name</td><td colspan=\"3\">" + sessionName + "</h1></tr>";
+	soundParams.forEach((item, i) => {
+		view += "<tr><td>" + item.name + "</td>";
+		view += "<td><input type=\"button\" value=\"-\" onclick=\"soundParams["+i+"].dec();showSessionControl();\" /></td>";
+		view += "<td> " + item.value + "</td>";
+		view += "<td><input type=\"button\" value=\"+\" onclick=\"soundParams["+i+"].inc();showSessionControl();\" /></td>";
+		view += "</tr>";
+	});
+	view += "</table>";
+	sessionControl.innerHTML = view;
+
 	hideAllViews();
 	sessionControl.hidden=false;
+
+
 }
 
 function hideAllViews() {
