@@ -16,11 +16,11 @@ var soundTrack1;
 
 var soundParams = [];
 
-var randomSound = function() {
-	/*
-	value1.setRandomValue();
-	*/
-	soundParams[0].add(2);
+var nextSound = function() {
+	soundParams.forEach((item, i) => {
+		item.change();
+	});
+	showSessionControl();
 }
 
 var checkMaxSounds = function() {
@@ -83,7 +83,7 @@ var triggerNewSound = function(trackId) {
 		if(this.response.includes("Error")) {
 			console.log("server error!!!");
 			state='server error';
-			randomSound();
+			nextSound();
 			triggerNewSound();
 		} else {
 			if(loopPlay) playTrack(this.response + "-loop.mp3");

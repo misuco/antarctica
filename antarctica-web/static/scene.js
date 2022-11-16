@@ -141,7 +141,7 @@ var requestFiles = function( spotId ) {
 		var files=this.response.split('\n');
 		if(files.length<=1) {
 			infoPanel.text += "\n\nFiles: 0";
-			randomSound();
+			nextSound();
 			triggerNewSound(spotId);
 		} else {
 			infoPanel.text += "\n\nFiles: " + files.length;

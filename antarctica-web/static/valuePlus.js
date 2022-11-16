@@ -19,32 +19,51 @@ class valuePlus {
 	}
 
 	setChangeMode(m) {
+		if(m>3) m=3;
+		if(m<0) m=0;
 		this.changeMode=m;
 	}
 
 	setChangeEvery(v) {
+		if(v>64) v=64;
+		if(v<1) v=1;
 		this.changeEvery=v;
 	}
 
 	setChangeBy(v) {
+		if(v>64) v=64;
+		if(v<1) v=1;
 		this.changeBy=v;
 	}
 
 	change() {
-		changeCounter++;
-		if(changeCounter==changeEvery) {
+		this.changeCounter++;
+		if(this.changeCounter==this.changeEvery) {
+			this.changeCounter=0;
 			switch(this.changeMode) {
+				// Random
 				case 1:
-					if(changeBy>0) {
-						for(var i=0;i<changeBy;i++) {
-							this.inc();
+					this.setRandomValue();
+					break;
+				// Saw
+				case 2:
+				// Tri
+				case 3:
+					this.add(this.changeBy);
+					if(this.value==this.max) {
+						if(this.changeMode==2) {
+							this.value=this.min;
+						} else if(this.changeMode==3) {
+							this.changeBy*=-1;
+						}
+					} else if(this.value==this.min) {
+						if(this.changeMode==2) {
+							this.value=this.max;
+						} else if(this.changeMode==3) {
+							this.changeBy*=-1;
 						}
 					}
-					if(changeBy<0) {
-						for(var i=0;i>changeBy;i--) {
-							this.dec();
-						}
-					}
+					this.valueFunction(this.value);
 					break;
 			}
 		}
@@ -57,9 +76,9 @@ class valuePlus {
 	}
 
 	add(v) {
-		this.value+=v;
-		if(this.value>this.max) this.value=this.min;
-		if(this.value<this.min) this.value=this.max;
+		this.value+=parseInt(v,10);
+		if(this.value>this.max) this.value=this.max;
+		if(this.value<this.min) this.value=this.min;
 		this.valueFunction(this.value);
 	}
 
