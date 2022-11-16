@@ -32,16 +32,21 @@ function showSessionControl() {
 
 	var view = "<table><tr><td>Session Name</td><td colspan=\"6\">" + sessionName + "</h1></tr>";
 	soundParams.forEach((item, i) => {
+		var checked = "";
 		view += "<tr><td>" + item.name + "</td>";
 		view += "<td><input type=\"button\" value=\"-\" onclick=\"soundParams["+i+"].dec();showSessionControl();\" /></td>";
 		view += "<td> " + item.value + "</td>";
 		view += "<td><input type=\"button\" value=\"+\" onclick=\"soundParams["+i+"].inc();showSessionControl();\" /></td>";
-		view += "<td><input type=\"radio\" name=\"var"+i+"\" value=\"const\" onclick=\"\" />const</td>";
-		view += "<td><input type=\"radio\" name=\"var"+i+"\" value=\"rand\" onclick=\"\" />rand</td>";
-		view += "<td><input type=\"radio\" name=\"var"+i+"\" value=\"saw\" onclick=\"\" />saw</td>";
-		view += "<td><input type=\"radio\" name=\"var"+i+"\" value=\"tri\" onclick=\"\" />tri</td>";
-		view += "<td>Every<input type=\"text\" name=\"varChangeEvery"+i+"\" value=\""+soundParams[i].changeEvery+"\" onchange=\"soundParams["+i+"].setChangeEvery(document.getElementById('varChangeEvery"+i+"').value);showSessionControl();\" size=\"2\" /></td>";
-		view += "<td>By<input type=\"text\" name=\"varChangeBy"+i+"\" value=\""+soundParams[i].changeBy+"\" onchange=\"soundParams["+i+"].setChangeBy(document.getElementById('varChangeBy"+i+"').value);showSessionControl();\" size=\"2\" /></td>";
+		checked = soundParams[i].changeMode == 0 ? "checked" : "";
+		view += "<td><input type=\"radio\" name=\"var"+i+"\" value=\"const\" onclick=\"soundParams["+i+"].setChangeMode(0);showSessionControl();\" "+checked+" />const</td>";
+		checked = soundParams[i].changeMode == 1 ? "checked" : "";
+		view += "<td><input type=\"radio\" name=\"var"+i+"\" value=\"rand\" onclick=\"soundParams["+i+"].setChangeMode(1);showSessionControl();\" "+checked+"/>rand</td>";
+		checked = soundParams[i].changeMode == 2 ? "checked" : "";
+		view += "<td><input type=\"radio\" name=\"var"+i+"\" value=\"saw\" onclick=\"soundParams["+i+"].setChangeMode(2);showSessionControl();\" "+checked+"/>saw</td>";
+		checked = soundParams[i].changeMode == 3 ? "checked" : "";
+		view += "<td><input type=\"radio\" name=\"var"+i+"\" value=\"tri\" onclick=\"soundParams["+i+"].setChangeMode(3);showSessionControl();\" "+checked+"/>tri</td>";
+		view += "<td>Every<input type=\"text\" id=\"varChangeEvery"+i+"\" value=\""+soundParams[i].changeEvery+"\" onchange=\"soundParams["+i+"].setChangeEvery(document.getElementById('varChangeEvery"+i+"').value);showSessionControl();\" size=\"2\" /></td>";
+		view += "<td>By<input type=\"text\" id=\"varChangeBy"+i+"\" value=\""+soundParams[i].changeBy+"\" onchange=\"soundParams["+i+"].setChangeBy(document.getElementById('varChangeBy"+i+"').value);showSessionControl();\" size=\"2\" /></td>";
 		view += "</tr>";
 	});
 	view += "</table>";
