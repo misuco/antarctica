@@ -27,7 +27,7 @@ void createNewSong( string filename, int tempo, vector<Midicalc::BlockConfig> co
     mc.setBPM( tempo );
     mc.initScaleFilter(scale,basenote);
     mc.newMidiFile( config );
-    cout << filename << " tempo " << tempo;
+    cout << "create_file: " << filename << endl << "tempo: " << tempo << endl;
     mc.saveNewMidiFile( filename );
 }
 
@@ -44,9 +44,11 @@ int main(int argc, char *argv[])
     mc.loadMidiFile( "/home/antarctica/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
     mc.analyzeMidiFile();
 
+    cout << "Params:";
     for(int i=0;i<argc;i++) {
-        cout << "Param " << argv[i];
+        cout << " " << argv[i];
     }
+    cout << endl;
 
     string target="";
     int block=0;
@@ -91,12 +93,12 @@ int main(int argc, char *argv[])
             break;
         case '?':
             if (optopt == 'c')
-                fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+                fprintf (stderr, "WARNING: Option -%c requires an argument.\n", optopt);
             else if (isprint (optopt))
-                fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+                fprintf (stderr, "WARNING: Unknown option `-%c'.\n", optopt);
             else
                 fprintf (stderr,
-                         "Unknown option character `\\x%x'.\n",
+                         "WARNING: Unknown option character `\\x%x'.\n",
                          optopt);
             return 1;
         default:
@@ -105,14 +107,14 @@ int main(int argc, char *argv[])
     }
 
 
-    cout << "got request block: " << block << " pitch: " << pitch << " tempo: " << tempo << " repeat: " << repeat << " loopLength: " << loopLength << " scale: " << scale << " basenote: " << basenote << " arrange: " << arrange << " " << target << endl;
+    cout << "block: " << block << endl << "pitch: " << pitch << endl << "tempo: " << tempo << endl << "repeat: " << repeat << endl << "loopLength: " << loopLength << endl << "scale: " << scale << endl << "basenote: " << basenote << endl << "arrange: " << arrange << endl;
 
     double secondsPerQuarter = 60.0 / tempo;
     double playTime = 0;
     double minPlayTime = 30;
     double maxPlayTime = 120;
 
-    cout << "seconds per quarter: " << secondsPerQuarter << endl;
+    cout << "seconds_per_quarter: " << secondsPerQuarter << endl;
 
     vector<Midicalc::BlockConfig> config;
 
@@ -245,8 +247,7 @@ int main(int argc, char *argv[])
 
     createNewSong( target, tempo, config, scale, basenote  );
 
-    cout << "seconds per quarter: " << secondsPerQuarter << endl;
-    cout << "play time: " << playTime << endl;
+    cout << "playtime: " << playTime << endl;
 
     return 0;
 }

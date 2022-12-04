@@ -77,7 +77,7 @@ void Midicalc::initScaleFilter(int scale, int basenote)
 {
     if(scale>=scalePool.size()) scale=scalePool.size()-1;
 
-    cout << "init scale filter " << scaleMap[scalePool.at(scale)] << endl;
+    //cout << "init scale filter " << scaleMap[scalePool.at(scale)] << endl;
 
     // clear existing filter
     scaleFilter.clear();
@@ -96,7 +96,7 @@ void Midicalc::initScaleFilter(int scale, int basenote)
     istringstream f(scalePool.at(scale));
     string s;
     while (getline(f, s, '-')) {
-        cout << s << endl;
+        //cout << s << endl;
         scaleSteps.push_back(s);
     }
 
@@ -114,7 +114,7 @@ void Midicalc::initScaleFilter(int scale, int basenote)
         } else if(scaleSteps.at(stepI)=="3H") {
             i+=3;
         } else {
-            cout << "unknown step token " << scaleSteps.at(stepI) << endl;
+            cout << "WARNING: unknown step token " << scaleSteps.at(stepI) << endl;
         }
         stepI++;
         if(stepI>=scaleSteps.size()) {
@@ -150,15 +150,15 @@ void Midicalc::loadChordMap(string filename)
         istringstream f(line);
         string s;
         while (getline(f, s, ';')) {
-            cout << s << endl;
+            //cout << s << endl;
             fields.push_back(s);
         }
 
         if(fields.size()>2) {
             chordMap[fields.at(2)] = fields.at(0);
-            cout << "loaded chord " << fields.at(0) << endl;
+            //cout << "loaded chord " << fields.at(0) << endl;
         } else {
-            cout << "invalid record " << line << endl;
+            //cout << "invalid record " << line << endl;
         }
     }
 
@@ -175,16 +175,16 @@ void Midicalc::loadScaleMap(string filename)
         istringstream f(line);
         string s;
         while (getline(f, s, ';')) {
-            cout << s << endl;
+            //cout << s << endl;
             fields.push_back(s);
         }
 
         if(fields.size()>2) {
             scaleMap[fields.at(2)] = fields.at(0);
             scalePool.push_back(fields.at(2));
-            cout << "loaded chord " << fields.at(0) << endl;
+            //cout << "loaded chord " << fields.at(0) << endl;
         } else {
-            cout << "invalid record " << line << endl;
+            //cout << "invalid record " << line << endl;
         }
     }
 
@@ -231,7 +231,7 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
     int n=0;
     for( auto& config: blockConfigs) {
 
-        cout << " - create Block " << config.block << " trans " << config.transpose << endl;
+        //cout << " - create Block " << config.block << " trans " << config.transpose << endl;
 
         setQuarter( config.block );
         setTranspose( config.transpose );
@@ -244,9 +244,9 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
 
         nBlocks = toQuarter - fromQuarter + 1;
 
-        cout << loopOffset << "   * beat  " << n << " from " << fromQuarter << " to " << toQuarter << " nBlocks " << nBlocks << endl;
-        cout << "   * index " << n << " from " << fromIndex << " to " << toIndex << endl;
-        cout << "   * tempo " << config.tempo << endl;
+        //cout << loopOffset << "   * beat  " << n << " from " << fromQuarter << " to " << toQuarter << " nBlocks " << nBlocks << endl;
+        //cout << "   * index " << n << " from " << fromIndex << " to " << toIndex << endl;
+        //cout << "   * tempo " << config.tempo << endl;
         n++;
 
         for(int i=fromIndex;i<=toIndex;i++) {
@@ -286,7 +286,7 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
 
                 string noteType = ( ( midievent[0] & 0xf0 ) == 0x90 ? " on " : " off " );
 
-                cout << " added @  " << destinationTick << " " << i << ". note " << noteType << " velocity " << newvelocity << " " << midinote2txt(key) << " transposed "  << midinote2txt(keyTransposed) << " translated " << midinote2txt(newkey)  << " at " << destinationTick << endl;
+                //cout << " added @  " << destinationTick << " " << i << ". note " << noteType << " velocity " << newvelocity << " " << midinote2txt(key) << " transposed "  << midinote2txt(keyTransposed) << " translated " << midinote2txt(newkey)  << " at " << destinationTick << endl;
 
             } else if (midiIn[0][i][0] == 0xff &&
                        midiIn[0][i][1] == 0x51) {
@@ -360,13 +360,17 @@ void Midicalc::saveNewMidiFile(const string &filename)
     system( command.c_str() );
     command = "ffmpeg -i " + filename + ".wav -acodec mp3 -ab 128k " + filename + ".mp3";
     system( command.c_str() );
+    command = "rm " + filename + ".wav";
+    system( command.c_str() );
 
     command = "fluidsynth /home/antarctica/antarcticalibs/TimGM6mb.sf2 " + filename + "-loop.mid -F " + filename + "-loop.wav -r 48000 -O s24";
     system( command.c_str() );
     command = "ffmpeg -i " + filename + "-loop.wav -acodec mp3 -ab 128k " + filename + "-loop.mp3";
     system( command.c_str() );
+    command = "rm " + filename + "-loop.wav";
+    system( command.c_str() );
 
-    cout << "saved " << filename << endl;
+    //cout << "saved " << filename << endl;
 }
 
 //////////////////////////////
@@ -431,9 +435,9 @@ void Midicalc::analyzeMidiFile() {
 
             blocks.push_back(b);
 
-            cout << "- block " << blocks.size() << "\tbeat\t" << beat << "\tquarter begin\t" << b.quarterBegin << "\tend\t" << b.quarterEnd << "\tindex begin\t" << b.iBegin << "\tend\t" << b.iEnd << endl;
-            cout << "\ton\t" << b.nNoteOn << "\toff\t" << b.nNoteOff << "\tother\t" << b.nEventOther << "\tonOffdiff\t" << b.nNoteOn - b.nNoteOff << "\tcOn\t" <<  b.totalOn << "\ttempo init\t" << b.tempoInit << "\tmin\t" << b.tempoMin << "\tmax\t" << b.tempoMax << "\tevs\t" << b.nEventTempo << endl;
-            cout << "\ttick min " << midiIn[0][b.iBegin].tick << " max " << midiIn[0][b.iEnd].tick << endl;
+            //cout << "- block " << blocks.size() << "\tbeat\t" << beat << "\tquarter begin\t" << b.quarterBegin << "\tend\t" << b.quarterEnd << "\tindex begin\t" << b.iBegin << "\tend\t" << b.iEnd << endl;
+            //cout << "\ton\t" << b.nNoteOn << "\toff\t" << b.nNoteOff << "\tother\t" << b.nEventOther << "\tonOffdiff\t" << b.nNoteOn - b.nNoteOff << "\tcOn\t" <<  b.totalOn << "\ttempo init\t" << b.tempoInit << "\tmin\t" << b.tempoMin << "\tmax\t" << b.tempoMax << "\tevs\t" << b.nEventTempo << endl;
+            //cout << "\ttick min " << midiIn[0][b.iBegin].tick << " max " << midiIn[0][b.iEnd].tick << endl;
 
             b.quarterBegin = quarter;
             b.iBegin = i;
@@ -452,10 +456,10 @@ void Midicalc::analyzeMidiFile() {
 
             if( cluster.totalOn == 0 && nNewNoteEvents > 0 ) {
                 clusters.push_back( cluster );
-                cout << "- end cluster -------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
-                cout << "- cluster " << clusters.size() << "\tbeat\t" << beat << "\tquarter begin\t" << cluster.quarterBegin << "\tend\t" << cluster.quarterEnd << "\tindex begin\t" << cluster.iBegin << "\tend\t" << cluster.iEnd << endl;
-                cout << "\ton\t" << cluster.nNoteOn << "\toff\t" << cluster.nNoteOff << "\tother\t" << cluster.nEventOther << "\tonOffdiff\t" << cluster.nNoteOn - cluster.nNoteOff << "\tcOn\t" <<  cluster.totalOn << "\ttempo init\t" << cluster.tempoInit << "\tmin\t" << cluster.tempoMin << "\tmax\t" << cluster.tempoMax << "\tevs\t" << cluster.nEventTempo << endl;
-                cout << "\ttick min " << midiIn[0][cluster.iBegin].tick << " max " << midiIn[0][cluster.iEnd].tick << endl;
+                //cout << "- end cluster -------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+                //cout << "- cluster " << clusters.size() << "\tbeat\t" << beat << "\tquarter begin\t" << cluster.quarterBegin << "\tend\t" << cluster.quarterEnd << "\tindex begin\t" << cluster.iBegin << "\tend\t" << cluster.iEnd << endl;
+                //cout << "\ton\t" << cluster.nNoteOn << "\toff\t" << cluster.nNoteOff << "\tother\t" << cluster.nEventOther << "\tonOffdiff\t" << cluster.nNoteOn - cluster.nNoteOff << "\tcOn\t" <<  cluster.totalOn << "\ttempo init\t" << cluster.tempoInit << "\tmin\t" << cluster.tempoMin << "\tmax\t" << cluster.tempoMax << "\tevs\t" << cluster.nEventTempo << endl;
+                //cout << "\ttick min " << midiIn[0][cluster.iBegin].tick << " max " << midiIn[0][cluster.iEnd].tick << endl;
 
                 cluster.quarterBegin = quarter;
                 cluster.iBegin = i;
@@ -473,7 +477,7 @@ void Midicalc::analyzeMidiFile() {
                 cluster.notes.clear();
                 cluster.harmonicMap.clear();
 
-                cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+                //cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 
             }
 
@@ -486,7 +490,7 @@ void Midicalc::analyzeMidiFile() {
             //vel = midiIn[0][i][2];
 
             pressedKeys[key]++;
-            if(pressedKeys[key]>1) cout << "WARNING: multiple key press for " << key << "\n";
+            if(pressedKeys[key]>1) cout << "WARNING: multiple key press for " << key << " in block " << blocks.size() << " quarter  " << quarter << endl;
 
             b.harmonicMap[tick] = pressedKeys;
             b.notes[key]++;
@@ -556,7 +560,7 @@ void Midicalc::harmonicAnalyze(Block b) {
         sum+=count;
     }
 
-    cout << "\tnotes\t" << sum << "\tmin\t" << min << "\tmax\t" << max << "\tharmonies\t" << b.harmonicMap.size() << "\n";
+    //cout << "\tnotes\t" << sum << "\tmin\t" << min << "\tmax\t" << max << "\tharmonies\t" << b.harmonicMap.size() << "\n";
 
     for(auto& harmony:b.harmonicMap) {
         //int prevNote = -1;
@@ -564,7 +568,7 @@ void Midicalc::harmonicAnalyze(Block b) {
         auto& time  = harmony.first;
         auto& notes = harmony.second;
 
-        cout << "- n notes: " << notes.size() << " at " << time << "\n";
+        //cout << "- n notes: " << notes.size() << " at " << time << "\n";
 
         disassembleChord( notes );
 
@@ -623,9 +627,9 @@ void Midicalc::harmonicAnalyze(Block b) {
         }
             */
 
-        cout << "\n";
+        //cout << "\n";
     }
-    cout << "\n";
+    //cout << "\n";
 }
 
 void Midicalc::disassembleChord(map<int,int> pressedKeys) {
@@ -647,8 +651,8 @@ void Midicalc::disassembleChord(map<int,int> pressedKeys) {
 
         if( chordMap.find(chordQualifier)!=chordMap.cend()) {
             if( pressedKeys.size() > 2 ){
-                cout << " chord " << chordQualifier;
-                cout << " is " << chordMap[chordQualifier] << " from " << midinote2txt(baseNote) << "\n";
+                //cout << " chord " << chordQualifier;
+                //cout << " is " << chordMap[chordQualifier] << " from " << midinote2txt(baseNote) << "\n";
             }
         } else {
             //cout << " is unknown \n";
@@ -823,7 +827,7 @@ double Midicalc::setTempo(double factor) {
 
     double newtempo = 60.0 / microseconds * 1000000.0;
 
-    cout << "changed Tempo to " << newtempo << "\n";
+    //cout << "changed Tempo to " << newtempo << "\n";
     return newtempo;
 
 }
