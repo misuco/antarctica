@@ -31,9 +31,14 @@ function showPlayer() {
 function showSessionControl() {
 
 	var view = "<table><tr><td>Session Name</td><td colspan=\"6\">" + sessionName + "</h1></tr>";
+	view += "<tr><td>Max sounds</td>";
+	view += "<td colspan=\"3\"><input type=\"text\" id=\"maxSounds\" size=\"3\" value=\"1\"><input type=\"button\" value=\"set\" onclick=\"maxSounds = document.getElementById('maxSounds').value; checkMaxSounds();\" /></td>";
+	view += "<td colspan=\"2\"><input type=\"checkbox\" id=\"autoPilot\" onclick=\"autoPilot = document.getElementById('autoPilot').checked;\"> <span>autopilot</span></td>";
+	view += "<td colspan=\"2\"><input type=\"checkbox\" id=\"loopPlay\" onclick=\"loopPlay = document.getElementById('loopPlay').checked;\"> <span>loop</span></td></tr>";
 	soundParams.forEach((item, i) => {
 		var checked = "";
 		view += "<tr><td>" + item.name + "</td>";
+
 		view += "<td><input type=\"button\" value=\"-\" onclick=\"soundParams["+i+"].dec();showSessionControl();\" /></td>";
 		view += "<td> " + item.value + "</td>";
 		view += "<td><input type=\"button\" value=\"+\" onclick=\"soundParams["+i+"].inc();showSessionControl();\" /></td>";
