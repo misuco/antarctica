@@ -73,7 +73,17 @@ function updateScene() {
 			}
 			trackNr++;
 		});
+
+		if(loadingSoundsMap.size>0) {
+			htmlTable += "<tr><td colspan=\"11\">Loading: ";
+			loadingSoundsMap.forEach((value, key, map) => {
+				htmlTable += key + " ";
+			});
+			htmlTable += "</td></tr>";
+		}
+
 		htmlTable += "</table>";
+
 		multitrackPlayerControl.innerHTML = htmlTable;
 	}
 
@@ -137,6 +147,10 @@ var requestFilesFromList = function( sector, spotId ) {
 
 var requestFiles = function( spotId ) {
 	var oReq = new XMLHttpRequest();
+
+	loadingSoundsMap.set(spotId,1);
+	trackStateUpdated=true;
+
 	oReq.addEventListener("load", function() {
 		var files=this.response.split('\n');
 		if(files.length<=1) {
@@ -144,6 +158,8 @@ var requestFiles = function( spotId ) {
 			nextSound();
 			triggerNewSound(spotId);
 		} else {
+			loadingSoundsMap.delete(spotId);
+			trackStateUpdated=true;
 			infoPanel.text += "\n\nFiles: " + files.length;
 			if(loopPlay) playTrack("loops/"+files[0]+"-loop.mp3");
 			else playTrack("loops/"+files[0]+".mp3");

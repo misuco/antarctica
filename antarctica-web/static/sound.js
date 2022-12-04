@@ -10,6 +10,8 @@ var scale = 16;
 var arrange = 0;
 
 var sounds = [];
+var loadingSoundsMap = new Map();
+
 var trackStateUpdated = false;
 
 var soundTrack1;
@@ -20,7 +22,7 @@ var nextSound = function() {
 	soundParams.forEach((item, i) => {
 		item.change();
 	});
-	showSessionControl();
+    //showSessionControl();
 }
 
 var checkMaxSounds = function() {
@@ -80,6 +82,8 @@ var triggerNewSound = function(trackId) {
 
 	var oReq = new XMLHttpRequest();
 	oReq.addEventListener("load", function() {
+		loadingSoundsMap.delete(trackId);
+		trackStateUpdated=true;
 		if(this.response.includes("Error")) {
 			console.log("server error!!!");
 			state='server error';
