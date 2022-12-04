@@ -7,7 +7,7 @@ var repeat = 4;
 var pitch = 0;
 var basenote = 0;
 var scale = 16;
-var arrange = 5;
+var arrange = 0;
 
 var sounds = [];
 var trackStateUpdated = false;
@@ -142,7 +142,7 @@ var createSoundTrack = function (scene) {
 		scale = value;
 	} );
 
-	var value8= new valuePlus( "Arrange", 1, 1, 10, arrange );
+	var value8= new valuePlus( "Arrange", 0, 1, 10, arrange );
 	value8.setValueFunction( function(value) {
 		arrange = value;
 	} );

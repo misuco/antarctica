@@ -118,7 +118,14 @@ int main(int argc, char *argv[])
 
     vector<Midicalc::BlockConfig> config;
 
-    if( arrange == 1 ) {
+    if( arrange == 0 ) {
+        for(int s=0;(s<repeat || playTime<minPlayTime) && playTime<maxPlayTime;s++) {
+            for(int c=0;c<loopLength;c++) {
+                config.push_back( { block+c, pitch, tempo, basenote, scale } );
+            }
+            playTime += secondsPerQuarter * loopLength;
+        }
+    } else if( arrange == 1 ) {
         for(int r=0;r<=20;r++) {
             config.push_back( { block, pitch+r*2, 20 + r*20, basenote, scale } );
         }

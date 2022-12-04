@@ -77,7 +77,8 @@ void Midicalc::initScaleFilter(int scale, int basenote)
 {
     if(scale>=scalePool.size()) scale=scalePool.size()-1;
 
-    //cout << "init scale filter " << scaleMap[scalePool.at(scale)] << endl;
+    cout << "Scale: " << scaleMap[scalePool.at(scale)] << endl;
+    cout << "Basenote: " << midinote2txt(basenote) << endl;
 
     // clear existing filter
     scaleFilter.clear();

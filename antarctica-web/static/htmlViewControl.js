@@ -38,7 +38,6 @@ function showSessionControl() {
 	soundParams.forEach((item, i) => {
 		var checked = "";
 		view += "<tr><td>" + item.name + "</td>";
-
 		view += "<td><input type=\"button\" value=\"-\" onclick=\"soundParams["+i+"].dec();showSessionControl();\" /></td>";
 		view += "<td> " + item.value + "</td>";
 		view += "<td><input type=\"button\" value=\"+\" onclick=\"soundParams["+i+"].inc();showSessionControl();\" /></td>";
