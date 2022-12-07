@@ -136,7 +136,7 @@ function updateScene() {
 		}
 	}
 
-	camera.alpha+=0.00005;
+	camera.alpha+=cameraAlphaSpeed;
 }
 
 var requestFilesFromList = function( sector, spotId ) {

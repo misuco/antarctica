@@ -28,6 +28,13 @@ function showPlayer() {
 	multitrackPlayerControl.hidden=false;
 }
 
+function updateSessionControl() {
+	if(sessionControl.hidden==false) {
+		showSessionControl();
+	}
+}
+
+
 function showSessionControl() {
 
 	var view = "<table><tr><td>Session Name</td><td colspan=\"6\">" + sessionName + "</h1></tr>";
@@ -36,7 +43,8 @@ function showSessionControl() {
 	const autoPilotChecked = autoPilot == true ? "checked" : "";
 	const loopPlayChecked = loopPlay == true ? "checked" : "";
 	view += "<td colspan=\"2\"><input type=\"checkbox\" id=\"autoPilot\" onclick=\"autoPilot = document.getElementById('autoPilot').checked;\" "+autoPilotChecked+"> <span>autopilot</span></td>";
-	view += "<td colspan=\"2\"><input type=\"checkbox\" id=\"loopPlay\" onclick=\"loopPlay = document.getElementById('loopPlay').checked;\" "+loopPlayChecked+"> <span>loop</span></td></tr>";
+	view += "<td colspan=\"2\"><input type=\"checkbox\" id=\"loopPlay\" onclick=\"loopPlay = document.getElementById('loopPlay').checked;\" "+loopPlayChecked+"> <span>loop</span></td>";
+	view += "</tr>";
 	soundParams.forEach((item, i) => {
 		var checked = "";
 		view += "<tr><td>" + item.name + "</td>";
