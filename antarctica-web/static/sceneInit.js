@@ -14,7 +14,7 @@ var playingTrack = '';
 var loopPlay = false;
 var autoPilot = false;
 var maxSounds = 1;
-var cameraAlphaSpeed = 0.5;
+var cameraAlphaSpeed = 0.00005;
 
 var infoPanel;
 var statusPanel;
