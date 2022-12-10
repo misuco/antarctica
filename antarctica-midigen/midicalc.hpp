@@ -70,6 +70,7 @@ private:
     int toQuarter;
     int fromIndex;
     int toIndex;
+    int origBpm;
 
     int repeat;
     int transpose;

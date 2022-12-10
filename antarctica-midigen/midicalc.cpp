@@ -52,6 +52,7 @@ void Midicalc::setCluster(int c)
     toQuarter = clusters[c].quarterEnd;
     fromIndex = clusters[c].iBegin;
     toIndex = clusters[c].iEnd;
+    origBpm = clusters[c].tempoInit;
 }
 
 void Midicalc::setQuarter(int q)
@@ -61,6 +62,7 @@ void Midicalc::setQuarter(int q)
     toQuarter = blocks[q].quarterEnd;
     fromIndex = blocks[q].iBegin;
     toIndex = blocks[q].iEnd;
+    origBpm = blocks[q].tempoInit;
 }
 
 void Midicalc::setRepeat(int n)
@@ -255,6 +257,7 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
             int command = midiIn[0][i][0] & 0xf0;
             int originalTick = midiIn[0][i].tick;
             int translatedTick = originalTick - fromQuarter * tpq;
+            int destinationTick = translatedTick + loopOffset;
 
             //qDebug() << " event at tick " << originalTick << " translated " << translatedTick;
 
@@ -267,8 +270,8 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
                 if(keyTransposed<24) keyTransposed=24;
                 int newkey = filterKey(keyTransposed);
                 int velocity = midiIn[0][i][2];
-                int newvelocity = velocity * 5;
-                if(newvelocity>127) newvelocity=127;
+                int newvelocity = velocity;
+                //if(newvelocity>127) newvelocity=127;
 
                 for(unsigned long j=0;j<midiIn[0][i].size();j++) {
                     midievent[j] = midiIn[0][i][j];
@@ -280,8 +283,6 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
                 midievent[1] = newkey;
                 midievent[2] = newvelocity;
 
-                int destinationTick = translatedTick + loopOffset;
-
                 //cout << " dest " << destinationTick << " \n";
                 midiOut.addEvent( 1, destinationTick /*+ tickOffset*/, midievent );
 
@@ -291,6 +292,11 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
 
             } else if (midiIn[0][i][0] == 0xff &&
                        midiIn[0][i][1] == 0x51) {
+
+                tempoEvent.tick = destinationTick;
+                setBPM( config.tempo * getTempo(i) / origBpm  );
+                midiOut.addEvent( 1, destinationTick, tempoEvent );
+                //cout << "set tempo " << bpm << " orig bpm " << origBpm << " getTempo(i) " << getTempo(i) << " congig tempo " << config.tempo << endl;
                 //cout << "unpro event at " << translatedTick + n*tpq*(toBeat-fromBeat) /*+ tickOffset*/ << " command: " << command << "\n";
             }
         }
