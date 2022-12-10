@@ -36,6 +36,7 @@ public:
         int tempo;
         int note;
         int scale;
+        int sound;
     };
 
     Midicalc();

@@ -232,6 +232,9 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
 
     int loopOffset = 0;
     int n=0;
+
+    int previousSound = -1;
+
     for( auto& config: blockConfigs) {
 
         //cout << " - create Block " << config.block << " trans " << config.transpose << endl;
@@ -246,6 +249,25 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
         }
 
         nBlocks = toQuarter - fromQuarter + 1;
+
+        if(config.sound!=previousSound) {
+            {
+                MidiEvent pc( 192, config.sound );
+                midiOut.addEvent( 0, loopOffset, pc );
+                midiOut.addEvent( 1, loopOffset, pc );
+            }
+            {
+                MidiEvent pc( 193, config.sound );
+                midiOut.addEvent( 0, loopOffset, pc );
+                midiOut.addEvent( 1, loopOffset, pc );
+            }
+            {
+                MidiEvent pc( 194, config.sound );
+                midiOut.addEvent( 0, loopOffset, pc );
+                midiOut.addEvent( 1, loopOffset, pc );
+            }
+            previousSound=config.sound;
+        }
 
         //cout << loopOffset << "   * beat  " << n << " from " << fromQuarter << " to " << toQuarter << " nBlocks " << nBlocks << endl;
         //cout << "   * index " << n << " from " << fromIndex << " to " << toIndex << endl;
@@ -293,9 +315,12 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
             } else if (midiIn[0][i][0] == 0xff &&
                        midiIn[0][i][1] == 0x51) {
 
+                /*
                 tempoEvent.tick = destinationTick;
                 setBPM( config.tempo * getTempo(i) / origBpm  );
                 midiOut.addEvent( 1, destinationTick, tempoEvent );
+                */
+
                 //cout << "set tempo " << bpm << " orig bpm " << origBpm << " getTempo(i) " << getTempo(i) << " congig tempo " << config.tempo << endl;
                 //cout << "unpro event at " << translatedTick + n*tpq*(toBeat-fromBeat) /*+ tickOffset*/ << " command: " << command << "\n";
             }
@@ -363,14 +388,17 @@ void Midicalc::saveNewMidiFile(const string &filename)
     p.start();
     p.waitForFinished();
     */
-    string command = "fluidsynth /home/antarctica/antarcticalibs/TimGM6mb.sf2 " + filename + ".mid -F " + filename + ".wav -r 48000 -O s24";
+
+    string soundfont = "/home/antarctica/antarcticalibs/Touhou.sf2";
+    //string command = "fluidsynth /home/antarctica/antarcticalibs/TimGM6mb.sf2 " + filename + ".mid -F " + filename + ".wav -r 48000 -O s24";
+    string command = "fluidsynth  " + soundfont + " " + filename + ".mid -F " + filename + ".wav -r 48000 -O s24";
     system( command.c_str() );
     command = "ffmpeg -i " + filename + ".wav -acodec mp3 -ab 128k " + filename + ".mp3";
     system( command.c_str() );
     command = "rm " + filename + ".wav";
     system( command.c_str() );
 
-    command = "fluidsynth /home/antarctica/antarcticalibs/TimGM6mb.sf2 " + filename + "-loop.mid -F " + filename + "-loop.wav -r 48000 -O s24";
+    command = "fluidsynth " + soundfont + " " + filename + "-loop.mid -F " + filename + "-loop.wav -r 48000 -O s24";
     system( command.c_str() );
     command = "ffmpeg -i " + filename + "-loop.wav -acodec mp3 -ab 128k " + filename + "-loop.mp3";
     system( command.c_str() );

@@ -8,6 +8,7 @@ var pitch = 0;
 var basenote = 0;
 var scale = 16;
 var arrange = 0;
+var soundProg = 0;
 
 var sounds = [];
 var loadingSoundsMap = new Map();
@@ -103,7 +104,7 @@ var triggerNewSound = function(trackId) {
 	statusPanel.text = "downloading " + getUrl + "/" + clipId;
 
 	var queryId=trackId+"_"+clipId+"_"+tempo+"_"+loopLength+"_"+repeat+"_"+pitch+"_"+basenote+"_"+scale+"_"+arrange+"_"+Date.now();
-	oReq.open("GET", baseUrl + "newclip?id="+queryId+"&clipId="+clipId+"&tempo="+tempo+"&loopLength="+loopLength+"&repeat="+repeat+"&pitch="+pitch+"&basenote="+basenote+"&scale="+scale+"&arrange="+arrange);
+	oReq.open("GET", baseUrl + "newclip?id="+queryId+"&clipId="+clipId+"&tempo="+tempo+"&loopLength="+loopLength+"&repeat="+repeat+"&pitch="+pitch+"&basenote="+basenote+"&scale="+scale+"&arrange="+arrange+"&sound="+soundProg);
 	oReq.send();
 }
 
@@ -151,6 +152,11 @@ var createSoundTrack = function (scene) {
 		arrange = value;
 	} );
 
+	var value9= new valuePlus( "Sound", 0, 1, 127, soundProg );
+	value9.setValueFunction( function(value) {
+		soundProg = value;
+	} );
+
 	soundParams.push(value1);
 	soundParams.push(value2);
 	soundParams.push(value3);
@@ -159,6 +165,7 @@ var createSoundTrack = function (scene) {
 	soundParams.push(value6);
 	soundParams.push(value7);
 	soundParams.push(value8);
+	soundParams.push(value9);
 }
 
 var disposeSoundTrack = function ( trackNr ) {
