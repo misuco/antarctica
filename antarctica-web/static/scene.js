@@ -219,9 +219,7 @@ function addNextPoint() {
 					//console.log( "have height " + number + " " + parseInt(number) );
 					sHeight = parseInt(number) / 6000;
 				}
-
 			}
-
 
 			var sphere;
 
@@ -331,7 +329,7 @@ var selectSpot = function(fields) {
 	sessionList.unshift(fields[5]);
 	visitedPoints.set(fields[5]);
 	addSelectedSpot();
-	getClosestUnvisited(fields[5]);
+	getClosestUnvisited(fields[5],autoPilotDistance);
 
 	state='loading';
 }

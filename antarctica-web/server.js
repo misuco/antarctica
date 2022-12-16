@@ -13,13 +13,14 @@ app.use(express.json()) // for parsing application/json
 
 app.get('/newclip', function(req, res) {
    console.log("got newclip " + req.query.id);
-   console.log(config.app.bin_path + ' -t '+req.query.tempo+' -p ' + req.query.pitch + ' -b '+req.query.clipId+' -l '+req.query.loopLength+' -r '+req.query.repeat+' -n '+req.query.basenote+' -s '+req.query.scale+' -a '+req.query.arrange+' -o '+config.app.web_path+'/loops/'+req.query.id);
-   let result=proc.execSync(config.app.bin_path + ' -t '+req.query.tempo+' -p ' + req.query.pitch + ' -b '+req.query.clipId+' -l '+req.query.loopLength+' -r '+req.query.repeat+' -n '+req.query.basenote+' -s '+req.query.scale+' -a '+req.query.arrange+' -c '+req.query.sound+' -o '+config.app.web_path+'/loops/'+req.query.id);
+   console.log(config.app.bin_path + ' -t '+req.query.tempo+' -p ' + req.query.pitch + ' -b '+req.query.clipId+' -l '+req.query.loopLength+' -r '+req.query.repeat+' -n '+req.query.basenote+' -s '+req.query.scale+' -a '+req.query.arrange+' -o '+config.app.web_path+'/loops/'+req.query.sessionId+'/'+req.query.id);
+   var result=proc.execSync('mkdir -p '+config.app.web_path+'/loops/'+req.query.sessionId);
+   result=proc.execSync(config.app.bin_path + ' -t '+req.query.tempo+' -p ' + req.query.pitch + ' -b '+req.query.clipId+' -l '+req.query.loopLength+' -r '+req.query.repeat+' -n '+req.query.basenote+' -s '+req.query.scale+' -a '+req.query.arrange+' -c '+req.query.sound+' -o '+config.app.web_path+'/loops/'+req.query.sessionId+'/'+req.query.id);
    console.log("------------------------------------------------------------------------------");
    console.log("request result :");
    console.log("--> "+result);
    console.log("------------------------------------------------------------------------------");
-   res.send("loops/" + req.query.id);
+   res.send("loops/" + req.query.sessionId + "/" + req.query.id);
 });
 
 app.get('/rate', function(req, res) {
