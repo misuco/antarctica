@@ -409,36 +409,62 @@ var createScene = function () {
 };
 
 
-camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,50), scene);
+var camSetup = function () {
+	camera.target.x = 0;
+	camera.target.y = 0.1;
+	camera.target.z = 0;
+	camera.radius=50;
+	camera.beta=0;
+	camera.upperRadiusLimit=60;
+	camera.lowerRadiusLimit=0.5;
+	camera.lowerBetaLimit=0;
+	camera.upperBetaLimit=Math.PI/2;
+	camera.angularSensibilityX=1000;
+	camera.angularSensibilityY=1000;
+	camera.panningSensibility=1000;
+	camera.wheelDeltaPercentage=0.01;
+	camera.wheelPresision=0.01;
+	//camera.pinchDeltaPercentage=0.001;
+	//camera.pinchPresision=0.01;
+	camera.useNaturalPinchZoom=true;
+	camera.minZ=0.1;
+	camera.attachControl(canvas, true);
+}
 
-// 0.0637
-// 0.1637
-// 0.00637
-//camera = new BABYLON.StereoscopicArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,50), 0.00137, 1, scene);
-camera.target.x = 0;
-camera.target.y = 0.1;
-camera.target.z = 0;
-camera.radius=50;
-camera.beta=0;
+var cam2d = function () {
+	if(activeCamera!="2d") {
+		camera2d.target.x = camera.target.x;
+		camera2d.target.y = camera.target.y;
+		camera2d.target.z = camera.target.z;
+		camera2d.radius = camera.radius;
+		camera2d.beta = camera.beta;
+		activeCamera = "2d";
+		camera = camera2d;
+		scene.setActiveCameraByName("cam2d");
+	}
+}
 
-//console.log("angularSensibilityX " + camera.angularSensibilityX + " camera.angularSensibilityY " + camera.angularSensibilityY + " camera.panningSensibility " + camera.panningSensibility);
-//console.log("camera.minZ " + camera.minZ + " camera.maxZ " + camera.maxZ );
+var cam3d = function () {
+	if(activeCamera!="3d") {
+		camera3d.target.x = camera.target.x;
+		camera3d.target.y = camera.target.y;
+		camera3d.target.z = camera.target.z;
+		camera3d.radius = camera.radius;
+		camera3d.beta = camera.beta;
+		activeCamera = "3d";
+		camera = camera3d;
+		scene.setActiveCameraByName("cam3d");
+	}
+}
 
-camera.upperRadiusLimit=60;
-camera.lowerRadiusLimit=0.5;
-camera.lowerBetaLimit=0;
-camera.upperBetaLimit=Math.PI/2;
-camera.angularSensibilityX=1000;
-camera.angularSensibilityY=1000;
-camera.panningSensibility=1000;
-camera.wheelDeltaPercentage=0.01;
-camera.wheelPresision=0.01;
-//camera.pinchDeltaPercentage=0.001;
-//camera.pinchPresision=0.01;
-camera.useNaturalPinchZoom=true;
-camera.minZ=0.1;
+camera = new BABYLON.StereoscopicArcRotateCamera("cam3d", Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,50), 0.00137, 1, scene);
+camSetup();
+camera3d = camera;
 
-camera.attachControl(canvas, true);
+camera = new BABYLON.ArcRotateCamera("cam2d", Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,50), scene);
+camSetup();
+camera2d = camera;
+scene.setActiveCameraByName("cam2d");
 
 createScene(); //Call the createScene function
 

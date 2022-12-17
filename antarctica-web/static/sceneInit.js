@@ -1,4 +1,7 @@
 var camera;
+var activeCamera;
+var camera3d;
+var camera2d;
 var canvas = document.getElementById("renderCanvas"); // Get the canvas element
 var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
 var scene = new BABYLON.Scene(engine);
