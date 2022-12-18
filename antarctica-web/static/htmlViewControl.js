@@ -37,15 +37,12 @@ function updateSessionControl() {
 
 function showSessionControl() {
 
-	var view = "<table><tr><td>Session Name</td><td colspan=\"6\">" + sessionName + "</h1></tr>";
-	view += "<tr><td>Max sounds</td>";
-	view += "<td colspan=\"3\"><input type=\"text\" id=\"maxSounds\" size=\"3\" value=\"" + maxSounds + "\"><input type=\"button\" value=\"set\" onclick=\"maxSounds = document.getElementById('maxSounds').value; checkMaxSounds();\" /></td>";
-	const autoPilotChecked = autoPilot == true ? "checked" : "";
-	const loopPlayChecked = loopPlay == true ? "checked" : "";
-	view += "<td colspan=\"3\"><input type=\"checkbox\" id=\"autoPilot\" onclick=\"autoPilot = document.getElementById('autoPilot').checked;\" "+autoPilotChecked+"> <span>autopilot</span>";
-	view += "<input type=\"text\" id=\"autoPilotDistance\" size=\"3\" value=\"" + autoPilotDistance + "\"><input type=\"button\" value=\"set\" onclick=\"autoPilotDistance = document.getElementById('autoPilotDistance').value;\" /></td>";
-	view += "<td colspan=\"2\"><input type=\"checkbox\" id=\"loopPlay\" onclick=\"loopPlay = document.getElementById('loopPlay').checked;\" "+loopPlayChecked+"> <span>loop</span></td>";
-	view += "</tr>";
+	var view = "<input type=\"button\" value=\"save\" onclick=\"saveSoundParams();showSessionControl();console.log(JSON.stringify(soundParams));\" />";
+	savedSoundParams.forEach((item, i) => {
+		view += "<input type=\"button\" value=\"session " + i + "\" onclick=\"setSoundParams(" + i + ");showSessionControl();\" />";
+	});
+
+	view += "<table><tr><td>Session Name</td><td colspan=\"6\">" + sessionName + "</h1></tr>";
 	soundParams.forEach((item, i) => {
 		var checked = "";
 		view += "<tr><td>" + item.name + "</td>";

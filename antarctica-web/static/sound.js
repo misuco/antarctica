@@ -48,10 +48,10 @@ var playTrack = function(trackId) {
 			music1.onEndedObservable.add(() => {
 				console.log("music 1 ended at state " + state);
 				music1.loopcount++;
-				if(loopPlay==true) {
+				if(loopPlay==1) {
 					music1.play();
 				}
-				if(autoPilot==true && music1.loopcount==1) {
+				if(autoPilot==1 && music1.loopcount==1) {
 					selectSpot(nextPointFields);
 				}
 			});
@@ -91,7 +91,7 @@ var triggerNewSound = function(trackId) {
 			nextSound();
 			triggerNewSound();
 		} else {
-			if(loopPlay) playTrack(this.response + "-loop.mp3");
+			if(loopPlay==1) playTrack(this.response + "-loop.mp3");
 			else playTrack(this.response + ".mp3");
 		}
 	});
@@ -157,6 +157,26 @@ var createSoundTrack = function (scene) {
 		soundProg = value;
 	} );
 
+	var value10= new valuePlus( "Autopilot", 0, 1, 1, autoPilot );
+	value10.setValueFunction( function(value) {
+		autoPilot = value;
+	} );
+
+	var value11= new valuePlus( "Autopilot distance", 0, 1, 9, autoPilotDistance );
+	value10.setValueFunction( function(value) {
+		autoPilotDistance = value;
+	} );
+
+	var value12= new valuePlus( "Loop Play", 0, 1, 1, loopPlay );
+	value12.setValueFunction( function(value) {
+		loopPlay = value;
+	} );
+
+	var value13= new valuePlus( "Max sounds", 1, 1, 10, maxSounds );
+	value13.setValueFunction( function(value) {
+		maxSounds = value;
+	} );
+
 	soundParams.push(value1);
 	soundParams.push(value2);
 	soundParams.push(value3);
@@ -166,6 +186,10 @@ var createSoundTrack = function (scene) {
 	soundParams.push(value7);
 	soundParams.push(value8);
 	soundParams.push(value9);
+	soundParams.push(value10);
+	soundParams.push(value11);
+	soundParams.push(value12);
+	soundParams.push(value13);
 }
 
 var disposeSoundTrack = function ( trackNr ) {

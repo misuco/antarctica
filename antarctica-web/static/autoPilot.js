@@ -31,6 +31,9 @@ var getClosestUnvisited = function(id,nth) {
 
 	visitedPoints.set(closestId[nth],1);
 
+	for(var i=0;i<10;i++) {
+		console.log( "closest " + i + " closest id: " + closestId[i] + " distance: " + closestDistance[i] );
+	}
 	console.log( "for " + id + " closest id: " + closestId[nth] + " distance: " + closestDistance[nth] );
 	console.log( "total visited points " + visitedPoints.size );
 }
