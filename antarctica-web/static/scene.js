@@ -249,6 +249,10 @@ function addNextPoint() {
 				sphere.material = mRed;
 			} else if( fields[7] == "Airport"  ) {
 				sphere.material = mYellow;
+			} else {
+				sphere.material = mWhite;
+			}
+				/*
 			} else if( fields[7] == "Island"  ) {
 				sphere.material = mYellow;
 			} else if( fields[7] == "Area"  ) {
@@ -279,9 +283,7 @@ function addNextPoint() {
 				sphere.material = mMagenta;
 			} else if( fields[7] == "Summit"  ) {
 				sphere.material = mWhite;
-			} else {
-				sphere.material = mGreen;
-			}
+				*/
 
 			sphere.actionManager = new BABYLON.ActionManager(scene);
 
