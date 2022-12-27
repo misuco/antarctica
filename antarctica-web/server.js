@@ -44,13 +44,26 @@ app.get('/files', function(req, res) {
    res.send(response);
 });
 
+app.get('/soundparams', function(req, res) {
+   console.log("got get request for soundparams " + req.query.spotId);
+
+   var respones="";
+   try {
+      response = fs.readFileSync(config.app.web_path+'/loops/soundparams.json','utf8');
+   } catch (err) {
+      response=err;
+   }
+   console.log(response);
+   res.send(response);
+});
+
 app.post('/soundparams', function(req, res) {
-   console.log("got soundparams");
+   console.log("got soundparams post");
    createSessionDir(req.query.sessionId);
    try {
-     fs.writeFileSync(config.app.web_path+'/loops/'+req.query.sessionId+'/soundparams.json', req.body);
+      fs.writeFileSync(config.app.web_path+'/loops/'+req.query.sessionId+'/soundparams.json', req.body);
    } catch (err) {
-     console.error(err);
+      console.error(err);
    }
    var response = req.body;
    res.send(response);

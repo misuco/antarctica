@@ -37,7 +37,8 @@ function updateSessionControl() {
 
 function showSessionControl() {
 
-	var view = "<input type=\"button\" value=\"save\" onclick=\"saveSoundParams();showSessionControl();console.log(JSON.stringify(soundParams));\" />";
+	var view = "<input type=\"button\" value=\"save\" onclick=\"saveSoundParams();showSessionControl();\" />";
+	view += "<input type=\"button\" value=\"init\" onclick=\"loadSoundParams();showSessionControl();\" />";
 	savedSoundParams.forEach((item, i) => {
 		view += "<input type=\"button\" value=\"session " + i + "\" onclick=\"setSoundParams(" + i + ");showSessionControl();\" />";
 	});

@@ -1,6 +1,7 @@
 
 var savedSoundParams = [];
 
+/*
 var loadSoundParams = function(id) {
    clipId = 1;
    tempo = 40;
@@ -21,6 +22,7 @@ var loadSoundParams = function(id) {
    maxSounds = 3;
 
 }
+*/
 
 var saveSoundParams = function() {
    var paramsAlreadySaved=false;
@@ -48,4 +50,25 @@ var sendSoundParams = function() {
 	oReq.open("POST", baseUrl + "soundparams?sessionId="+sessionId);
    oReq.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
    oReq.send(JSON.stringify(savedSoundParams));
+}
+
+var loadSoundParams = function() {
+	var oReq = new XMLHttpRequest();
+	oReq.addEventListener("load", function() {
+      savedSoundParams=[];
+      console.log(this.response);
+      const soundParamsImport = JSON.parse("["+this.response+"]");
+      soundParamsImport.forEach((item, i) => {
+//         Object.assign(new ValuePlus, item);
+         var soundParam = new valuePlus( item );
+         savedSoundParams.push(soundParam);
+         console.log("loadSoundParams response "+item);
+      });
+	});
+
+	var getUrl = window.location;
+	var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ;
+
+	oReq.open("GET", baseUrl + "soundparams?sessionId="+sessionId);
+   oReq.send();
 }
