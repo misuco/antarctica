@@ -177,6 +177,11 @@ var createSoundTrack = function (scene) {
 		maxSounds = value;
 	} );
 
+	var value14= new valuePlus( "Title", 1, 1, 10, "DefaultTitle" );
+	value14.setValueFunction( function(value) {
+		this.value=value;
+	} );
+
 	soundParams.push(value1);
 	soundParams.push(value2);
 	soundParams.push(value3);
@@ -190,6 +195,7 @@ var createSoundTrack = function (scene) {
 	soundParams.push(value11);
 	soundParams.push(value12);
 	soundParams.push(value13);
+	soundParams.push(value14);
 }
 
 var disposeSoundTrack = function ( trackNr ) {

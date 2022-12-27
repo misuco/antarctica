@@ -124,7 +124,7 @@ var saveSoundParams = function() {
 var sendSoundParams = function() {
 	var oReq = new XMLHttpRequest();
 	oReq.addEventListener("load", function() {
-		console.log("sendSoundParams response "+this.response);
+		console.log("sendSoundParams");
 	});
 
 	var getUrl = window.location;
@@ -141,13 +141,9 @@ var loadSoundParams = function() {
       savedSoundParams=[];
       const soundParamsImport = JSON.parse("["+this.response+"]");
       soundParamsImport.forEach((item, i) => {
-//         Object.assign(new ValuePlus, item);
-         console.log("loadSoundParams param "+i);
-         console.log("loadSoundParams item "+JSON.stringify(item));
-         //var soundParam = new valuePlus( item );
-         //console.log("loadSoundParams object "+JSON.stringify(soundParam));
          savedSoundParams.push(JSON.stringify(item));
       });
+      showSessionControl();
 	});
 
 	var getUrl = window.location;
