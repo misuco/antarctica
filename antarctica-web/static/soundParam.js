@@ -1,28 +1,111 @@
 
 var savedSoundParams = [];
 
-/*
-var loadSoundParams = function(id) {
-   clipId = 1;
-   tempo = 40;
-   loopLength = 4;
-   repeat = 4;
-   pitch = 0;
-   basenote = 0;
-   scale = 20;
-   arrange = 0;
-   soundProg = 4;
 
-   soundParams[0].setChangeMode(1);
-   soundParams[4].setChangeMode(1);
+var setSoundParams = function(n) {
+   console.log("setSoundParam "+n);
+   soundParams=[];
+   console.log("JSON:"+savedSoundParams[n]);
+   //console.log(JSON.stringify(savedSoundParams[n]));
+   const soundParamImport = JSON.parse(savedSoundParams[n]);
+   soundParamImport.forEach((item, i) => {
+      var soundParam = Object.assign(new valuePlus, item );
+      if(soundParam.name=="Clip ID") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+      		clipId = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
+      else if(soundParam.name=="Tempo") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+            tempo = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
+      else if(soundParam.name=="Loop len") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+            loopLength = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
+      else if(soundParam.name=="Repeat") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+            repeat = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
+      else if(soundParam.name=="Pitch") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+            pitch = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
+      else if(soundParam.name=="Basenote") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+            basenote = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
+      else if(soundParam.name=="Scale") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+            scale = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
+      else if(soundParam.name=="Arrange") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+            arrange = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
+      else if(soundParam.name=="Sound") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+            soundProg = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
+      else if(soundParam.name=="Autopilot") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+            autoPilot = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
+      else if(soundParam.name=="Autopilot distance") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+            autoPilotDistance = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
+      else if(soundParam.name=="Loop Play") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+            loopPlay = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
+      else if(soundParam.name=="Max sounds") {
+         console.log("assigned " + soundParam.name)
+         soundParam.setValueFunction( function(value) {
+            maxSounds = value;
+      	} );
+         soundParam.valueFunction(soundParam.value);
+      }
 
-   loopPlay = 1;
-   autoPilot = 1;
-   autoPilotDistance = 5;
-   maxSounds = 3;
-
+      soundParams.push(soundParam);
+   });
 }
-*/
+
 
 var saveSoundParams = function() {
    var paramsAlreadySaved=false;
@@ -56,13 +139,14 @@ var loadSoundParams = function() {
 	var oReq = new XMLHttpRequest();
 	oReq.addEventListener("load", function() {
       savedSoundParams=[];
-      console.log(this.response);
       const soundParamsImport = JSON.parse("["+this.response+"]");
       soundParamsImport.forEach((item, i) => {
 //         Object.assign(new ValuePlus, item);
-         var soundParam = new valuePlus( item );
-         savedSoundParams.push(soundParam);
-         console.log("loadSoundParams response "+item);
+         console.log("loadSoundParams param "+i);
+         console.log("loadSoundParams item "+JSON.stringify(item));
+         //var soundParam = new valuePlus( item );
+         //console.log("loadSoundParams object "+JSON.stringify(soundParam));
+         savedSoundParams.push(JSON.stringify(item));
       });
 	});
 
