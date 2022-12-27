@@ -8,13 +8,17 @@ var proc = require('child_process');
 const app = express()
 const port = process.env.PORT || 3000
 
+const createSessionDir = function(sessionId) {
+   var result=proc.execSync('mkdir -p '+config.app.web_path+'/loops/'+sessionId);
+}
+
 app.use(express.static('static'));
 app.use(express.json()) // for parsing application/json
 
 app.get('/newclip', function(req, res) {
    console.log("got newclip " + req.query.id);
    console.log(config.app.bin_path + ' -t '+req.query.tempo+' -p ' + req.query.pitch + ' -b '+req.query.clipId+' -l '+req.query.loopLength+' -r '+req.query.repeat+' -n '+req.query.basenote+' -s '+req.query.scale+' -a '+req.query.arrange+' -o '+config.app.web_path+'/loops/'+req.query.sessionId+'/'+req.query.id);
-   var result=proc.execSync('mkdir -p '+config.app.web_path+'/loops/'+req.query.sessionId);
+   createSessionDir(req.query.sessionId);
    result=proc.execSync(config.app.bin_path + ' -t '+req.query.tempo+' -p ' + req.query.pitch + ' -b '+req.query.clipId+' -l '+req.query.loopLength+' -r '+req.query.repeat+' -n '+req.query.basenote+' -s '+req.query.scale+' -a '+req.query.arrange+' -c '+req.query.sound+' -o '+config.app.web_path+'/loops/'+req.query.sessionId+'/'+req.query.id);
    console.log("------------------------------------------------------------------------------");
    console.log("request result :");
@@ -40,6 +44,17 @@ app.get('/files', function(req, res) {
    res.send(response);
 });
 
+app.post('/soundparams', function(req, res) {
+   console.log("got soundparams");
+   createSessionDir(req.query.sessionId);
+   try {
+     fs.writeFileSync(config.app.web_path+'/loops/'+req.query.sessionId+'/soundparams.json', req.body);
+   } catch (err) {
+     console.error(err);
+   }
+   var response = req.body;
+   res.send(response);
+});
 
 app.get('/rating', function(req, res) {
    console.log("got rating request ");
