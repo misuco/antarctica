@@ -23,7 +23,7 @@ var nextSound = function() {
 	soundParams.forEach((item, i) => {
 		item.change();
 	});
-   updateSessionControl();
+   //updateSessionControl();
 }
 
 var checkMaxSounds = function() {

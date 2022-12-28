@@ -477,6 +477,7 @@ engine.runRenderLoop(function () {
 	scene.render();
 });
 
+loadSoundParams();
 
 oReq.open("GET", "AntarcticNames.csv");
 oReq.send();

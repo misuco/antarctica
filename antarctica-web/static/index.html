@@ -6,17 +6,39 @@
 
    <style>
    span {
+      font-size: 32px;
       color: red;
       background-color: black;
    }
    a {
+      font-size: 32px;
       color: red;
       background-color: black;
    }
    td {
+      font-size: 32px;
       color: red;
       background-color: black;
    }
+
+   .block {
+     width: 31vw;
+     height: 10vh;
+     font-size: 4vh;
+     text-align: center;
+     background-color: rgba(255,255,255,0.5);;
+     color: rgba(255,255,255,0.5);
+   }
+
+   .menu {
+     width: 19vw;
+     height: 10vh;
+     font-size: 8vh;
+     text-align: center;
+     background-color: rgba(255,255,255,0.5);
+     color: rgba(255,255,255,0.5);
+   }
+
    </style>
 
 </head>
@@ -49,16 +71,22 @@
 <script type="text/javascript" src="autoPilot.js"></script>
 
 <div style="top:0px;left:0;position:absolute;z-index:1000" id="menu">
-   <a onclick="hideAllViews()">Close</a> | <a onclick="showSessionControl()">Session Control</a> | <a onclick="showPlayer()">Play Control</a> | <a onclick="showRating()">Rating</a>
-   <input type="button" value="next" onclick="selectSpot(nextPointFields);" />
+   <input type="button" class="menu" value="X" onclick="hideAllViews()"/>
+   <input type="button" class="menu" value="Start" onclick="showSessionMenu()"/>
+   <input type="button" class="menu" value="Ctl" onclick="showSessionControl()"/>
+   <input type="button" class="menu" value="Player" onclick="showPlayer()"/>
+   <input type="button" class="menu" value="next" onclick="selectSpot(nextPointFields);" />
+   <!--
    <input type="button" value="2d cam" onclick="cam2d();console.log('2d cam');" />
    <input type="button" value="3d cam" onclick="cam3d();console.log('3d cam');" />
    <span id="sessionNameDisplay">No session</span>
+   -->
 </div>
 
-<div style="top:100px;left:0;position:absolute;z-index:1000;" id="sessionControl"><span>Session Control</span></div>
-<div style="top:100px;left:0;position:absolute;z-index:1000;" id="multitrackPlayerControl"><span>Player Control</span></div>
-<div style="top:100px;left:0;position:absolute;z-index:1000;" id="ratingList"><span></span></div>
+<div style="top:10vh;left:0;width:100%;position:absolute;z-index:1000;" id="sessionControl"><span>Session Control</span></div>
+<div style="top:10vh;left:0;position:absolute;z-index:1000;" id="multitrackPlayerControl"><span>Player Control</span></div>
+<div style="top:10vh;left:0;position:absolute;z-index:1000;" id="ratingList"><span></span></div>
+
 <div style="top:0;left:0;width:100vw;height:100vh;background-color:#ffffff80;position:absolute;z-index:1000;display:none;" id="sessionStart">
    <div style="text-align:center;line-height:100vh;">
       Session name:

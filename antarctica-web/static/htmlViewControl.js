@@ -28,12 +28,38 @@ function showPlayer() {
 	multitrackPlayerControl.hidden=false;
 }
 
+/*
 function updateSessionControl() {
 	if(sessionControl.hidden==false) {
 		showSessionControl();
 	}
 }
+*/
 
+function showSessionMenu() {
+	var view="";
+	savedSoundParams.forEach((item, i) => {
+		var soundParam=JSON.parse(item);
+		var title = soundParam[13].value;
+		view += "<input type=\"button\" class=\"block\" value=\"" + title + "\" onclick=\"setSoundParams(" + i + ");showTeleportMenu();\" />";
+	});
+
+	sessionControl.innerHTML=view;
+	hideAllViews();
+	sessionControl.hidden=false;
+}
+
+function showTeleportMenu() {
+	var view="";
+
+	records.forEach((item, i) => {
+		view += "<input type=\"button\" class=\"block\" value=\"" + item[6] + "\" onclick=\"selectSpot(records[" + i + "]);hideAllViews();\" />";
+	});
+
+	sessionControl.innerHTML=view;
+	hideAllViews();
+	sessionControl.hidden=false;
+}
 
 function showSessionControl() {
 

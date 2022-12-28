@@ -143,7 +143,7 @@ var loadSoundParams = function() {
       soundParamsImport.forEach((item, i) => {
          savedSoundParams.push(JSON.stringify(item));
       });
-      showSessionControl();
+      showSessionMenu();
 	});
 
 	var getUrl = window.location;
