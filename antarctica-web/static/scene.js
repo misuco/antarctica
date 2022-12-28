@@ -37,7 +37,8 @@ function updateScene() {
 	if(trackStateUpdated) {
 		trackStateUpdated=false;
 		const multitrackPlayerControl = document.getElementById('multitrackPlayerControl');
-		var htmlTable = "<table><tr><td> Track </td><td>Point</td><td> Control </td><td> Manage </td><td> Rate </td><td> Status </td><td> Play Time </td><td> Duration </td><td> Clip </td><td> Tempo  </td><td> Name </td></tr>";
+		//var htmlTable = "<table><tr><td> Track </td><td>Point</td><td> Control </td><td> Manage </td><td> Rate </td><td> Status </td><td> Play Time </td><td> Duration </td><td> Clip </td><td> Tempo  </td><td> Name </td></tr>";
+		var htmlTable = "<table><tr><td> Control </td><td> Manage </td><td> Status </td><td> Play Time </td><td> Duration </td><td> Name </td></tr>";
 		var trackNr = 0;
 		sounds.forEach(element => {
 			var t = Math.round( element.currentTime );
@@ -49,26 +50,28 @@ function updateScene() {
 				var dmin = Math.floor( d / 60 );
 				var pointId=name2Id(element.name);
 				var point=pointLoadedMap.get(pointId)
-				htmlTable += "<tr><td>" + trackNr + "</td><td>" + pointId + "</td><td>";
+				//htmlTable += "<tr><td>" + trackNr + "</td><td>" + pointId + "</td><td>";
+				htmlTable += "<tr><td>";
 				if(element.isPlaying) {
-					htmlTable += "<input type=\"button\" onclick=\"pauseSoundTrack("+trackNr+");\" value=\"pause\"/> ";
+					htmlTable += "<input type=\"button\" class=\"list\" onclick=\"pauseSoundTrack("+trackNr+");\" value=\"| |\"/> ";
 				} else {
-					htmlTable += "<input type=\"button\" onclick=\"playSoundTrack("+trackNr+");\" value=\"play\"/> ";
+					htmlTable += "<input type=\"button\" class=\"list\" onclick=\"playSoundTrack("+trackNr+");\" value=\"| >\"/> ";
 				}
-				htmlTable += "</td><td><input type=\"button\" onclick=\"disposeSoundTrack("+trackNr+");\" value=\"dispose\"/> ";
-				htmlTable += "<input type=\"button\" onclick=\"highlightSpot("+pointId+");\" value=\"show\"/> ";
-				htmlTable += "<a href=\""+element.name+"\" target=\"_blank\">download</a>";
+				htmlTable += "</td><td><input type=\"button\" class=\"list\" onclick=\"disposeSoundTrack("+trackNr+");\" value=\"X\"/> ";
+//				htmlTable += "<input type=\"button\" onclick=\"highlightSpot("+pointId+");\" value=\"show\"/> ";
+//				htmlTable += "<a href=\""+element.name+"\" target=\"_blank\">download</a></td>";
 
 				const trackId=filename2TrackId(element.name);
 				const trackParams=trackId.split("_");
-				htmlTable += " </td><td>  <a onclick=\"sendRate('"+trackId+"',1);\"> [1] </a>";
-				htmlTable += " <a onclick=\"sendRate('"+trackId+"',2);\"> [2] </a>";
-				htmlTable += " <a onclick=\"sendRate('"+trackId+"',3);\"> [3] </a> </td>";
+
+//				htmlTable += " <td> <a onclick=\"sendRate('"+trackId+"',1);\"> [1] </a>";
+//				htmlTable += " <a onclick=\"sendRate('"+trackId+"',2);\"> [2] </a>";
+//				htmlTable += " <a onclick=\"sendRate('"+trackId+"',3);\"> [3] </a> </td>";
 				htmlTable += " <td id=\"status_"+trackId+"\"> </td>";
 				htmlTable += " <td id=\"playTime_"+trackId+"\"> </td>";
 				htmlTable += " <td id=\"duration_"+trackId+"\"> </td>";
-				htmlTable += " <td> " +trackParams[3] + " </td>";
-				htmlTable += " <td> " +trackParams[4] + " </td>";
+//				htmlTable += " <td> " +trackParams[3] + " </td>";
+//				htmlTable += " <td> " +trackParams[4] + " </td>";
 				htmlTable += " <td> " +point.name + " </td></tr>";
 			}
 			trackNr++;
