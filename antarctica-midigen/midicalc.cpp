@@ -79,8 +79,8 @@ void Midicalc::initScaleFilter(int scale, int basenote)
 {
     if(scale>=scalePool.size()) scale=scalePool.size()-1;
 
-    cout << "Scale: " << scaleMap[scalePool.at(scale)] << endl;
-    cout << "Basenote: " << midinote2txt(basenote) << endl;
+    //cout << "Scale: " << scaleMap[scalePool.at(scale)] << endl;
+    //cout << "Basenote: " << midinote2txt(basenote) << endl;
 
     // clear existing filter
     scaleFilter.clear();
@@ -225,6 +225,9 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
 
     //cout << "new track with tick offset " << tickOffset << "\n";
     //cout << "events from " << fromBeat  << "(i:" << fromIndex << ") to " << toBeat << "(i:" << toIndex << ")\n";
+
+    cout << "Scale: " << scaleMap[scalePool.at(blockConfigs.at(0).scale)] << endl;
+    cout << "Basenote: " << midinote2txt(blockConfigs.at(0).note) << endl;
 
     /* loop n */
 
@@ -458,6 +461,8 @@ void Midicalc::analyzeMidiFile() {
         cluster.quarterEnd = quarter;
 
         if( (int)quarter != (int)previousQuarter ) {
+            int quarterPause = (int)quarter - (int)previousQuarter;
+
             b.iEnd--;
             b.quarterEnd--;
 
@@ -470,9 +475,12 @@ void Midicalc::analyzeMidiFile() {
 
             blocks.push_back(b);
 
-            //cout << "- block " << blocks.size() << "\tbeat\t" << beat << "\tquarter begin\t" << b.quarterBegin << "\tend\t" << b.quarterEnd << "\tindex begin\t" << b.iBegin << "\tend\t" << b.iEnd << endl;
-            //cout << "\ton\t" << b.nNoteOn << "\toff\t" << b.nNoteOff << "\tother\t" << b.nEventOther << "\tonOffdiff\t" << b.nNoteOn - b.nNoteOff << "\tcOn\t" <<  b.totalOn << "\ttempo init\t" << b.tempoInit << "\tmin\t" << b.tempoMin << "\tmax\t" << b.tempoMax << "\tevs\t" << b.nEventTempo << endl;
-            //cout << "\ttick min " << midiIn[0][b.iBegin].tick << " max " << midiIn[0][b.iEnd].tick << endl;
+            if(quarterPause>2 || i==0 || i==midiIn.getNumEvents(0)-1) {
+                cout << "---- pause ---- " << quarterPause << endl;
+                cout << "- block " << blocks.size() << "\tbeat\t" << beat << "\tquarter begin\t" << b.quarterBegin << "\tend\t" << b.quarterEnd << "\tindex begin\t" << b.iBegin << "\tend\t" << b.iEnd << endl;
+                cout << "\ton\t" << b.nNoteOn << "\toff\t" << b.nNoteOff << "\tother\t" << b.nEventOther << "\tonOffdiff\t" << b.nNoteOn - b.nNoteOff << "\tcOn\t" <<  b.totalOn << "\ttempo init\t" << b.tempoInit << "\tmin\t" << b.tempoMin << "\tmax\t" << b.tempoMax << "\tevs\t" << b.nEventTempo << endl;
+                cout << "\ttick min " << midiIn[0][b.iBegin].tick << " max " << midiIn[0][b.iEnd].tick << endl;
+            }
 
             b.quarterBegin = quarter;
             b.iBegin = i;
