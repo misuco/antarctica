@@ -9,6 +9,10 @@ var basenote = 0;
 var scale = 16;
 var arrange = 0;
 var soundProg = 0;
+var loopPlay = 0;
+var autoPilot = 0;
+var autoPilotDistance = 5;
+var maxSounds = 1;
 
 var sounds = [];
 var loadingSoundsMap = new Map();
@@ -23,7 +27,7 @@ var nextSound = function() {
 	soundParams.forEach((item, i) => {
 		item.change();
 	});
-   //updateSessionControl();
+   updateSessionControl();
 }
 
 var checkMaxSounds = function() {
@@ -46,7 +50,7 @@ var playTrack = function(trackId) {
 			soundTrack1.addSound(music1);
 			music1.loopcount=0;
 			music1.onEndedObservable.add(() => {
-				console.log("music 1 ended at state " + state);
+				console.log("music 1 ended at state " + state + " autoPilot " + autoPilot + " loopPlay " + loopPlay);
 				music1.loopcount++;
 				if(loopPlay==1) {
 					music1.play();
@@ -163,7 +167,7 @@ var createSoundTrack = function (scene) {
 	} );
 
 	var value11= new valuePlus( "Autopilot distance", 0, 1, 9, autoPilotDistance );
-	value10.setValueFunction( function(value) {
+	value11.setValueFunction( function(value) {
 		autoPilotDistance = value;
 	} );
 

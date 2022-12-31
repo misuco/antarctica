@@ -12,6 +12,9 @@ class valuePlus {
 		this.changeEvery = 1;
 		this.changeBy = 0;
 		this.changeCounter = 0;
+		this.seq = [];
+		this.minRandom = min;
+		this.maxRandom = max;
 	}
 
 	setValueFunction(f) {
@@ -19,7 +22,7 @@ class valuePlus {
 	}
 
 	setChangeMode(m) {
-		if(m>3) m=3;
+		if(m>4) m=4;
 		if(m<0) m=0;
 		this.changeMode=m;
 	}
@@ -38,7 +41,14 @@ class valuePlus {
 
 	change() {
 		this.changeCounter++;
-		if(this.changeCounter==this.changeEvery) {
+		if(this.changeMode==4) {
+			// seq
+			if(this.changeCounter>=this.seq.length) {
+				this.changeCounter=0;
+			}
+			this.value=this.seq[this.changeCounter];
+			this.valueFunction(this.value);
+		} else if(this.changeCounter==this.changeEvery) {
 			this.changeCounter=0;
 			switch(this.changeMode) {
 				// Random
@@ -70,9 +80,17 @@ class valuePlus {
 	}
 
 	setRandomValue() {
-		var fragments=(this.max-this.min)/this.step;
-		this.value=this.min+Math.round((Math.random()*fragments)*this.step);
+		var fragments=(this.maxRandom-this.minRandom)/this.step;
+		this.value=this.minRandom+Math.round((Math.random()*fragments)*this.step);
 		this.valueFunction(this.value);
+	}
+
+	setSeq(s) {
+		const seqString=s.split(',');
+		this.seq = [];
+		seqString.forEach((item, i) => {
+			this.seq.push(parseInt(item));
+		});
 	}
 
 	add(v) {
@@ -83,12 +101,14 @@ class valuePlus {
 	}
 
 	inc() {
+		console.log("inc "+this.name);
 		this.value+=this.step;
 		if(this.value>this.max) this.value=this.max;
 		this.valueFunction(this.value);
 	}
 
 	dec() {
+		console.log("dec "+this.name);
 		this.value-=this.step;
 		if(this.value<this.min) this.value=this.min;
 		this.valueFunction(this.value);

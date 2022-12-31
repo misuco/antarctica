@@ -28,13 +28,12 @@ function showPlayer() {
 	multitrackPlayerControl.hidden=false;
 }
 
-/*
 function updateSessionControl() {
+	// update session view on load of new sound
 	if(sessionControl.hidden==false) {
 		showSessionControl();
 	}
 }
-*/
 
 function showSessionMenu() {
 	var view="";
@@ -63,20 +62,21 @@ function showTeleportMenu() {
 
 function showSessionControl() {
 
-	var view = "<input type=\"button\" value=\"save\" class=\"block2\" onclick=\"saveSoundParams();showSessionControl();\" />";
+	/*
 	savedSoundParams.forEach((item, i) => {
 		var soundParam=JSON.parse(item);
 		var title = soundParam[13].value;
 		view += "<input type=\"button\" value=\"" + title + "\" class=\"block2\" onclick=\"setSoundParams(" + i + ");showSessionControl();\" />";
 	});
+	*/
 
-	view += "<table><tr><td>Session Name</td><td colspan=\"6\">" + sessionName + "</h1></td></tr>";
-	view += "<tr><td>Parameter</td><td></td><td>V</td><td></td><td>co</td><td>rn</td><td>sa</td><td>tr</td><td>Ev</td><td>By</td></tr>";
+	view = "<table><tr><td>Session Name</td><td colspan=\"8\">" + sessionName + "</h1></td></tr>";
+	view += "<tr><td>Parameter</td><td></td><td>V</td><td></td><td>co</td><td>rn</td><td>sa</td><td>tr</td><td>sq</td><td>Ev</td><td>By</td><td>Seq</td></tr>";
 	soundParams.forEach((item, i) => {
 		if (typeof item.value === 'string') {
 			var checked = "";
 			view += "<tr><td>" + item.name + "</td>";
-			view += "<td colspan=\"9\"><input type=\"text\" class=\"list2text\" id=\"itemValue"+i+"\" value=\""+item.value+"\" onchange=\"soundParams["+i+"].valueFunction(document.getElementById('itemValue"+i+"').value);showSessionControl();\" size=\"22\" /></td>";
+			view += "<td colspan=\"11\"><input type=\"text\" class=\"list2text\" id=\"itemValue"+i+"\" value=\""+item.value+"\" onchange=\"soundParams["+i+"].valueFunction(document.getElementById('itemValue"+i+"').value);showSessionControl();\" size=\"22\" /></td>";
 			view += "</tr>";
 		} else {
 			var checked = "";
@@ -92,12 +92,17 @@ function showSessionControl() {
 			view += "<td><input type=\"radio\" class=\"list2\" name=\"var"+i+"\" value=\"saw\" onclick=\"soundParams["+i+"].setChangeMode(2);showSessionControl();\" "+checked+"/></td>";
 			checked = soundParams[i].changeMode == 3 ? "checked" : "";
 			view += "<td><input type=\"radio\" class=\"list2\" name=\"var"+i+"\" value=\"tri\" onclick=\"soundParams["+i+"].setChangeMode(3);showSessionControl();\" "+checked+"/></td>";
+			checked = soundParams[i].changeMode == 4 ? "checked" : "";
+			view += "<td><input type=\"radio\" class=\"list2\" name=\"var"+i+"\" value=\"seq\" onclick=\"soundParams["+i+"].setChangeMode(4);showSessionControl();\" "+checked+"/></td>";
 			view += "<td><input type=\"text\" class=\"list2\" id=\"varChangeEvery"+i+"\" value=\""+soundParams[i].changeEvery+"\" onchange=\"soundParams["+i+"].setChangeEvery(document.getElementById('varChangeEvery"+i+"').value);showSessionControl();\" size=\"3\" /></td>";
 			view += "<td><input type=\"text\" class=\"list2\" id=\"varChangeBy"+i+"\" value=\""+soundParams[i].changeBy+"\" onchange=\"soundParams["+i+"].setChangeBy(document.getElementById('varChangeBy"+i+"').value);showSessionControl();\" size=\"3\" /></td>";
+			view += "<td><input type=\"text\" class=\"list2text\" id=\"varSeq"+i+"\" value=\""+soundParams[i].seq+"\" onchange=\"soundParams["+i+"].setSeq(document.getElementById('varSeq"+i+"').value);showSessionControl();\" size=\"10\" /></td>";
 			view += "</tr>";
 		}
 	});
 	view += "</table>";
+	view += "<input type=\"button\" value=\"save\" class=\"block2\" onclick=\"saveSoundParams();showSessionControl();\" />";
+
 	sessionControl.innerHTML = view;
 
 	hideAllViews();

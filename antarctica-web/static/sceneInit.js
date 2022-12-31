@@ -14,10 +14,6 @@ var selectedPoints = [];
 
 var state = 'select';
 var playingTrack = '';
-var loopPlay = 0;
-var autoPilot = 0;
-var autoPilotDistance = 5;
-var maxSounds = 1;
 var cameraAlphaSpeed = 0.00005;
 
 var infoPanel;
