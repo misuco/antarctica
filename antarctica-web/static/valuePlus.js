@@ -21,6 +21,11 @@ class valuePlus {
 		this.valueFunction = f;
 	}
 
+	setValue(v) {
+		this.value=parseInt(v);
+		this.valueFunction(v);
+	}
+
 	setChangeMode(m) {
 		if(m>4) m=4;
 		if(m<0) m=0;

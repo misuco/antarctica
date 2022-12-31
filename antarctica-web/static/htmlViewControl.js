@@ -3,6 +3,8 @@ const sessionStart = document.getElementById('sessionStart');
 const ratingList = document.getElementById('ratingList');
 const sessionControl = document.getElementById('sessionControl');
 
+var popUpScalesCsv="";
+
 var requestRating = function() {
 	var oReq = new XMLHttpRequest();
 	oReq.addEventListener("load", function() {
@@ -33,6 +35,36 @@ function updateSessionControl() {
 	if(sessionControl.hidden==false) {
 		showSessionControl();
 	}
+}
+
+function popUpScales(v,i) {
+	view="<select class=\"block2text\" id=\"popUpScales"+i+"\" onchange=\"soundParams["+i+"].setValue(document.getElementById('popUpScales"+i+"').value);showSessionControl();\">";
+	lines = popUpScalesCsv.split('\n');
+	fieldId = lines[0].split(';');
+	for(var i=1;i<lines.length;i++) {
+		fields = lines[i].split(';');
+		const value=i;
+		var selected="";
+		if(v==i) {
+			selected="selected";
+		}
+		view+="<option value=\""+value+"\" "+selected+">"+fields[0]+"</option>";
+	}
+	view+="</option>";
+	return view;
+}
+
+function initPopUpScales() {
+	var oReq = new XMLHttpRequest();
+	oReq.addEventListener("load", function() {
+		popUpScalesCsv=this.response;
+	});
+
+	//var getUrl = window.location;
+	//var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ;
+	console.log("GET scales_cleaned_sorted.csv");
+	oReq.open("GET", "scales_cleaned_sorted.csv");
+	oReq.send();
 }
 
 function showSessionMenu() {
@@ -96,7 +128,11 @@ function showSessionControl() {
 			view += "<td><input type=\"radio\" class=\"list2\" name=\"var"+i+"\" value=\"seq\" onclick=\"soundParams["+i+"].setChangeMode(4);showSessionControl();\" "+checked+"/></td>";
 			view += "<td><input type=\"text\" class=\"list2\" id=\"varChangeEvery"+i+"\" value=\""+soundParams[i].changeEvery+"\" onchange=\"soundParams["+i+"].setChangeEvery(document.getElementById('varChangeEvery"+i+"').value);showSessionControl();\" size=\"3\" /></td>";
 			view += "<td><input type=\"text\" class=\"list2\" id=\"varChangeBy"+i+"\" value=\""+soundParams[i].changeBy+"\" onchange=\"soundParams["+i+"].setChangeBy(document.getElementById('varChangeBy"+i+"').value);showSessionControl();\" size=\"3\" /></td>";
-			view += "<td><input type=\"text\" class=\"list2text\" id=\"varSeq"+i+"\" value=\""+soundParams[i].seq+"\" onchange=\"soundParams["+i+"].setSeq(document.getElementById('varSeq"+i+"').value);showSessionControl();\" size=\"10\" /></td>";
+			if(soundParams[i].name=="Scale") {
+				view += "<td>"+popUpScales(soundParams[i].value,i)+"</td>";
+			} else {
+				view += "<td><input type=\"text\" class=\"list2text\" id=\"varSeq"+i+"\" value=\""+soundParams[i].seq+"\" onchange=\"soundParams["+i+"].setSeq(document.getElementById('varSeq"+i+"').value);showSessionControl();\" size=\"10\" /></td>";
+			}
 			view += "</tr>";
 		}
 	});
@@ -119,3 +155,4 @@ function hideAllViews() {
 
 hideAllViews();
 sessionStart.hidden=false;
+initPopUpScales();

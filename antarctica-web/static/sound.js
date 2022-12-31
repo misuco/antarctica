@@ -146,7 +146,7 @@ var createSoundTrack = function (scene) {
 		basenote = value;
 	} );
 
-	var value7 = new valuePlus( "Scale", 1, 1,46, scale );
+	var value7 = new valuePlus( "Scale", 1, 1, 44, scale );
 	value7.setValueFunction( function(value) {
 		scale = value;
 	} );
