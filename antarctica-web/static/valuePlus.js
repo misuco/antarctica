@@ -23,6 +23,8 @@ class valuePlus {
 
 	setValue(v) {
 		this.value=parseInt(v);
+		if(this.value>this.max) this.value=this.max;
+		if(this.value<this.min) this.value=this.min;
 		this.valueFunction(v);
 	}
 
@@ -106,14 +108,12 @@ class valuePlus {
 	}
 
 	inc() {
-		console.log("inc "+this.name);
 		this.value+=this.step;
 		if(this.value>this.max) this.value=this.max;
 		this.valueFunction(this.value);
 	}
 
 	dec() {
-		console.log("dec "+this.name);
 		this.value-=this.step;
 		if(this.value<this.min) this.value=this.min;
 		this.valueFunction(this.value);

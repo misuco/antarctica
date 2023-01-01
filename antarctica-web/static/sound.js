@@ -126,7 +126,7 @@ var createSoundTrack = function (scene) {
 		tempo = value;
 	} );
 
-	var value3 = new valuePlus( "Loop len", 1, 1, 16, loopLength );
+	var value3 = new valuePlus( "Loop len", 1, 1, 186, loopLength );
 	value3.setValueFunction( function(value) {
 		loopLength = value;
 	} );
@@ -141,7 +141,7 @@ var createSoundTrack = function (scene) {
 		pitch = value;
 	} );
 
-	var value6 = new valuePlus( "Basenote", 0, 1, 12, basenote );
+	var value6 = new valuePlus( "Basenote", 0, 1, 10, basenote );
 	value6.setValueFunction( function(value) {
 		basenote = value;
 	} );

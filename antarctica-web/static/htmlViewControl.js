@@ -4,6 +4,7 @@ const ratingList = document.getElementById('ratingList');
 const sessionControl = document.getElementById('sessionControl');
 
 var popUpScalesCsv="";
+var popUpGmInstrumentsCsv="";
 
 var requestRating = function() {
 	var oReq = new XMLHttpRequest();
@@ -38,17 +39,50 @@ function updateSessionControl() {
 }
 
 function popUpScales(v,i) {
-	view="<select class=\"block2text\" id=\"popUpScales"+i+"\" onchange=\"soundParams["+i+"].setValue(document.getElementById('popUpScales"+i+"').value);showSessionControl();\">";
+	view="<select class=\"list2text\" id=\"popUpScales"+i+"\" onchange=\"soundParams["+i+"].setValue(document.getElementById('popUpScales"+i+"').value);showSessionControl();\">";
 	lines = popUpScalesCsv.split('\n');
 	fieldId = lines[0].split(';');
 	for(var i=1;i<lines.length;i++) {
 		fields = lines[i].split(';');
-		const value=i;
+		if(fields.length>1) {
+			var selected="";
+			if(v==i) {
+				selected="selected";
+			}
+			view+="<option class=\"list2text\" value=\""+i+"\" "+selected+">"+fields[0]+"</option>";
+		}
+	}
+	view+="</option>";
+	return view;
+}
+
+function popUpGmInstruments(v,i) {
+	view="<select class=\"list2text\" id=\"popUpGmInstruments"+i+"\" onchange=\"soundParams["+i+"].setValue(document.getElementById('popUpGmInstruments"+i+"').value);showSessionControl();\">";
+	lines = popUpGmInstrumentsCsv.split('\n');
+	for(var i=0;i<lines.length;i++) {
+		fields = lines[i].split(';');
+		if(fields.length>1) {
+			var selected="";
+			if(v==i) {
+				selected="selected";
+			}
+			view+="<option class=\"list2text\" value=\""+i+"\" "+selected+">"+i+". "+fields[1]+"</option>";
+		}
+	}
+	view+="</option>";
+	return view;
+}
+
+function popUpNote(v,i) {
+	view="<select class=\"list2text\" id=\"popUpNote"+i+"\" onchange=\"soundParams["+i+"].setValue(document.getElementById('popUpNote"+i+"').value);showSessionControl();\">";
+	lines = popUpScalesCsv.split('\n');
+	for(var i=0;i<11;i++) {
 		var selected="";
+		const text=["c","c#","d","d#","e","f","f#","g","g#","h","h#"];
 		if(v==i) {
 			selected="selected";
 		}
-		view+="<option value=\""+value+"\" "+selected+">"+fields[0]+"</option>";
+		view+="<option class=\"list2text\" value=\""+i+"\" "+selected+">"+text[i]+"</option>";
 	}
 	view+="</option>";
 	return view;
@@ -64,6 +98,19 @@ function initPopUpScales() {
 	//var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ;
 	console.log("GET scales_cleaned_sorted.csv");
 	oReq.open("GET", "scales_cleaned_sorted.csv");
+	oReq.send();
+}
+
+function initPopUpGmInstruments() {
+	var oReq = new XMLHttpRequest();
+	oReq.addEventListener("load", function() {
+		popUpGmInstrumentsCsv=this.response;
+	});
+
+	//var getUrl = window.location;
+	//var baseUrl = getUrl.protocol + "//" + getUrl.host + "/" ;
+	console.log("GET gm_instrument_patch_map.csv");
+	oReq.open("GET", "gm_instrument_patch_map.csv");
 	oReq.send();
 }
 
@@ -114,8 +161,16 @@ function showSessionControl() {
 			var checked = "";
 			view += "<tr><td>" + item.name + "</td>";
 			view += "<td><input type=\"button\" class=\"list2\" value=\"-\" onclick=\"soundParams["+i+"].dec();showSessionControl();\" /></td>";
-			view += "<td> " + item.value + "</td>";
 			view += "<td><input type=\"button\" class=\"list2\" value=\"+\" onclick=\"soundParams["+i+"].inc();showSessionControl();\" /></td>";
+			if(soundParams[i].name=="Scale") {
+				view += "<td>"+popUpScales(soundParams[i].value,i)+"</td>";
+			} else if(soundParams[i].name=="Basenote") {
+				view += "<td>"+popUpNote(soundParams[i].value,i)+"</td>";
+			} else if(soundParams[i].name=="Sound") {
+				view += "<td>"+popUpGmInstruments(soundParams[i].value,i)+"</td>";
+			} else {
+				view += "<td> " + item.value + "</td>";
+			}
 			checked = soundParams[i].changeMode == 0 ? "checked" : "";
 			view += "<td><input type=\"radio\" class=\"list2\" name=\"var"+i+"\" value=\"const\" onclick=\"soundParams["+i+"].setChangeMode(0);showSessionControl();\" "+checked+" /></td>";
 			checked = soundParams[i].changeMode == 1 ? "checked" : "";
@@ -128,11 +183,7 @@ function showSessionControl() {
 			view += "<td><input type=\"radio\" class=\"list2\" name=\"var"+i+"\" value=\"seq\" onclick=\"soundParams["+i+"].setChangeMode(4);showSessionControl();\" "+checked+"/></td>";
 			view += "<td><input type=\"text\" class=\"list2\" id=\"varChangeEvery"+i+"\" value=\""+soundParams[i].changeEvery+"\" onchange=\"soundParams["+i+"].setChangeEvery(document.getElementById('varChangeEvery"+i+"').value);showSessionControl();\" size=\"3\" /></td>";
 			view += "<td><input type=\"text\" class=\"list2\" id=\"varChangeBy"+i+"\" value=\""+soundParams[i].changeBy+"\" onchange=\"soundParams["+i+"].setChangeBy(document.getElementById('varChangeBy"+i+"').value);showSessionControl();\" size=\"3\" /></td>";
-			if(soundParams[i].name=="Scale") {
-				view += "<td>"+popUpScales(soundParams[i].value,i)+"</td>";
-			} else {
-				view += "<td><input type=\"text\" class=\"list2text\" id=\"varSeq"+i+"\" value=\""+soundParams[i].seq+"\" onchange=\"soundParams["+i+"].setSeq(document.getElementById('varSeq"+i+"').value);showSessionControl();\" size=\"10\" /></td>";
-			}
+			view += "<td><input type=\"text\" class=\"list2text\" id=\"varSeq"+i+"\" value=\""+soundParams[i].seq+"\" onchange=\"soundParams["+i+"].setSeq(document.getElementById('varSeq"+i+"').value);showSessionControl();\" size=\"10\" /></td>";
 			view += "</tr>";
 		}
 	});
@@ -156,3 +207,4 @@ function hideAllViews() {
 hideAllViews();
 sessionStart.hidden=false;
 initPopUpScales();
+initPopUpGmInstruments();
