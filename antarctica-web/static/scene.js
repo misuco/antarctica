@@ -26,19 +26,27 @@ function resizeHomePoints(d) {
 
 function highlightSpot(id) {
 	var point = pointLoadedMap.get(id.toString());
-	infoPanel.text = "spot nr. " + id + "\n" + point.name + "\n" + point.fields[7] + "\n" + point.fields[14] + "\n" + point.fields[15];
 	selectedSpot.position.x=point.pointX;
 	selectedSpot.position.z=point.pointY;
 }
 
 const zeroPad = (num, places) => String(num).padStart(places, '0')
 
+function updatePointInfo(t) {
+	var infoPopUp = "<tr><td style=\"vertical-align: text-top\"><input type=\"button\" class=\"list\" onclick=\"clearPointInfo();\" value=\"X\"\/></td><td>"+t+"</td></tr>";
+	document.getElementById('pointInfoField').innerHTML=infoPopUp;
+}
+
+function clearPointInfo() {
+	document.getElementById('pointInfoField').innerHTML="";
+}
+
 function updateScene() {
 	if(trackStateUpdated) {
 		trackStateUpdated=false;
 		const multitrackPlayerControl = document.getElementById('multitrackPlayerControl');
 		//var htmlTable = "<table><tr><td> Track </td><td>Point</td><td> Control </td><td> Manage </td><td> Rate </td><td> Status </td><td> Play Time </td><td> Duration </td><td> Clip </td><td> Tempo  </td><td> Name </td></tr>";
-		var htmlTable = "<table><tr><td> Control </td><td> Manage </td><td> Status </td><td> Play Time </td><td> Duration </td><td> Name </td></tr>";
+		var htmlTable = "<table><tr><td> Control </td><td> Clear </td><td> Play Time </td><td> Duration </td><td> Name </td></tr>";
 		var trackNr = 0;
 		sounds.forEach(element => {
 			var t = Math.round( element.currentTime );
@@ -53,9 +61,9 @@ function updateScene() {
 				//htmlTable += "<tr><td>" + trackNr + "</td><td>" + pointId + "</td><td>";
 				htmlTable += "<tr><td>";
 				if(element.isPlaying) {
-					htmlTable += "<input type=\"button\" class=\"list\" onclick=\"pauseSoundTrack("+trackNr+");\" value=\"| |\"/> ";
+					htmlTable += "<input type=\"button\" class=\"list\" onclick=\"pauseSoundTrack("+trackNr+");\" value=\"ll\"/> ";
 				} else {
-					htmlTable += "<input type=\"button\" class=\"list\" onclick=\"playSoundTrack("+trackNr+");\" value=\"| >\"/> ";
+					htmlTable += "<input type=\"button\" class=\"list\" onclick=\"playSoundTrack("+trackNr+");\" value=\"l>\"/> ";
 				}
 				htmlTable += "</td><td><input type=\"button\" class=\"list\" onclick=\"disposeSoundTrack("+trackNr+");\" value=\"X\"/> ";
 //				htmlTable += "<input type=\"button\" onclick=\"highlightSpot("+pointId+");\" value=\"show\"/> ";
@@ -67,12 +75,13 @@ function updateScene() {
 //				htmlTable += " <td> <a onclick=\"sendRate('"+trackId+"',1);\"> [1] </a>";
 //				htmlTable += " <a onclick=\"sendRate('"+trackId+"',2);\"> [2] </a>";
 //				htmlTable += " <a onclick=\"sendRate('"+trackId+"',3);\"> [3] </a> </td>";
-				htmlTable += " <td id=\"status_"+trackId+"\"> </td>";
-				htmlTable += " <td id=\"playTime_"+trackId+"\"> </td>";
+//				htmlTable += " <td id=\"status_"+trackId+"\"> </td>";
+				htmlTable += " <td id=\"playTime_"+trackId+"\" class=\"bigfont\"> </td>";
 				htmlTable += " <td id=\"duration_"+trackId+"\"> </td>";
 //				htmlTable += " <td> " +trackParams[3] + " </td>";
 //				htmlTable += " <td> " +trackParams[4] + " </td>";
-				htmlTable += " <td> " +point.name + " </td></tr>";
+				var infoPopUp=point.name + "<br/>" + point.fields[7] + " " + point.fields[14] + "<br/>" + point.fields[15];
+				htmlTable += " <td> <a onclick=\"updatePointInfo('" + infoPopUp + "');\">" + point.name + " </a></td></tr>";
 			}
 			trackNr++;
 		});
@@ -85,6 +94,9 @@ function updateScene() {
 			htmlTable += "</td></tr>";
 		}
 
+		htmlTable += "</table>";
+		htmlTable += "<table id=\"pointInfoField\" style=\"word-wrap:break-word;width:50vw;\">";
+		htmlTable += "<tr><td colspan=\"5\"></td></tr>";
 		htmlTable += "</table>";
 
 		multitrackPlayerControl.innerHTML = htmlTable;
@@ -104,7 +116,6 @@ function updateScene() {
 				playState = "play";
 			}
 			const trackId=filename2TrackId(element.name);
-			document.getElementById('status_'+trackId).innerHTML = playState;
 			document.getElementById('playTime_'+trackId).innerHTML = zeroPad(tmin,2) + ":" + zeroPad(tsec,2);
 			document.getElementById('duration_'+trackId).innerHTML = zeroPad(dmin,2) + ":" + zeroPad(dsec,2);
 		}
@@ -157,13 +168,11 @@ var requestFiles = function( spotId ) {
 	oReq.addEventListener("load", function() {
 		var files=this.response.split('\n');
 		if(files.length<=1) {
-			infoPanel.text += "\n\nFiles: 0";
 			nextSound();
 			triggerNewSound(spotId);
 		} else {
 			loadingSoundsMap.delete(spotId);
 			trackStateUpdated=true;
-			infoPanel.text += "\n\nFiles: " + files.length;
 			if(loopPlay) playTrack("loops/"+files[0]+"-loop.mp3");
 			else playTrack("loops/"+files[0]+".mp3");
 			console.log("got file response " + this.response );
@@ -309,8 +318,6 @@ function addNextPoint() {
 }
 
 var selectSpot = function(fields) {
-	//console.log("set cam to x:" + event.source.position.x + " y: " + event.source.position.y + " " + fields[1] + fields[9] + fields[10] );
-	infoPanel.text = "spot nr. " + fields[5] + "\n" + fields[6] + "\n" + fields[7] + "\n" + fields[14] + "\n" + fields[15];
 	selectedSpot.position.x = fields[2];
 	selectedSpot.position.z = fields[3];
 	selectedSpot.pointId = fields[5];
@@ -335,8 +342,6 @@ var selectSpot = function(fields) {
 	visitedPoints.set(fields[5]);
 	addSelectedSpot();
 	getClosestUnvisited(fields[5],autoPilotDistance);
-
-	state='loading';
 }
 
 var oReq = new XMLHttpRequest();
@@ -376,14 +381,6 @@ var createScene = function () {
 	panel2.addColumnDefinition(0.8);
 	panel2.addColumnDefinition(0.2);
 	panel2.addRowDefinition(1);
-
-	infoPanel = new BABYLON.GUI.TextBlock();
-	infoPanel.text = "--- Hello Antarctica ---";
-	infoPanel.textWrapping=true;
-	infoPanel.textVerticalAlignment=BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
-	//infoPanel.fontSize=10;
-	infoPanel.color = "white";
-	panel2.addControl(infoPanel, 0, 1);
 
 	statusPanel = new BABYLON.GUI.TextBlock();
 	statusPanel.text = "--- loading ---";

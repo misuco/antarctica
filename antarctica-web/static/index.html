@@ -2,23 +2,25 @@
 <html lang="en"  style="height: 100%; margin: 0;">
 <head>
    <meta charset="UTF-8">
-   <title>Hello Antarctica 2022</title>
+   <title>Antarctica 2022-2023</title>
 
    <style>
    span {
-      font-size: 32px;
+      font-size: 4vh;
       color: red;
-      background-color: black;
    }
    a {
-      font-size: 32px;
+      font-size: 4vh;
       color: red;
-      background-color: black;
    }
    td {
-      font-size: 32px;
+      font-size: 4vh;
       color: red;
-      background-color: black;
+      background-color: rgba(0,0,0,0.5);
+   }
+
+   .bigfont {
+      font-size: 8vh;
    }
 
    .block {
@@ -40,7 +42,7 @@
    }
 
    .menu {
-     width: 19vw;
+     width: 12vw;
      height: 10vh;
      font-size: 8vh;
      text-align: center;
@@ -112,9 +114,11 @@
 <div style="top:0px;left:0;position:absolute;z-index:1000" id="menu">
    <input type="button" class="menu" value="X" onclick="hideAllViews()"/>
    <input type="button" class="menu" value="Start" onclick="showSessionMenu()"/>
-   <input type="button" class="menu" value="Ctl" onclick="showSessionControl()"/>
-   <input type="button" class="menu" value="Player" onclick="showPlayer()"/>
-   <input type="button" class="menu" value="next" onclick="selectSpot(nextPointFields);" />
+   <input type="button" class="menu" value="CTL" onclick="showSessionControl()"/>
+   <input type="button" class="menu" value="TRK" onclick="showPlayer()"/>
+   <input type="button" class="menu" value="NXT" onclick="selectSpot(nextPointFields);" />
+   <input type="button" class="menu" value="SLO" onclick="cameraAlphaSpeed=cameraAlphaSpeed/2;" />
+   <input type="button" class="menu" value="FST" onclick="cameraAlphaSpeed=cameraAlphaSpeed*2;" />
    <!--
    <input type="button" value="2d cam" onclick="cam2d();console.log('2d cam');" />
    <input type="button" value="3d cam" onclick="cam3d();console.log('3d cam');" />

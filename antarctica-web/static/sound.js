@@ -64,7 +64,6 @@ var playTrack = function(trackId) {
 
 			music1.setVolume(1);
 			music1.play();
-			state='play';
 			trackStateUpdated=true;
 		},
 		{
@@ -91,7 +90,6 @@ var triggerNewSound = function(trackId) {
 		trackStateUpdated=true;
 		if(this.response.includes("Error")) {
 			console.log("server error!!!");
-			state='server error';
 			nextSound();
 			triggerNewSound();
 		} else {

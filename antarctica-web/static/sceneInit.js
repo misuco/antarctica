@@ -12,11 +12,9 @@ var pointLoadedMap = new Map();
 var homePonits = [];
 var selectedPoints = [];
 
-var state = 'select';
 var playingTrack = '';
-var cameraAlphaSpeed = 0.00005;
+var cameraAlphaSpeed = 0.0005;
 
-var infoPanel;
 var statusPanel;
 
 var selectedSpot;

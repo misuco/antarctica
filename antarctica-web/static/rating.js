@@ -11,6 +11,4 @@ var sendRate = function( trackId, rating ) {
 
 	oReq.open("GET", baseUrl + "rate?trackId="+trackId+"&rating="+rating);
 	oReq.send();
-
-	state='rated';
 }
