@@ -27,7 +27,7 @@ void createNewSong( string filename, int tempo, vector<Midicalc::BlockConfig> co
     mc.setBPM( tempo );
     mc.initScaleFilter(scale,basenote);
     mc.newMidiFile( config );
-    cout << "create_file: " << filename << endl << "tempo: " << tempo << endl;
+    cout << "create_file v2.3: " << filename << endl << "tempo: " << tempo << endl;
     mc.saveNewMidiFile( filename );
 }
 
@@ -122,45 +122,46 @@ int main(int argc, char *argv[])
 
     vector<Midicalc::BlockConfig> config;
 
+    /*
     if( arrange == 0 ) {
         for(int s=0;(s<repeat || playTime<minPlayTime) && playTime<maxPlayTime;s++) {
             for(int c=0;c<loopLength;c++) {
-                config.push_back( { block+c, pitch, tempo, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch, tempo, basenote, scale, sound } );
             }
             playTime += secondsPerQuarter * loopLength;
         }
     } else if( arrange == 1 ) {
         for(int r=0;r<=20;r++) {
-            config.push_back( { block, pitch+r*2, 20 + r*20, basenote, scale, sound } );
+            config.push_back( { block, block, pitch+r*2, 20 + r*20, basenote, scale, sound } );
         }
         for(int r=0;r<10;r++) {
-            config.push_back( { block, pitch+40, 420, basenote, scale, sound } );
+            config.push_back( { block, block, pitch+40, 420, basenote, scale, sound } );
         }
         for(int r=20;r>=0;r--) {
-            config.push_back( { block, pitch+r*2, 20 + r*20, basenote, scale, sound } );
+            config.push_back( { block, block, pitch+r*2, 20 + r*20, basenote, scale, sound } );
         }
     } else if( arrange == 2 ) {
         for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
-            config.push_back( { block, pitch, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 5, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 4, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 9, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 5, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 4, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 9, tempo, basenote, scale, sound } );
             playTime += secondsPerQuarter * 4;
         }
     } else if( arrange == 3 ) {
         for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
-            config.push_back( { block, pitch, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 1, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 2, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 3, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 4, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 5, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 6, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 7, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 8, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 9, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 10, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 11, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 1, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 2, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 3, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 4, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 5, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 6, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 7, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 8, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 9, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 10, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 11, tempo, basenote, scale, sound } );
             playTime += secondsPerQuarter * 12;
         }
     } else if( arrange == 4 ) {
@@ -168,92 +169,100 @@ int main(int argc, char *argv[])
 
         for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
             for(int c=0;c<loopLength;c++) {
-                config.push_back( { block+c, pitch, tempo, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch, tempo, basenote, scale, sound } );
             }
             for(int c=0;c<loopLength;c++) {
-                config.push_back( { block+c, pitch + 5, tempo, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch + 5, tempo, basenote, scale, sound } );
             }
             for(int c=0;c<loopLength*2;c++) {
-                config.push_back( { block+c, pitch, tempo * 2, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch, tempo * 2, basenote, scale, sound } );
             }
             for(int c=0;c<loopLength*2;c++) {
-                config.push_back( { block+c, pitch + 5, tempo * 2, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch + 5, tempo * 2, basenote, scale, sound } );
             }
             for(int c=0;c<loopLength*3;c++) {
-                config.push_back( { block+c, pitch, tempo * 3, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch, tempo * 3, basenote, scale, sound } );
             }
             for(int c=0;c<loopLength*3;c++) {
-                config.push_back( { block+c, pitch + 5, tempo * 3, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch + 5, tempo * 3, basenote, scale, sound } );
             }
             for(int c=0;c<loopLength*4;c++) {
-                config.push_back( { block+c, pitch, tempo * 4, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch, tempo * 4, basenote, scale, sound } );
             }
             for(int c=0;c<loopLength*4;c++) {
-                config.push_back( { block+c, pitch + 5, tempo * 4, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch + 5, tempo * 4, basenote, scale, sound } );
             }
             playTime += secondsPerQuarter * 8 * loopLength;
         }
     } else if( arrange == 5 ) {
         for(int s=0;(s<repeat || playTime<minPlayTime) && playTime<maxPlayTime;s++) {
             for(int c=0;c<loopLength;c++) {
-                config.push_back( { block+c, pitch, tempo, basenote, scale+s, sound } );
+                config.push_back( { block+c, block+c, pitch, tempo, basenote, scale+s, sound } );
             }
             playTime += secondsPerQuarter * loopLength;
         }
     } else if( arrange == 6 ) {
         for(int n=0;(n<repeat || playTime<minPlayTime) && playTime<maxPlayTime;n++) {
             for(int c=0;c<loopLength;c++) {
-                config.push_back( { block+c, pitch, tempo, basenote+n*2, scale, sound } );
+                config.push_back( { block+c, block+c, pitch, tempo, basenote+n*2, scale, sound } );
             }
             playTime += secondsPerQuarter * loopLength;
         }
     } else if( arrange == 7 ) {
         for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
             for(int c=0;c<loopLength;c++) {
-                config.push_back( { block+c, pitch-24, tempo, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch-24, tempo, basenote, scale, sound } );
             }
             for(int c=0;c<loopLength;c++) {
-                config.push_back( { block+c, pitch+24, tempo, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch+24, tempo, basenote, scale, sound } );
             }
             for(int c=0;c<loopLength;c++) {
-                config.push_back( { block+c, pitch-12, tempo, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch-12, tempo, basenote, scale, sound } );
             }
             for(int c=0;c<loopLength;c++) {
-                config.push_back( { block+c, pitch+12, tempo, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch+12, tempo, basenote, scale, sound } );
             }
             playTime += secondsPerQuarter * loopLength * 4;
         }
     } else if( arrange == 8 ) {
         for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
-            config.push_back( { block, pitch, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 5, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 7, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 5, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch - 4, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 5, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 7, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 5, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch - 4, tempo, basenote, scale, sound } );
             playTime += secondsPerQuarter * 8;
         }
     } else if( arrange == 9 ) {
         for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
-            config.push_back( { block, pitch + 11, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 4, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 9, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 2, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 7, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch - 1, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch, tempo, basenote, scale, sound } );
-            config.push_back( { block, pitch + 4, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 11, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 4, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 9, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 2, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 7, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch - 1, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch, tempo, basenote, scale, sound } );
+            config.push_back( { block, block, pitch + 4, tempo, basenote, scale, sound } );
             playTime += secondsPerQuarter * 8;
         }
     } else {
         for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
             for(int c=0;c<loopLength;c++) {
-                config.push_back( { block+c, pitch, tempo, basenote, scale, sound } );
+                config.push_back( { block+c, block+c, pitch, tempo, basenote, scale, sound } );
             }
             playTime += secondsPerQuarter * loopLength;
         }
+    }
+    */
+
+    for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
+        for(int c=0;c<loopLength;c++) {
+            config.push_back( { block+c, block+c+10, pitch, tempo, basenote, scale, sound } );
+        }
+        playTime += secondsPerQuarter * loopLength;
     }
 
     createNewSong( target, tempo, config, scale, basenote );

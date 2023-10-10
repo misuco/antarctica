@@ -31,7 +31,8 @@ class Midicalc {
 
 public:
     struct BlockConfig {
-        int block;
+        int rhythmBlock;
+        int pitchBlock;
         int transpose;
         int tempo;
         int note;
@@ -49,7 +50,8 @@ public:
 
     void    setBPM(int b );
     void    setCluster(int c );
-    void    setQuarter(int q );
+    void    setRhythmSourceBlock(int q );
+    void    setPitchSourceBlock(int q );
     void    setRepeat(int n);
     void    setTranspose(int n);
 
@@ -59,32 +61,20 @@ public:
 
 private:
 
+    //
+    // Input facilities
+    // ------------------------------------------
     MidiFile    midiIn;
-    MidiFile    midiOut;
-    MidiFile    midiOutLoop;
-    int         ticksPerQuarterNote;
 
-    // parameters
-    int bpm;
+    // the source midi file is analysed
+    // into quarter blocks
 
-    int fromQuarter;
-    int toQuarter;
-    int fromIndex;
-    int toIndex;
-    int origBpm;
-
-    int repeat;
-    int transpose;
-
-    // control
-    MidiEvent tempoEvent;
-    double  currentTempo = 60.0;
-
+    // analysis structure
     struct Block {
-        int quarterBegin;
-        int quarterEnd;
-        int iBegin;
-        int iEnd;
+        int blockBegin;
+        int blockEnd;
+        int indexBegin;
+        int indexEnd;
         double tempoInit;
         double tempoMin;
         double tempoMax;
@@ -99,20 +89,55 @@ private:
 
     vector<Block> blocks;
     vector<Block> clusters;
-
     map<string,string> chordMap;
 
     vector<string> scalePool;
     map<string,string> scaleMap;
 
+
+    //
+    // Output facilities
+    // ------------------------------------------
+    MidiFile    midiOut;
+    MidiFile    midiOutLoop;
+    int         ticksPerQuarterNote;
+
+    // generator parameters
+
+    // tempo
+    int bpm;
+
+    // source blocks
+    // ryhthm
+    int fromRhythmBlock;
+    int toRhythmBlock;
+    int fromRhythmIndex;
+    int toRhythmIndex;
+    int origBpm;
+    // pitch
+    int fromPitchBlock;
+    int toPitchBlock;
+    int fromPitchIndex;
+    int toPitchIndex;
+
+    // transform
+    int repeat;
+    int transpose;
+
+    // control
+    MidiEvent tempoEvent;
+    double  currentTempo = 60.0;
+
+    // scale filter is used to force a scale
     vector<bool> scaleFilter;
     vector<int> scaleFilterMap;
     int scaleFilterLowestNote;
     int scaleFilterHighestNote;
 
-    //vector<int> endIndicies;
-    //vector<int> blockQuarter;
-
+    // key lookup is used to apply the pitch from
+    // one block to another block
+    map<int,int> keyLookupMap;
+    int pitchIndex;
 
     // function declarations:
     double  getTempo(int index);
@@ -127,6 +152,7 @@ private:
 
     string outputPath;
     void disassembleChord(map<int, int> pressedKeys);
+    int lookupKey(int key);
 };
 
 #endif // MIDICALC_HPP

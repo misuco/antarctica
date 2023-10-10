@@ -15,6 +15,38 @@
 #include <sstream>
 #include <stdlib.h>
 
+int Midicalc::lookupKey(int key) {
+    int lookedUpKey=0;
+    if(keyLookupMap.find(key) == keyLookupMap.end()) {
+        bool keyFound=false;
+        while (keyFound==false) {
+            int command = midiIn[0][pitchIndex][0] & 0xf0;
+            if(command == 0x90) {
+                lookedUpKey = midiIn[0][pitchIndex][1];
+                keyFound=true;
+                keyLookupMap[key]=lookedUpKey;
+            }
+            pitchIndex++;
+
+            // if end of lookup block is reached
+            if(pitchIndex>toPitchIndex) {
+                // if keys were found, start from scrach
+                if(keyLookupMap.size()>0) {
+                    pitchIndex=fromPitchIndex;
+
+                // else no keys in block, return original key
+                } else {
+                    lookedUpKey=key;
+                    keyFound=true;
+                }
+            }
+        }
+    } else {
+        lookedUpKey=keyLookupMap[key];
+    }
+    return lookedUpKey;
+}
+
 int Midicalc::filterKey(int key) {
 
     if(key>=scaleFilterHighestNote) {
@@ -47,22 +79,34 @@ void Midicalc::setBPM(int b)
 
 void Midicalc::setCluster(int c)
 {
-    if(c>=clusters.size()) c=clusters.size()-1;
-    fromQuarter = clusters[c].quarterBegin;
-    toQuarter = clusters[c].quarterEnd;
-    fromIndex = clusters[c].iBegin;
-    toIndex = clusters[c].iEnd;
+    int clustersSize=clusters.size();
+    if(c>=clustersSize) c=clustersSize-1;
+    fromRhythmBlock = clusters[c].blockBegin;
+    toRhythmBlock = clusters[c].blockEnd;
+    fromRhythmIndex = clusters[c].indexBegin;
+    toRhythmIndex = clusters[c].indexEnd;
     origBpm = clusters[c].tempoInit;
 }
 
-void Midicalc::setQuarter(int q)
+void Midicalc::setRhythmSourceBlock(int q)
 {
-    if(q>=blocks.size()) q=blocks.size()-1;
-    fromQuarter = blocks[q].quarterBegin;
-    toQuarter = blocks[q].quarterEnd;
-    fromIndex = blocks[q].iBegin;
-    toIndex = blocks[q].iEnd;
+    int blocksSize=blocks.size();
+    if(q>=blocksSize) q=blocksSize-1;
+    fromRhythmBlock = blocks[q].blockBegin;
+    toRhythmBlock = blocks[q].blockEnd;
+    fromRhythmIndex = blocks[q].indexBegin;
+    toRhythmIndex = blocks[q].indexEnd;
     origBpm = blocks[q].tempoInit;
+}
+
+void Midicalc::setPitchSourceBlock(int q)
+{
+    int blocksSize=blocks.size();
+    if(q>=blocksSize) q=blocksSize-1;
+    fromPitchBlock = blocks[q].blockBegin;
+    toPitchBlock = blocks[q].blockEnd;
+    fromPitchIndex = blocks[q].indexBegin;
+    toPitchIndex = blocks[q].indexEnd;
 }
 
 void Midicalc::setRepeat(int n)
@@ -77,7 +121,8 @@ void Midicalc::setTranspose(int n)
 
 void Midicalc::initScaleFilter(int scale, int basenote)
 {
-    if(scale>=scalePool.size()) scale=scalePool.size()-1;
+    int scalePoolSize=scalePool.size();
+    if(scale>=scalePoolSize) scale=scalePoolSize-1;
 
     //cout << "Scale: " << scaleMap[scalePool.at(scale)] << endl;
     //cout << "Basenote: " << midinote2txt(basenote) << endl;
@@ -120,7 +165,8 @@ void Midicalc::initScaleFilter(int scale, int basenote)
             cout << "WARNING: unknown step token " << scaleSteps.at(stepI) << endl;
         }
         stepI++;
-        if(stepI>=scaleSteps.size()) {
+        int scaleStepsSize=scaleSteps.size();
+        if(stepI>=scaleStepsSize) {
             stepI=0;
         }
     }
@@ -242,7 +288,8 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
 
         //cout << " - create Block " << config.block << " trans " << config.transpose << endl;
 
-        setQuarter( config.block );
+        setRhythmSourceBlock( config.rhythmBlock );
+        setPitchSourceBlock( config.pitchBlock );
         setTranspose( config.transpose );
         initScaleFilter( config.scale, config.note );
         if(config.tempo > 0) {
@@ -251,7 +298,7 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
             midiOut.addEvent( 1, loopOffset, tempoEvent );
         }
 
-        nBlocks = toQuarter - fromQuarter + 1;
+        nBlocks = toRhythmBlock - fromRhythmBlock + 1;
 
         if(config.sound!=previousSound) {
             {
@@ -276,30 +323,33 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
         //cout << "   * index " << n << " from " << fromIndex << " to " << toIndex << endl;
         //cout << "   * tempo " << config.tempo << endl;
         n++;
+        pitchIndex=fromPitchIndex;
 
-        for(int i=fromIndex;i<=toIndex;i++) {
+        for(int rhythmIndex=fromRhythmIndex;rhythmIndex<=toRhythmIndex;rhythmIndex++) {
 
-            int command = midiIn[0][i][0] & 0xf0;
-            int originalTick = midiIn[0][i].tick;
-            int translatedTick = originalTick - fromQuarter * tpq;
+            int command = midiIn[0][rhythmIndex][0] & 0xf0;
+            int originalTick = midiIn[0][rhythmIndex].tick;
+            int translatedTick = originalTick - fromRhythmBlock * tpq;
             int destinationTick = translatedTick + loopOffset;
 
             //qDebug() << " event at tick " << originalTick << " translated " << translatedTick;
 
-            if ( /*(command == 0x90 && midiIn[0][i][2] != 0) || */
-                 (command == 0x90 || command == 0x80) ) {
+            // 0x80: Note Off
+            // 0x90: Note On
+            if (command == 0x90 || command == 0x80) {
 
-                int key = midiIn[0][i][1];
+                int key = lookupKey(midiIn[0][rhythmIndex][1]);
+
                 int keyTransposed = key + transpose;
                 if(keyTransposed>127) keyTransposed=127;
                 if(keyTransposed<24) keyTransposed=24;
                 int newkey = filterKey(keyTransposed);
-                int velocity = midiIn[0][i][2];
+                int velocity = midiIn[0][rhythmIndex][2];
                 int newvelocity = velocity;
                 //if(newvelocity>127) newvelocity=127;
 
-                for(unsigned long j=0;j<midiIn[0][i].size();j++) {
-                    midievent[j] = midiIn[0][i][j];
+                for(unsigned long j=0;j<midiIn[0][rhythmIndex].size();j++) {
+                    midievent[j] = midiIn[0][rhythmIndex][j];
                 }
                 if(velocity == 0) {
                     newvelocity = 0;
@@ -315,8 +365,9 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
 
                 //cout << " added @  " << destinationTick << " " << i << ". note " << noteType << " velocity " << newvelocity << " " << midinote2txt(key) << " transposed "  << midinote2txt(keyTransposed) << " translated " << midinote2txt(newkey)  << " at " << destinationTick << endl;
 
-            } else if (midiIn[0][i][0] == 0xff &&
-                       midiIn[0][i][1] == 0x51) {
+            // 0xFF 0x51: Set Tempo Meta message
+            } else if (midiIn[0][rhythmIndex][0] == 0xff &&
+                       midiIn[0][rhythmIndex][1] == 0x51) {
 
                 /*
                 tempoEvent.tick = destinationTick;
@@ -329,7 +380,6 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
             }
         }
         loopOffset += tpq*nBlocks;
-        //tickOffset += ( midiOut[0][endIndicies.at(fromBeat)].tick - midiOut[0][beginIndicies.at(toBeat)].tick);
     }
 
     /*
@@ -358,10 +408,10 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
         midiOut.addEvent( 1, loopOffset, midievent );
     }
 
-    midiOut.addCopyright( 1, 0, "Antarctica 2020 by Dock 18" );
+    midiOut.addCopyright( 1, 0, "Antarctica 2023" );
     midiOut.sortTracks();
 
-    midiOutLoop.addCopyright( 1, 0, "Antarctica 2020 by Dock 18 - loop version" );
+    midiOutLoop.addCopyright( 1, 0, "Antarctica 2023" );
     midiOutLoop.sortTracks();
 
 }
@@ -431,10 +481,10 @@ void Midicalc::analyzeMidiFile() {
     double previousQuarter=0;
 
     Block b;
-    b.quarterBegin = 0;
-    b.quarterEnd = 0;
-    b.iBegin = 0;
-    b.iEnd = 0;
+    b.blockBegin = 0;
+    b.blockEnd = 0;
+    b.indexBegin = 0;
+    b.indexEnd = 0;
     b.tempoInit=-1;
     b.tempoMin=9999;
     b.tempoMax=0;
@@ -454,20 +504,20 @@ void Midicalc::analyzeMidiFile() {
 
         beat = quarter / 4;
 
-        b.iEnd = i;
-        b.quarterEnd = quarter;
+        b.indexEnd = i;
+        b.blockEnd = quarter;
 
-        cluster.iEnd = i;
-        cluster.quarterEnd = quarter;
+        cluster.indexEnd = i;
+        cluster.blockEnd = quarter;
 
         if( (int)quarter != (int)previousQuarter ) {
             int quarterPause = (int)quarter - (int)previousQuarter;
 
-            b.iEnd--;
-            b.quarterEnd--;
+            b.indexEnd--;
+            b.blockEnd--;
 
-            cluster.iEnd--;
-            cluster.quarterEnd--;
+            cluster.indexEnd--;
+            cluster.blockEnd--;
 
             bool nNewNoteEvents = b.nNoteOn + b.nNoteOff;
 
@@ -477,13 +527,13 @@ void Midicalc::analyzeMidiFile() {
 
             if(quarterPause>2 || i==0 || i==midiIn.getNumEvents(0)-1) {
                 cout << "---- pause ---- " << quarterPause << endl;
-                cout << "- block " << blocks.size() << "\tbeat\t" << beat << "\tquarter begin\t" << b.quarterBegin << "\tend\t" << b.quarterEnd << "\tindex begin\t" << b.iBegin << "\tend\t" << b.iEnd << endl;
+                cout << "- block " << blocks.size() << "\tbeat\t" << beat << "\tquarter begin\t" << b.blockBegin << "\tend\t" << b.blockEnd << "\tindex begin\t" << b.indexBegin << "\tend\t" << b.indexEnd << endl;
                 cout << "\ton\t" << b.nNoteOn << "\toff\t" << b.nNoteOff << "\tother\t" << b.nEventOther << "\tonOffdiff\t" << b.nNoteOn - b.nNoteOff << "\tcOn\t" <<  b.totalOn << "\ttempo init\t" << b.tempoInit << "\tmin\t" << b.tempoMin << "\tmax\t" << b.tempoMax << "\tevs\t" << b.nEventTempo << endl;
-                cout << "\ttick min " << midiIn[0][b.iBegin].tick << " max " << midiIn[0][b.iEnd].tick << endl;
+                cout << "\ttick min " << midiIn[0][b.indexBegin].tick << " max " << midiIn[0][b.indexEnd].tick << endl;
             }
 
-            b.quarterBegin = quarter;
-            b.iBegin = i;
+            b.blockBegin = quarter;
+            b.indexBegin = i;
             //b.iEnd = 0;
             b.tempoInit=currentTempo;
             b.tempoMin=currentTempo;
@@ -504,8 +554,8 @@ void Midicalc::analyzeMidiFile() {
                 //cout << "\ton\t" << cluster.nNoteOn << "\toff\t" << cluster.nNoteOff << "\tother\t" << cluster.nEventOther << "\tonOffdiff\t" << cluster.nNoteOn - cluster.nNoteOff << "\tcOn\t" <<  cluster.totalOn << "\ttempo init\t" << cluster.tempoInit << "\tmin\t" << cluster.tempoMin << "\tmax\t" << cluster.tempoMax << "\tevs\t" << cluster.nEventTempo << endl;
                 //cout << "\ttick min " << midiIn[0][cluster.iBegin].tick << " max " << midiIn[0][cluster.iEnd].tick << endl;
 
-                cluster.quarterBegin = quarter;
-                cluster.iBegin = i;
+                cluster.blockBegin = quarter;
+                cluster.indexBegin = i;
                 //cluster.iEnd = 0;
                 cluster.tempoInit=currentTempo;
                 cluster.tempoMin=currentTempo;
