@@ -49,7 +49,8 @@ public:
     void    analyzeMidiFile ();
 
     void    setBPM(int b );
-    void    setCluster(int c );
+    void    setRhythmSourceCluster(int c );
+    void    setPitchSourceCluster(int c);
     void    setRhythmSourceBlock(int q );
     void    setPitchSourceBlock(int q );
     void    setRepeat(int n);

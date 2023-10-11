@@ -4,105 +4,20 @@ var savedSoundParams = [];
 
 var setSoundParams = function(n) {
    console.log("setSoundParam "+n);
-   soundParams=[];
+   //soundParams=[];
    console.log("JSON:"+savedSoundParams[n]);
    //console.log(JSON.stringify(savedSoundParams[n]));
    const soundParamImport = JSON.parse(savedSoundParams[n]);
    soundParamImport.forEach((item, i) => {
-      var soundParam = Object.assign(new valuePlus, item );
-      if(soundParam.name=="Clip ID") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-      		clipId = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-      else if(soundParam.name=="Tempo") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-            tempo = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-      else if(soundParam.name=="Loop len") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-            loopLength = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-      else if(soundParam.name=="Repeat") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-            repeat = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-      else if(soundParam.name=="Pitch") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-            pitch = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-      else if(soundParam.name=="Basenote") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-            basenote = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-      else if(soundParam.name=="Scale") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-            scale = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-      else if(soundParam.name=="Arrange") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-            arrange = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-      else if(soundParam.name=="Sound") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-            soundProg = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-      else if(soundParam.name=="Autopilot") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-            autoPilot = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-      else if(soundParam.name=="Autopilot distance") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-            autoPilotDistance = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-      else if(soundParam.name=="Loop Play") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-            loopPlay = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-      else if(soundParam.name=="Max sounds") {
-         console.log("assigned " + soundParam.name)
-         soundParam.setValueFunction( function(value) {
-            maxSounds = value;
-      	} );
-         soundParam.valueFunction(soundParam.value);
-      }
-
-      soundParams.push(soundParam);
+      console.log(" - " + item.name);
+      soundParamsMap.get(item.name).changeMode=item.changeMode;
+      soundParamsMap.get(item.name).changeEvery=item.changeEvery;
+      soundParamsMap.get(item.name).changeBy=item.changeBy;
+      soundParamsMap.get(item.name).changeCounter=item.changeCounter;
+      soundParamsMap.get(item.name).seq=item.seq;
+      soundParamsMap.get(item.name).minRandom=item.minRandom;
+      soundParamsMap.get(item.name).maxRandom=item.maxRandom;
+      soundParamsMap.get(item.name).setValue(item.value);
    });
 }
 

@@ -77,7 +77,7 @@ void Midicalc::setBPM(int b)
     currentTempo = setTempo( currentTempo / bpm );
 }
 
-void Midicalc::setCluster(int c)
+void Midicalc::setRhythmSourceCluster(int c)
 {
     int clustersSize=clusters.size();
     if(c>=clustersSize) c=clustersSize-1;
@@ -86,6 +86,16 @@ void Midicalc::setCluster(int c)
     fromRhythmIndex = clusters[c].indexBegin;
     toRhythmIndex = clusters[c].indexEnd;
     origBpm = clusters[c].tempoInit;
+}
+
+void Midicalc::setPitchSourceCluster(int c)
+{
+    int clustersSize=clusters.size();
+    if(c>=clustersSize) c=clustersSize-1;
+    fromPitchBlock = clusters[c].blockBegin;
+    toPitchBlock = clusters[c].blockEnd;
+    fromPitchIndex = clusters[c].indexBegin;
+    toPitchIndex = clusters[c].indexEnd;
 }
 
 void Midicalc::setRhythmSourceBlock(int q)
@@ -288,8 +298,8 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
 
         //cout << " - create Block " << config.block << " trans " << config.transpose << endl;
 
-        setRhythmSourceBlock( config.rhythmBlock );
-        setPitchSourceBlock( config.pitchBlock );
+        setRhythmSourceCluster( config.rhythmBlock );
+        setPitchSourceCluster( config.pitchBlock );
         setTranspose( config.transpose );
         initScaleFilter( config.scale, config.note );
         if(config.tempo > 0) {
@@ -471,7 +481,7 @@ void Midicalc::analyzeMidiFile() {
 
     map<int,int> pressedKeys;
 
-    double offtime = 0.0;
+    //double offtime = 0.0;
 
     int beat = 0;
 
@@ -480,82 +490,81 @@ void Midicalc::analyzeMidiFile() {
 
     double previousQuarter=0;
 
-    Block b;
-    b.blockBegin = 0;
-    b.blockEnd = 0;
-    b.indexBegin = 0;
-    b.indexEnd = 0;
-    b.tempoInit=-1;
-    b.tempoMin=9999;
-    b.tempoMax=0;
-    b.nNoteOn = 0;
-    b.nNoteOff = 0;
-    b.nEventTempo = 0;
-    b.nEventOther = 0;
-    b.totalOn = 0;
+    Block analyzeBlock;
+    analyzeBlock.blockBegin = 0;
+    analyzeBlock.blockEnd = 0;
+    analyzeBlock.indexBegin = 0;
+    analyzeBlock.indexEnd = 0;
+    analyzeBlock.tempoInit=-1;
+    analyzeBlock.tempoMin=9999;
+    analyzeBlock.tempoMax=0;
+    analyzeBlock.nNoteOn = 0;
+    analyzeBlock.nNoteOff = 0;
+    analyzeBlock.nEventTempo = 0;
+    analyzeBlock.nEventOther = 0;
+    analyzeBlock.totalOn = 0;
 
     Block cluster;
-    cluster = b;
+    cluster = analyzeBlock;
 
-    for (int i=0; i<midiIn.getNumEvents(0); i++) {
-        int command = midiIn[0][i][0] & 0xf0;
-        int tick = midiIn[0][i].tick;
+    for (int analyzeIndex=0; analyzeIndex<midiIn.getNumEvents(0); analyzeIndex++) {
+        int command = midiIn[0][analyzeIndex][0] & 0xf0;
+        int tick = midiIn[0][analyzeIndex].tick;
         double quarter = (double)tick / (double)ticksPerQuarterNote;
 
         beat = quarter / 4;
 
-        b.indexEnd = i;
-        b.blockEnd = quarter;
+        analyzeBlock.indexEnd = analyzeIndex;
+        analyzeBlock.blockEnd = quarter;
 
-        cluster.indexEnd = i;
+        cluster.indexEnd = analyzeIndex;
         cluster.blockEnd = quarter;
 
         if( (int)quarter != (int)previousQuarter ) {
-            int quarterPause = (int)quarter - (int)previousQuarter;
+            //int quarterPause = (int)quarter - (int)previousQuarter;
 
-            b.indexEnd--;
-            b.blockEnd--;
+            analyzeBlock.indexEnd--;
+            analyzeBlock.blockEnd--;
 
             cluster.indexEnd--;
             cluster.blockEnd--;
 
-            bool nNewNoteEvents = b.nNoteOn + b.nNoteOff;
+            bool nNewNoteEvents = analyzeBlock.nNoteOn + analyzeBlock.nNoteOff;
 
-            harmonicAnalyze(b);
+            harmonicAnalyze(analyzeBlock);
 
-            blocks.push_back(b);
+            blocks.push_back(analyzeBlock);
 
-            if(quarterPause>2 || i==0 || i==midiIn.getNumEvents(0)-1) {
-                cout << "---- pause ---- " << quarterPause << endl;
-                cout << "- block " << blocks.size() << "\tbeat\t" << beat << "\tquarter begin\t" << b.blockBegin << "\tend\t" << b.blockEnd << "\tindex begin\t" << b.indexBegin << "\tend\t" << b.indexEnd << endl;
-                cout << "\ton\t" << b.nNoteOn << "\toff\t" << b.nNoteOff << "\tother\t" << b.nEventOther << "\tonOffdiff\t" << b.nNoteOn - b.nNoteOff << "\tcOn\t" <<  b.totalOn << "\ttempo init\t" << b.tempoInit << "\tmin\t" << b.tempoMin << "\tmax\t" << b.tempoMax << "\tevs\t" << b.nEventTempo << endl;
-                cout << "\ttick min " << midiIn[0][b.indexBegin].tick << " max " << midiIn[0][b.indexEnd].tick << endl;
-            }
+//            if(quarterPause>2 || analyzeIndex==0 || analyzeIndex==midiIn.getNumEvents(0)-1) {
+//                cout << "---- pause ---- " << quarterPause << endl;
+//                cout << "- block " << blocks.size() << "\tbeat\t" << beat << "\tquarter begin\t" << analyzeBlock.blockBegin << "\tend\t" << analyzeBlock.blockEnd << "\tindex begin\t" << analyzeBlock.indexBegin << "\tend\t" << analyzeBlock.indexEnd << endl;
+//                cout << "\ton\t" << analyzeBlock.nNoteOn << "\toff\t" << analyzeBlock.nNoteOff << "\tother\t" << analyzeBlock.nEventOther << "\tonOffdiff\t" << analyzeBlock.nNoteOn - analyzeBlock.nNoteOff << "\tcOn\t" <<  analyzeBlock.totalOn << "\ttempo init\t" << analyzeBlock.tempoInit << "\tmin\t" << analyzeBlock.tempoMin << "\tmax\t" << analyzeBlock.tempoMax << "\tevs\t" << analyzeBlock.nEventTempo << endl;
+//                cout << "\ttick min " << midiIn[0][analyzeBlock.indexBegin].tick << " max " << midiIn[0][analyzeBlock.indexEnd].tick << endl;
+//            }
 
-            b.blockBegin = quarter;
-            b.indexBegin = i;
-            //b.iEnd = 0;
-            b.tempoInit=currentTempo;
-            b.tempoMin=currentTempo;
-            b.tempoMax=currentTempo;
-            b.nNoteOn = 0;
-            b.nNoteOff = 0;
-            b.nEventTempo = 0;
-            b.nEventOther = 0;
-            b.totalOn = 0;
+            analyzeBlock.blockBegin = quarter;
+            analyzeBlock.indexBegin = analyzeIndex;
+            analyzeBlock.tempoInit=currentTempo;
+            analyzeBlock.tempoMin=currentTempo;
+            analyzeBlock.tempoMax=currentTempo;
+            analyzeBlock.nNoteOn = 0;
+            analyzeBlock.nNoteOff = 0;
+            analyzeBlock.nEventTempo = 0;
+            analyzeBlock.nEventOther = 0;
+            analyzeBlock.totalOn = 0;
 
-            b.notes.clear();
-            b.harmonicMap.clear();
+            analyzeBlock.notes.clear();
+            analyzeBlock.harmonicMap.clear();
 
             if( cluster.totalOn == 0 && nNewNoteEvents > 0 ) {
                 clusters.push_back( cluster );
-                //cout << "- end cluster -------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
-                //cout << "- cluster " << clusters.size() << "\tbeat\t" << beat << "\tquarter begin\t" << cluster.quarterBegin << "\tend\t" << cluster.quarterEnd << "\tindex begin\t" << cluster.iBegin << "\tend\t" << cluster.iEnd << endl;
-                //cout << "\ton\t" << cluster.nNoteOn << "\toff\t" << cluster.nNoteOff << "\tother\t" << cluster.nEventOther << "\tonOffdiff\t" << cluster.nNoteOn - cluster.nNoteOff << "\tcOn\t" <<  cluster.totalOn << "\ttempo init\t" << cluster.tempoInit << "\tmin\t" << cluster.tempoMin << "\tmax\t" << cluster.tempoMax << "\tevs\t" << cluster.nEventTempo << endl;
-                //cout << "\ttick min " << midiIn[0][cluster.iBegin].tick << " max " << midiIn[0][cluster.iEnd].tick << endl;
+                cout << "- end cluster -------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+                cout << "- cluster " << clusters.size() << "\tbeat\t" << beat << "\tquarter begin\t" << cluster.blockBegin << "\tend\t" << cluster.blockEnd << "\tindex begin\t" << cluster.indexBegin << "\tend\t" << cluster.indexEnd << endl;
+                cout << "\ton\t" << cluster.nNoteOn << "\toff\t" << cluster.nNoteOff << "\tother\t" << cluster.nEventOther << "\tonOffdiff\t" << cluster.nNoteOn - cluster.nNoteOff << "\tcOn\t" <<  cluster.totalOn << "\ttempo init\t" << cluster.tempoInit << "\tmin\t" << cluster.tempoMin << "\tmax\t" << cluster.tempoMax << "\tevs\t" << cluster.nEventTempo << endl;
+                cout << "\ttick min " << midiIn[0][cluster.indexBegin].tick << " max " << midiIn[0][cluster.indexEnd].tick << endl;
 
                 cluster.blockBegin = quarter;
-                cluster.indexBegin = i;
+                cluster.indexBegin = analyzeIndex;
                 //cluster.iEnd = 0;
                 cluster.tempoInit=currentTempo;
                 cluster.tempoMin=currentTempo;
@@ -577,18 +586,18 @@ void Midicalc::analyzeMidiFile() {
         }
 
 
-        if (command == 0x90 && midiIn[0][i][2] != 0) {
+        if (command == 0x90 && midiIn[0][analyzeIndex][2] != 0) {
             // NOTE ON
-            key = midiIn[0][i][1];
+            key = midiIn[0][analyzeIndex][1];
             //vel = midiIn[0][i][2];
 
             pressedKeys[key]++;
             if(pressedKeys[key]>1) cout << "WARNING: multiple key press for " << key << " in block " << blocks.size() << " quarter  " << quarter << endl;
 
-            b.harmonicMap[tick] = pressedKeys;
-            b.notes[key]++;
-            b.nNoteOn++;
-            b.totalOn++;
+            analyzeBlock.harmonicMap[tick] = pressedKeys;
+            analyzeBlock.notes[key]++;
+            analyzeBlock.nNoteOn++;
+            analyzeBlock.totalOn++;
 
             cluster.harmonicMap[tick] = pressedKeys;
             cluster.notes[key]++;
@@ -597,39 +606,39 @@ void Midicalc::analyzeMidiFile() {
 
         } else if (command == 0x90 || command == 0x80) {
             // NOTE OFF
-            key = midiIn[0][i][1];
+            key = midiIn[0][analyzeIndex][1];
 
             pressedKeys[key]--;
             if(pressedKeys[key]<0) cout << "WARNING: negative key value for " << key << "\n";
             if(pressedKeys[key]<=0) pressedKeys.erase(key);
 
-            b.harmonicMap[tick] = pressedKeys;
-            b.nNoteOff++;
-            b.totalOn--;
+            analyzeBlock.harmonicMap[tick] = pressedKeys;
+            analyzeBlock.nNoteOff++;
+            analyzeBlock.totalOn--;
 
             cluster.harmonicMap[tick] = pressedKeys;
             cluster.nNoteOff++;
             cluster.totalOn--;
 
-        } else if (midiIn[0][i][0] == 0xff &&
-                   midiIn[0][i][1] == 0x51) {
+        } else if (midiIn[0][analyzeIndex][0] == 0xff &&
+                   midiIn[0][analyzeIndex][1] == 0x51) {
             // TEMPO
-            currentTempo = getTempo(i);
-            if(b.tempoInit == -1) {
-                b.tempoInit = currentTempo;
+            currentTempo = getTempo(analyzeIndex);
+            if(analyzeBlock.tempoInit == -1) {
+                analyzeBlock.tempoInit = currentTempo;
                 cluster.tempoInit = currentTempo;
             }
 
-            if(currentTempo>b.tempoMax) b.tempoMax = currentTempo;
-            if(currentTempo<b.tempoMin) b.tempoMin = currentTempo;
-            b.nEventTempo++;
+            if(currentTempo>analyzeBlock.tempoMax) analyzeBlock.tempoMax = currentTempo;
+            if(currentTempo<analyzeBlock.tempoMin) analyzeBlock.tempoMin = currentTempo;
+            analyzeBlock.nEventTempo++;
 
             if(currentTempo>cluster.tempoMax) cluster.tempoMax = currentTempo;
             if(currentTempo<cluster.tempoMin) cluster.tempoMin = currentTempo;
             cluster.nEventTempo++;
 
         } else {
-            b.nEventOther++;
+            analyzeBlock.nEventOther++;
             cluster.nEventOther++;
         }
 
@@ -658,7 +667,7 @@ void Midicalc::harmonicAnalyze(Block b) {
     for(auto& harmony:b.harmonicMap) {
         //int prevNote = -1;
 
-        auto& time  = harmony.first;
+        //auto& time  = harmony.first;
         auto& notes = harmony.second;
 
         //cout << "- n notes: " << notes.size() << " at " << time << "\n";

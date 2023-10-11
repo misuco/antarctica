@@ -118,7 +118,7 @@ function showSessionMenu() {
 	var view="";
 	savedSoundParams.forEach((item, i) => {
 		var soundParam=JSON.parse(item);
-		var title = soundParam[13].value;
+		var title = soundParam[14].value;
 		view += "<input type=\"button\" class=\"block\" value=\"" + title + "\" onclick=\"setSoundParams(" + i + ");showTeleportMenu();\" />";
 	});
 

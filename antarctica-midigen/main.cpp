@@ -27,7 +27,7 @@ void createNewSong( string filename, int tempo, vector<Midicalc::BlockConfig> co
     mc.setBPM( tempo );
     mc.initScaleFilter(scale,basenote);
     mc.newMidiFile( config );
-    cout << "create_file v2.3: " << filename << endl << "tempo: " << tempo << endl;
+    cout << "create_file v2.4: " << filename << endl << "tempo: " << tempo << endl;
     mc.saveNewMidiFile( filename );
 }
 
@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
 
     string target="";
     int block=0;
+    int pitchBlock=0;
     int loopLength=0;
     int repeat=0;
     int tempo=0;
@@ -62,7 +63,7 @@ int main(int argc, char *argv[])
     int sound = 1;
 
     int c;
-    while ((c = getopt (argc, argv, "o:b:l:r:t:p:s:n:a:c:")) != -1) {
+    while ((c = getopt (argc, argv, "o:b:d:l:r:t:p:s:n:a:c:")) != -1) {
         switch (c)
         {
         case 'o':
@@ -70,6 +71,9 @@ int main(int argc, char *argv[])
             break;
         case 'b':
             block = stoi(optarg);
+            break;
+        case 'd':
+            pitchBlock = stoi(optarg);
             break;
         case 'l':
             loopLength = stoi(optarg);
@@ -111,7 +115,7 @@ int main(int argc, char *argv[])
     }
 
 
-    cout << "block: " << block << endl << "pitch: " << pitch << endl << "tempo: " << tempo << endl << "repeat: " << repeat << endl << "loopLength: " << loopLength << endl << "scale: " << scale << endl << "basenote: " << basenote << endl << "arrange: " << arrange << endl << "sound: " << sound << endl;
+    cout << "block: " << block << endl << "pitchBlock: " << pitchBlock << endl << "pitch: " << pitch << endl << "tempo: " << tempo << endl << "repeat: " << repeat << endl << "loopLength: " << loopLength << endl << "scale: " << scale << endl << "basenote: " << basenote << endl << "arrange: " << arrange << endl << "sound: " << sound << endl;
 
     double secondsPerQuarter = 60.0 / tempo;
     double playTime = 0;
@@ -260,7 +264,7 @@ int main(int argc, char *argv[])
 
     for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
         for(int c=0;c<loopLength;c++) {
-            config.push_back( { block+c, block+c+10, pitch, tempo, basenote, scale, sound } );
+            config.push_back( { block+c, pitchBlock+c, pitch, tempo, basenote, scale, sound } );
         }
         playTime += secondsPerQuarter * loopLength;
     }

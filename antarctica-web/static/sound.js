@@ -1,6 +1,7 @@
 /* 6 370 099 200 combinations
 */
 var clipId = 1;
+var pitchClipId = 1;
 var tempo = 40;
 var loopLength = 4;
 var repeat = 4;
@@ -22,6 +23,7 @@ var trackStateUpdated = false;
 var soundTrack1;
 
 var soundParams = [];
+var soundParamsMap = new Map();
 
 var nextSound = function() {
 	soundParams.forEach((item, i) => {
@@ -50,7 +52,7 @@ var playTrack = function(trackId) {
 			soundTrack1.addSound(music1);
 			music1.loopcount=0;
 			music1.onEndedObservable.add(() => {
-				console.log("music 1 ended at state " + state + " autoPilot " + autoPilot + " loopPlay " + loopPlay);
+				console.log("music 1 ended autoPilot " + autoPilot + " loopPlay " + loopPlay);
 				music1.loopcount++;
 				if(loopPlay==1) {
 					music1.play();
@@ -105,8 +107,8 @@ var triggerNewSound = function(trackId) {
 
 	statusPanel.text = "downloading " + getUrl + "/" + clipId;
 
-	var queryId=trackId+"_"+clipId+"_"+tempo+"_"+loopLength+"_"+repeat+"_"+pitch+"_"+basenote+"_"+scale+"_"+arrange+"_"+Date.now();
-	oReq.open("GET", baseUrl + "newclip?id="+queryId+"&clipId="+clipId+"&tempo="+tempo+"&loopLength="+loopLength+"&repeat="+repeat+"&pitch="+pitch+"&basenote="+basenote+"&scale="+scale+"&arrange="+arrange+"&sound="+soundProg+"&sessionId="+sessionId);
+	var queryId=trackId+"_"+clipId+"_"+pitchClipId+"_"+tempo+"_"+loopLength+"_"+repeat+"_"+pitch+"_"+basenote+"_"+scale+"_"+arrange+"_"+Date.now();
+	oReq.open("GET", baseUrl + "newclip?id="+queryId+"&clipId="+clipId+"&pitchClipId="+pitchClipId+"&tempo="+tempo+"&loopLength="+loopLength+"&repeat="+repeat+"&pitch="+pitch+"&basenote="+basenote+"&scale="+scale+"&arrange="+arrange+"&sound="+soundProg+"&sessionId="+sessionId);
 	oReq.send();
 }
 
@@ -114,90 +116,96 @@ var createSoundTrack = function (scene) {
 	soundTrack1 = new BABYLON.SoundTrack(scene);
 	BABYLON.Engine.audioEngine.setGlobalVolume(1);
 
-	var value1 = new valuePlus( "Clip ID", 0, 1, 185, clipId );
-	value1.setValueFunction( function(value) {
+	soundParamsMap.set("Rhythm Clip ID",new valuePlus( "Rhythm Clip ID", 0, 1, 81, clipId ));
+	soundParamsMap.get("Rhythm Clip ID").setValueFunction( function(value) {
 		clipId = value;
 	} );
+	soundParams.push(soundParamsMap.get("Rhythm Clip ID"));
 
-	var value2 = new valuePlus( "Tempo", 10, 1, 500, tempo );
-	value2.setValueFunction( function(value) {
+	soundParamsMap.set("Pitch Clip ID",new valuePlus( "Pitch Clip ID", 0, 1, 81, clipId ));
+	soundParamsMap.get("Pitch Clip ID").setValueFunction( function(value) {
+		pitchClipId = value;
+	} );
+	soundParams.push(soundParamsMap.get("Pitch Clip ID"));
+
+	soundParamsMap.set("Tempo",new valuePlus( "Tempo", 10, 1, 500, tempo ));
+	soundParamsMap.get("Tempo").setValueFunction( function(value) {
 		tempo = value;
 	} );
+	soundParams.push(soundParamsMap.get("Tempo"));
 
-	var value3 = new valuePlus( "Loop len", 1, 1, 186, loopLength );
-	value3.setValueFunction( function(value) {
+	soundParamsMap.set("Loop len",new valuePlus( "Loop len", 1, 1, 186, loopLength ));
+	soundParamsMap.get("Loop len").setValueFunction( function(value) {
 		loopLength = value;
 	} );
+	soundParams.push(soundParamsMap.get("Loop len"));
 
-	var value4 = new valuePlus( "Repeat", 1, 1, 16, repeat );
-	value4.setValueFunction( function(value) {
+	soundParamsMap.set("Repeat",new valuePlus( "Repeat", 1, 1, 16, repeat ));
+	soundParamsMap.get("Repeat").setValueFunction( function(value) {
 		repeat = value;
 	} );
+	soundParams.push(soundParamsMap.get("Repeat"));
 
-	var value5 = new valuePlus( "Pitch", -36, 1, 36, pitch );
-	value5.setValueFunction( function(value) {
+	soundParamsMap.set("Pitch",new valuePlus( "Pitch", -36, 1, 36, pitch ));
+	soundParamsMap.get("Pitch").setValueFunction( function(value) {
 		pitch = value;
 	} );
+	soundParams.push(soundParamsMap.get("Pitch"));
 
-	var value6 = new valuePlus( "Basenote", 0, 1, 10, basenote );
-	value6.setValueFunction( function(value) {
+	soundParamsMap.set("Basenote",new valuePlus( "Basenote", 0, 1, 10, basenote ));
+	soundParamsMap.get("Basenote").setValueFunction( function(value) {
 		basenote = value;
 	} );
+	soundParams.push(soundParamsMap.get("Basenote"));
 
-	var value7 = new valuePlus( "Scale", 1, 1, 44, scale );
-	value7.setValueFunction( function(value) {
+	soundParamsMap.set("Scale",new valuePlus( "Scale", 0, 1, 44, scale ));
+	soundParamsMap.get("Scale").setValueFunction( function(value) {
 		scale = value;
 	} );
+	soundParams.push(soundParamsMap.get("Scale"));
 
-	var value8= new valuePlus( "Arrange", 0, 1, 10, arrange );
-	value8.setValueFunction( function(value) {
+	soundParamsMap.set("Arrange",new valuePlus( "Arrange", 0, 1, 10, arrange ));
+	soundParamsMap.get("Arrange").setValueFunction( function(value) {
 		arrange = value;
 	} );
+	soundParams.push(soundParamsMap.get("Arrange"));
 
-	var value9= new valuePlus( "Sound", 0, 1, 127, soundProg );
-	value9.setValueFunction( function(value) {
+	soundParamsMap.set("Sound",new valuePlus( "Sound", 0, 1, 127, soundProg ));
+	soundParamsMap.get("Sound").setValueFunction( function(value) {
 		soundProg = value;
 	} );
+	soundParams.push(soundParamsMap.get("Sound"));
 
-	var value10= new valuePlus( "Autopilot", 0, 1, 1, autoPilot );
-	value10.setValueFunction( function(value) {
+	soundParamsMap.set("Autopilot",new valuePlus( "Autopilot", 0, 1, 1, autoPilot ));
+	soundParamsMap.get("Autopilot").setValueFunction( function(value) {
 		autoPilot = value;
 	} );
+	soundParams.push(soundParamsMap.get("Autopilot"));
 
-	var value11= new valuePlus( "Autopilot distance", 0, 1, 9, autoPilotDistance );
-	value11.setValueFunction( function(value) {
+	soundParamsMap.set("Autopilot distance",new valuePlus( "Autopilot distance", 0, 1, 9, autoPilotDistance ));
+	soundParamsMap.get("Autopilot distance").setValueFunction( function(value) {
 		autoPilotDistance = value;
 	} );
+	soundParams.push(soundParamsMap.get("Autopilot distance"));
 
-	var value12= new valuePlus( "Loop Play", 0, 1, 1, loopPlay );
-	value12.setValueFunction( function(value) {
+	soundParamsMap.set("Loop Play",new valuePlus( "Loop Play", 0, 1, 1, loopPlay ));
+	soundParamsMap.get("Loop Play").setValueFunction( function(value) {
 		loopPlay = value;
 	} );
+	soundParams.push(soundParamsMap.get("Loop Play"));
 
-	var value13= new valuePlus( "Max sounds", 1, 1, 10, maxSounds );
-	value13.setValueFunction( function(value) {
+	soundParamsMap.set("Max sounds",new valuePlus( "Max sounds", 0, 1, 10, maxSounds ));
+	soundParamsMap.get("Max sounds").setValueFunction( function(value) {
 		maxSounds = value;
 	} );
+	soundParams.push(soundParamsMap.get("Max sounds"));
 
-	var value14= new valuePlus( "Title", 1, 1, 10, "DefaultTitle" );
-	value14.setValueFunction( function(value) {
-		this.value=value;
+	soundParamsMap.set("Title",new valuePlus( "Title", 0, 1, 10, "DefaultTitle" ));
+	soundParamsMap.get("Title").setValueFunction( function(value) {
+		maxSounds = value;
 	} );
+	soundParams.push(soundParamsMap.get("Title"));
 
-	soundParams.push(value1);
-	soundParams.push(value2);
-	soundParams.push(value3);
-	soundParams.push(value4);
-	soundParams.push(value5);
-	soundParams.push(value6);
-	soundParams.push(value7);
-	soundParams.push(value8);
-	soundParams.push(value9);
-	soundParams.push(value10);
-	soundParams.push(value11);
-	soundParams.push(value12);
-	soundParams.push(value13);
-	soundParams.push(value14);
 }
 
 var disposeSoundTrack = function ( trackNr ) {
