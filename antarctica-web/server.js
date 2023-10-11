@@ -49,7 +49,7 @@ app.get('/soundparams', function(req, res) {
 
    var respones="";
    try {
-      response = fs.readFileSync(config.app.web_path+'/loops/soundparams.json','utf8');
+      response = fs.readFileSync(config.app.web_path+'/soundparams.json','utf8');
    } catch (err) {
       response=err;
    }
@@ -61,7 +61,7 @@ app.post('/soundparams', function(req, res) {
    console.log("got soundparams post");
    createSessionDir(req.query.sessionId);
    try {
-      fs.writeFileSync(config.app.web_path+'/loops/'+req.query.sessionId+'/soundparams.json', req.body);
+      fs.writeFileSync(config.app.web_path+'/'+req.query.sessionId+'/soundparams.json', req.body);
    } catch (err) {
       console.error(err);
    }
