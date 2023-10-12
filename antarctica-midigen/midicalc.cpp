@@ -15,36 +15,46 @@
 #include <sstream>
 #include <stdlib.h>
 
-int Midicalc::lookupKey(int key) {
-    int lookedUpKey=0;
-    if(keyLookupMap.find(key) == keyLookupMap.end()) {
-        bool keyFound=false;
-        while (keyFound==false) {
-            int command = midiIn[0][pitchIndex][0] & 0xf0;
-            if(command == 0x90) {
-                lookedUpKey = midiIn[0][pitchIndex][1];
-                keyFound=true;
-                keyLookupMap[key]=lookedUpKey;
-            }
-            pitchIndex++;
-
-            // if end of lookup block is reached
-            if(pitchIndex>toPitchIndex) {
-                // if keys were found, start from scrach
-                if(keyLookupMap.size()>0) {
-                    pitchIndex=fromPitchIndex;
-
-                // else no keys in block, return original key
-                } else {
-                    lookedUpKey=key;
-                    keyFound=true;
-                }
-            }
+int Midicalc::lookupOnKey(int key) {
+    cout << "-----------------------------------------" << endl;
+    cout << "lookupOnKey " << key << endl;
+    cout << "lookupOnKey block before " << currentPitchBlock << " index " << currentPitchIndex << endl;
+    int lookedUpKey=clusters[currentPitchBlock].noteSeq[currentPitchIndex];
+    currentPitchIndex++;
+    int currentNoteSeqSize=clusters[currentPitchBlock].noteSeq.size();
+    if(currentPitchIndex>currentNoteSeqSize) {
+        currentPitchIndex=0;
+        currentPitchBlock++;
+        if(currentPitchBlock>toPitchBlock) {
+            currentPitchBlock=fromPitchBlock;
         }
-    } else {
-        lookedUpKey=keyLookupMap[key];
     }
+    cout << "lookupOnKey block compare from " << fromPitchBlock << " to " << toPitchBlock << endl;
+    cout << "lookupOnKey block after " << currentPitchBlock << " index " << currentPitchIndex << endl;
+    keyLookupMap[key]=lookedUpKey;
+    printKeyLookupMap();
     return lookedUpKey;
+}
+
+int Midicalc::lookupOffKey(int key) {
+    cout << "-----------------------------------------" << endl;
+    cout << "lookupOffKey " << key << endl;
+    int lookedUpOffKey=0;
+    if(keyLookupMap.find(key)==keyLookupMap.end()) {
+        cout << "ERROR: lookupOffKey not found " << key << endl;
+    } else {
+        lookedUpOffKey=keyLookupMap[key];
+        keyLookupMap.erase(key);
+    }
+    printKeyLookupMap();
+    return lookedUpOffKey;
+}
+
+void Midicalc::printKeyLookupMap() {
+    for(auto entry:keyLookupMap) {
+        cout << "{" << entry.first << ":" << entry.second << "}";
+    }
+    cout << endl;
 }
 
 int Midicalc::filterKey(int key) {
@@ -92,10 +102,8 @@ void Midicalc::setPitchSourceCluster(int c)
 {
     int clustersSize=clusters.size();
     if(c>=clustersSize) c=clustersSize-1;
-    fromPitchBlock = clusters[c].blockBegin;
-    toPitchBlock = clusters[c].blockEnd;
-    fromPitchIndex = clusters[c].indexBegin;
-    toPitchIndex = clusters[c].indexEnd;
+    fromPitchBlock = c;
+    toPitchBlock = c;
 }
 
 void Midicalc::setRhythmSourceBlock(int q)
@@ -115,8 +123,6 @@ void Midicalc::setPitchSourceBlock(int q)
     if(q>=blocksSize) q=blocksSize-1;
     fromPitchBlock = blocks[q].blockBegin;
     toPitchBlock = blocks[q].blockEnd;
-    fromPitchIndex = blocks[q].indexBegin;
-    toPitchIndex = blocks[q].indexEnd;
 }
 
 void Midicalc::setRepeat(int n)
@@ -333,7 +339,8 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
         //cout << "   * index " << n << " from " << fromIndex << " to " << toIndex << endl;
         //cout << "   * tempo " << config.tempo << endl;
         n++;
-        pitchIndex=fromPitchIndex;
+        currentPitchBlock=fromPitchBlock;
+        currentPitchIndex=0;
 
         for(int rhythmIndex=fromRhythmIndex;rhythmIndex<=toRhythmIndex;rhythmIndex++) {
 
@@ -348,15 +355,26 @@ void Midicalc::newMidiFile( vector<BlockConfig> blockConfigs ) {
             // 0x90: Note On
             if (command == 0x90 || command == 0x80) {
 
-                int key = lookupKey(midiIn[0][rhythmIndex][1]);
+                int incomingKey = midiIn[0][rhythmIndex][1];
+                int velocity = midiIn[0][rhythmIndex][2];
+
+                int key;
+                if(command==0x80 || velocity==0) {
+                    key=lookupOffKey(incomingKey);
+                    cout << "note off:";
+                } else {
+                    key=lookupOnKey(incomingKey);
+                    cout << "note on:";
+                }
 
                 int keyTransposed = key + transpose;
                 if(keyTransposed>127) keyTransposed=127;
                 if(keyTransposed<24) keyTransposed=24;
                 int newkey = filterKey(keyTransposed);
-                int velocity = midiIn[0][rhythmIndex][2];
                 int newvelocity = velocity;
-                //if(newvelocity>127) newvelocity=127;
+                //if(newvelocity>127) newvelocity=127;                               
+
+                cout << "incoming: " << incomingKey << " lookedup " << key << " transposed " << keyTransposed << " filtered " << newkey << endl;
 
                 for(unsigned long j=0;j<midiIn[0][rhythmIndex].size();j++) {
                     midievent[j] = midiIn[0][rhythmIndex][j];
@@ -555,13 +573,22 @@ void Midicalc::analyzeMidiFile() {
 
             analyzeBlock.notes.clear();
             analyzeBlock.harmonicMap.clear();
+            analyzeBlock.noteSeq.clear();
 
             if( cluster.totalOn == 0 && nNewNoteEvents > 0 ) {
                 clusters.push_back( cluster );
+                /*
                 cout << "- end cluster -------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
                 cout << "- cluster " << clusters.size() << "\tbeat\t" << beat << "\tquarter begin\t" << cluster.blockBegin << "\tend\t" << cluster.blockEnd << "\tindex begin\t" << cluster.indexBegin << "\tend\t" << cluster.indexEnd << endl;
                 cout << "\ton\t" << cluster.nNoteOn << "\toff\t" << cluster.nNoteOff << "\tother\t" << cluster.nEventOther << "\tonOffdiff\t" << cluster.nNoteOn - cluster.nNoteOff << "\tcOn\t" <<  cluster.totalOn << "\ttempo init\t" << cluster.tempoInit << "\tmin\t" << cluster.tempoMin << "\tmax\t" << cluster.tempoMax << "\tevs\t" << cluster.nEventTempo << endl;
                 cout << "\ttick min " << midiIn[0][cluster.indexBegin].tick << " max " << midiIn[0][cluster.indexEnd].tick << endl;
+
+                cout << "notes: ";
+                for(auto note:cluster.noteSeq) {
+                    cout << note <<  " ";
+                }
+                cout << endl;
+                */
 
                 cluster.blockBegin = quarter;
                 cluster.indexBegin = analyzeIndex;
@@ -578,6 +605,7 @@ void Midicalc::analyzeMidiFile() {
                 harmonicAnalyze(cluster);
                 cluster.notes.clear();
                 cluster.harmonicMap.clear();
+                cluster.noteSeq.clear();
 
                 //cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 
@@ -596,11 +624,13 @@ void Midicalc::analyzeMidiFile() {
 
             analyzeBlock.harmonicMap[tick] = pressedKeys;
             analyzeBlock.notes[key]++;
+            analyzeBlock.noteSeq.push_back(key);
             analyzeBlock.nNoteOn++;
             analyzeBlock.totalOn++;
 
             cluster.harmonicMap[tick] = pressedKeys;
             cluster.notes[key]++;
+            cluster.noteSeq.push_back(key);
             cluster.nNoteOn++;
             cluster.totalOn++;
 

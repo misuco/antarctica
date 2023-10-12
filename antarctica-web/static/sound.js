@@ -33,6 +33,7 @@ var nextSound = function() {
 }
 
 var checkMaxSounds = function() {
+	console.log("check max sounds length: " + sounds.length + " max: " + maxSounds);
 	while(sounds.length>maxSounds) {
 		console.log("dispose sound 0 " + sounds.length + " > " + maxSounds );
 		disposeSoundTrack(0);
@@ -202,7 +203,7 @@ var createSoundTrack = function (scene) {
 
 	soundParamsMap.set("Title",new valuePlus( "Title", 0, 1, 10, "DefaultTitle" ));
 	soundParamsMap.get("Title").setValueFunction( function(value) {
-		maxSounds = value;
+		title = value;
 	} );
 	soundParams.push(soundParamsMap.get("Title"));
 

@@ -4,35 +4,35 @@
          "min": 0,
          "step": 1,
          "max": 81,
-         "value": 1,
+         "value": 0,
          "changeMode": 0,
-         "changeEvery": "3",
-         "changeBy": "2",
-         "changeCounter": 2,
+         "changeEvery": 1,
+         "changeBy": 4,
+         "changeCounter": 0,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Pitch Clip ID",
          "min": 0,
          "step": 1,
          "max": 81,
-         "value": 1,
+         "value": 0,
          "changeMode": 0,
-         "changeEvery": "3",
-         "changeBy": "2",
-         "changeCounter": 2,
+         "changeEvery": 1,
+         "changeBy": 4,
+         "changeCounter": 0,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Tempo",
          "min": 10,
          "step": 1,
          "max": 500,
-         "value": 40,
+         "value": 60,
          "changeMode": 0,
          "changeEvery": 1,
          "changeBy": 0,
@@ -46,7 +46,7 @@
          "min": 1,
          "step": 1,
          "max": 16,
-         "value": 2,
+         "value": 4,
          "changeMode": 0,
          "changeEvery": 1,
          "changeBy": 0,
@@ -74,10 +74,10 @@
          "min": -36,
          "step": 1,
          "max": 36,
-         "value": 28,
-         "changeMode": 3,
-         "changeEvery": 1,
-         "changeBy": -4,
+         "value": 0,
+         "changeMode": 0,
+         "changeEvery": 0,
+         "changeBy": 0,
          "changeCounter": 0,
          "seq": [],
          "minRandom": -36,
@@ -144,7 +144,7 @@
          "min": 0,
          "step": 1,
          "max": 1,
-         "value": 1,
+         "value": 0,
          "changeMode": 0,
          "changeEvery": 1,
          "changeBy": 0,
@@ -172,7 +172,7 @@
          "min": 0,
          "step": 1,
          "max": 1,
-         "value": 1,
+         "value": 0,
          "changeMode": 0,
          "changeEvery": 1,
          "changeBy": 0,
@@ -223,7 +223,7 @@
          "changeCounter": 2,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Pitch Clip ID",
@@ -237,7 +237,7 @@
          "changeCounter": 2,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Tempo",
@@ -435,7 +435,7 @@
          "changeCounter": 2,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Pitch Clip ID",
@@ -449,7 +449,7 @@
          "changeCounter": 2,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Tempo",
@@ -647,7 +647,7 @@
          "changeCounter": 0,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Pitch Clip ID",
@@ -661,7 +661,7 @@
          "changeCounter": 0,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Tempo",
@@ -880,7 +880,7 @@
              162
          ],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Pitch Clip ID",
@@ -900,7 +900,7 @@
              162
          ],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Tempo",
@@ -1104,7 +1104,7 @@
          "changeCounter": 0,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Pitch Clip ID",
@@ -1118,7 +1118,7 @@
          "changeCounter": 0,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Tempo",
@@ -1320,7 +1320,7 @@
          "changeCounter": 0,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Pitch Clip ID",
@@ -1334,7 +1334,7 @@
          "changeCounter": 0,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Tempo",
@@ -1532,7 +1532,7 @@
          "changeCounter": 0,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Pitch Clip ID",
@@ -1546,7 +1546,7 @@
          "changeCounter": 0,
          "seq": [],
          "minRandom": 0,
-         "maxRandom": 185
+         "maxRandom": 81
      },
      {
          "name": "Tempo",

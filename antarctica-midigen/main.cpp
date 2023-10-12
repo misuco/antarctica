@@ -265,6 +265,7 @@ int main(int argc, char *argv[])
     for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
         for(int c=0;c<loopLength;c++) {
             config.push_back( { block+c, pitchBlock+c, pitch, tempo, basenote, scale, sound } );
+            cout << "main.cpp config block: " << block+c << " pitchBlock: " << pitchBlock+c << endl;
         }
         playTime += secondsPerQuarter * loopLength;
     }

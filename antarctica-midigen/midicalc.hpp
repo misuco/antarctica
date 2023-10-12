@@ -86,6 +86,7 @@ private:
         int totalOn;
         map<int,int> notes;
         map<int,map<int,int>> harmonicMap;
+        vector<int> noteSeq;
     };
 
     vector<Block> blocks;
@@ -118,8 +119,8 @@ private:
     // pitch
     int fromPitchBlock;
     int toPitchBlock;
-    int fromPitchIndex;
-    int toPitchIndex;
+    int currentPitchBlock;
+    int currentPitchIndex;
 
     // transform
     int repeat;
@@ -138,7 +139,6 @@ private:
     // key lookup is used to apply the pitch from
     // one block to another block
     map<int,int> keyLookupMap;
-    int pitchIndex;
 
     // function declarations:
     double  getTempo(int index);
@@ -153,7 +153,9 @@ private:
 
     string outputPath;
     void disassembleChord(map<int, int> pressedKeys);
-    int lookupKey(int key);
+    int lookupOnKey(int key);
+    int lookupOffKey(int key);
+    void printKeyLookupMap();
 };
 
 #endif // MIDICALC_HPP
