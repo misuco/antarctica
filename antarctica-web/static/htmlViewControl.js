@@ -141,6 +141,12 @@ function showTeleportMenu() {
 	closeButton.hidden=false;
 }
 
+function showViewControl() {
+	hideAllViews();
+	viewControl.hidden=false;
+	closeButton.hidden=false;
+}
+
 function showSessionControl() {
 
 	/*
@@ -213,6 +219,7 @@ function hideAllViews() {
 	sessionStart.hidden=true;
 	sessionControl.hidden=true;
 	closeButton.hidden=true;
+	viewControl.hidden=true;
 	menu.hidden=true;
 }
 

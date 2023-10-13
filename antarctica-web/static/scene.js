@@ -62,16 +62,18 @@ function updateScene() {
 				htmlTable += "<tr><td>";
 				if(element.isPlaying) {
 					htmlTable += "<button class=\"list\" onclick=\"pauseSoundTrack("+trackNr+");\" value=\"ll\"> ";
-					htmlTable += "<img src=\"icons/pause.svg\" style=\"width:8vh;height:8vh\"/>";
+					htmlTable += "<img src=\"icons/pause.svg\" style=\"width:6vh;height:6vh\"/>";
 					htmlTable += "</button>";
 				} else {
 					htmlTable += "<button class=\"list\" onclick=\"playSoundTrack("+trackNr+");\" value=\"l>\"> ";
-					htmlTable += "<img src=\"icons/play.svg\" style=\"width:8vh;height:8vh\"/>";
+					htmlTable += "<img src=\"icons/play.svg\" style=\"width:6vh;height:6vh\"/>";
 					htmlTable += "</button>";
 				}
-				htmlTable += "</td><td><button class=\"list\" onclick=\"disposeSoundTrack("+trackNr+");\" value=\"X\"> ";
-				htmlTable += "<img src=\"icons/close.svg\" style=\"width:8vh;height:8vh\"/>";
-				htmlTable += "</button></td>";
+				htmlTable += "</td>";
+
+//				htmlTable += "</td><td><button class=\"list\" onclick=\"disposeSoundTrack("+trackNr+");\" value=\"X\"> ";
+//				htmlTable += "<img src=\"icons/close.svg\" style=\"width:8vh;height:8vh\"/>";
+//				htmlTable += "</button></td>";
 //				htmlTable += "<input type=\"button\" onclick=\"highlightSpot("+pointId+");\" value=\"show\"/> ";
 //				htmlTable += "<a href=\""+element.name+"\" target=\"_blank\">download</a></td>";
 
@@ -82,12 +84,12 @@ function updateScene() {
 //				htmlTable += " <a onclick=\"sendRate('"+trackId+"',2);\"> [2] </a>";
 //				htmlTable += " <a onclick=\"sendRate('"+trackId+"',3);\"> [3] </a> </td>";
 //				htmlTable += " <td id=\"status_"+trackId+"\"> </td>";
-				htmlTable += " <td id=\"playTime_"+trackId+"\" class=\"bigfont\"> </td>";
-				htmlTable += " <td id=\"duration_"+trackId+"\"> </td>";
+				htmlTable += " <td id=\"playTime_"+trackId+"\" class=\"tdPadding2\"> </td>";
+				htmlTable += " <td id=\"duration_"+trackId+"\" class=\"tdPadding2\"> </td>";
 //				htmlTable += " <td> " +trackParams[3] + " </td>";
 //				htmlTable += " <td> " +trackParams[4] + " </td>";
 				var infoPopUp=point.name + "<br/>" + point.fields[7] + " " + point.fields[14] + "<br/>" + point.fields[15];
-				htmlTable += " <td> <a onclick=\"updatePointInfo('" + infoPopUp + "');\">" + point.name + " </a></td></tr>";
+				htmlTable += " <td class=\"tdPadding2\"> <a onclick=\"updatePointInfo('" + infoPopUp + "');\">" + point.name + " </a></td></tr>";
 			}
 			trackNr++;
 		});
@@ -149,11 +151,13 @@ function updateScene() {
 			camera.target.z = selectedSpot.position.z;
 		}
 
+		/*
 		if(Math.abs(cameraDeltaRadius)>0.0005) {
 			camera.radius+=cameraDeltaRadius;
 		} else {
 			camera.radius = 0.5;
 		}
+		*/
 	}
 
 	camera.alpha+=cameraAlphaSpeed;
@@ -202,6 +206,7 @@ function addSelectedSpot() {
 		sphere.position.z = selectedSpot.position.z;
 		sphere.position.y = 0.1;
 		sphere.material = mRed;
+		sphere.parent=selectedPointsNode;
 		selectedPoints.push(sphere);
 	}
 }
@@ -220,9 +225,6 @@ function addNextPoint() {
 
 		if (fields.length > 8) {
 
-			var sHeight = 0.001;
-
-			/*
 			var sHeight = 0.05;
 
 			if( fields[7] == "Summit"  ) {
@@ -242,7 +244,6 @@ function addNextPoint() {
 					sHeight = parseInt(number) / 6000;
 				}
 			}
-			*/
 
 			var sphere;
 
@@ -250,27 +251,26 @@ function addNextPoint() {
 			var sectorY = Math.floor(fields[3]/2);
 			var sectorId = sectorX + "_" + sectorY;
 
-			//var sWidth = 0.01 + ( 400 - sectorCountMap.get(sectorId) ) / 10000;
-			let sWidth = 0.001;
+			var sWidth = 0.01 + ( 400 - sectorCountMap.get(sectorId) ) / 10000;
 
 			//console.log("sWidth " + sWidth + " sectorId " + sectorId + " count " + sectorCountMap.get(sectorId) );
 
-			/*
 			if( fields[7] == "Summit"  ) {
 				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);
+				sphere.parent = landscapePointsNode;
 			} else if( fields[7] == "Building" ) {
-				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:0.1}, scene);
+				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);
 				homePonits.push(sphere);
+				sphere.parent = buildingPointsNode;
 			} else if( fields[7] == "Airport" ){
 				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.8,height:0.4,depth:2}, scene);
 				homePonits.push(sphere);
+				sphere.parent = buildingPointsNode;
 			} else {
 				//sphere = BABYLON.MeshBuilder.CreateBox("box", {width:sWidth,height:sHeight,depth:sWidth}, scene);
 				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);
+				sphere.parent = landscapePointsNode;
 			}
-			*/
-
-			sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);
 
 			sphere.position.x = fields[2];
 			sphere.position.z = fields[3];
@@ -359,7 +359,9 @@ var selectSpot = function(fields) {
 
 	sessionList.unshift(fields[5]);
 	visitedPoints.set(fields[5]);
+
 	addSelectedSpot();
+
 	getClosestUnvisited(fields[5],autoPilotDistance);
 }
 

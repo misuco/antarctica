@@ -14,6 +14,8 @@ var loopPlay = 0;
 var autoPilot = 0;
 var autoPilotDistance = 5;
 var maxSounds = 1;
+var spatialSoundOn = false;
+
 
 var sounds = [];
 var loadingSoundsMap = new Map();
@@ -72,7 +74,7 @@ var playTrack = function(trackId) {
 		},
 		{
 			loop: false,
-			spatialSound: true,
+			spatialSound: spatialSoundOn,
 			distanceModel: "exponential",
 			rolloffFactor: 1.5
 		}
