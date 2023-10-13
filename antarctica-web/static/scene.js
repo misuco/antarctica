@@ -196,7 +196,8 @@ var requestFiles = function( spotId ) {
 function addSelectedSpot() {
 	var meshName="sp_"+selectedSpot.pointId;
 	if( scene.getMeshByName(meshName)==undefined) {
-		var sphere = BABYLON.MeshBuilder.CreateCylinder(meshName, {width:1,height:1,depth:1, diameterTop: 1, diameterBottom: 0, tessellation: 4}, scene);
+		//var sphere = BABYLON.MeshBuilder.CreateCylinder(meshName, {width:1,height:1,depth:1, diameterTop: 1, diameterBottom: 0, tessellation: 4}, scene);
+		var sphere = BABYLON.MeshBuilder.CreateSphere(meshName, {diameter: 0.1}, scene);
 		sphere.position.x = selectedSpot.position.x;
 		sphere.position.z = selectedSpot.position.z;
 		sphere.position.y = 0.1;
@@ -219,6 +220,9 @@ function addNextPoint() {
 
 		if (fields.length > 8) {
 
+			var sHeight = 0.001;
+
+			/*
 			var sHeight = 0.05;
 
 			if( fields[7] == "Summit"  ) {
@@ -238,19 +242,24 @@ function addNextPoint() {
 					sHeight = parseInt(number) / 6000;
 				}
 			}
+			*/
 
 			var sphere;
 
 			var sectorX = Math.floor(fields[2]/2);
 			var sectorY = Math.floor(fields[3]/2);
 			var sectorId = sectorX + "_" + sectorY;
-			var sWidth = 0.01 + ( 400 - sectorCountMap.get(sectorId) ) / 10000;
+
+			//var sWidth = 0.01 + ( 400 - sectorCountMap.get(sectorId) ) / 10000;
+			let sWidth = 0.001;
+
 			//console.log("sWidth " + sWidth + " sectorId " + sectorId + " count " + sectorCountMap.get(sectorId) );
 
+			/*
 			if( fields[7] == "Summit"  ) {
 				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);
 			} else if( fields[7] == "Building" ) {
-				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:1}, scene);
+				sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:0.1}, scene);
 				homePonits.push(sphere);
 			} else if( fields[7] == "Airport" ){
 				sphere = BABYLON.MeshBuilder.CreateBox("box", {width:0.8,height:0.4,depth:2}, scene);
@@ -259,6 +268,10 @@ function addNextPoint() {
 				//sphere = BABYLON.MeshBuilder.CreateBox("box", {width:sWidth,height:sHeight,depth:sWidth}, scene);
 				sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);
 			}
+			*/
+
+			sphere = BABYLON.MeshBuilder.CreateCylinder("box", {width:sWidth,height:sHeight,depth:sWidth, diameterTop: 0, diameterBottom: sWidth, tessellation: 4}, scene);
+
 			sphere.position.x = fields[2];
 			sphere.position.z = fields[3];
 			sphere.position.y = sHeight / 2;

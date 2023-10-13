@@ -16,7 +16,24 @@ app.use(express.static('static'));
 app.use(express.json()) // for parsing application/json
 
 app.get('/newclip', function(req, res) {
+   console.log("------------------------------------------------------------------------------");
    console.log("got newclip " + req.query.id);
+
+   var files = fs.readdirSync(config.app.web_path+'/loops/').filter(fn => fn.includes( req.query.id ));
+
+   files.forEach(file => { console.log(" - "+file); });
+
+   if(files.length===0) {
+      result=proc.execSync(config.app.bin_path + ' -t '+req.query.tempo+' -p ' + req.query.pitch + ' -b '+req.query.clipId + ' -d '+req.query.pitchClipId+' -l '+req.query.loopLength+' -r '+req.query.repeat+' -n '+req.query.basenote+' -s '+req.query.scale+' -a '+req.query.arrange+' -c '+req.query.sound+' -o '+config.app.web_path+'/loops/'+req.query.id);
+      console.log("request result :");
+      console.log("--> "+result);
+   } else {
+      console.log("clip already exists");
+   }
+   console.log("------------------------------------------------------------------------------");
+   res.send("loops/" + req.query.id);
+
+   /*
    console.log(config.app.bin_path + ' -t '+req.query.tempo+' -p ' + req.query.pitch + ' -b '+req.query.clipId + ' -d '+req.query.pitchClipId+' -l '+req.query.loopLength+' -r '+req.query.repeat+' -n '+req.query.basenote+' -s '+req.query.scale+' -a '+req.query.arrange+' -o '+config.app.web_path+'/loops/'+req.query.sessionId+'/'+req.query.id);
    createSessionDir(req.query.sessionId);
    result=proc.execSync(config.app.bin_path + ' -t '+req.query.tempo+' -p ' + req.query.pitch + ' -b '+req.query.clipId + ' -d '+req.query.pitchClipId+' -l '+req.query.loopLength+' -r '+req.query.repeat+' -n '+req.query.basenote+' -s '+req.query.scale+' -a '+req.query.arrange+' -c '+req.query.sound+' -o '+config.app.web_path+'/loops/'+req.query.sessionId+'/'+req.query.id);
@@ -25,6 +42,7 @@ app.get('/newclip', function(req, res) {
    console.log("--> "+result);
    console.log("------------------------------------------------------------------------------");
    res.send("loops/" + req.query.sessionId + "/" + req.query.id);
+   */
 });
 
 app.get('/rate', function(req, res) {

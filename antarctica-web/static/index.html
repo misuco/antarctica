@@ -41,6 +41,18 @@
      color: rgba(255,255,255,0.5);
    }
 
+   .menuButton {
+     width: 12vh;
+     height: 12vh;
+     font-size: 8vh;
+     text-align: center;
+     align-items: center;
+     radius: 5vh;
+     background-color: rgba(255,255,255,0);
+     color: rgba(255,255,255,0);
+     border-width: 0;
+   }
+
    .menu {
      width: 12vh;
      height: 12vh;
@@ -61,7 +73,7 @@
      radius: 5vh;
      background-color: rgba(255,255,255,0);
      color: rgba(255,255,255,0);
-     border-width: 0
+     border-width: 0;
    }
 
    .list {
@@ -125,14 +137,14 @@
 <script type="text/javascript" src="scene.js"></script>
 <script type="text/javascript" src="autoPilot.js"></script>
 
-<div style="top:0px;right:0;position:absolute;z-index:1000" id="next">
-   <button type="button" class="menu" value="NXT" onclick="selectSpot(nextPointFields);">
+<div style="top:0px;right:0;position:absolute;z-index:1000" id="nextButton">
+   <button type="button" class="menuButton" value="NXT" onclick="selectSpot(nextPointFields);">
    <img src="icons/next.svg" style="width:10vh;height:10vh" />
    </button>
 </div>
 
 <div style="top:0px;left:0;position:absolute;z-index:1000" id="menuButton">
-   <button type="button" class="menu" onclick="toggleMenu()">
+   <button type="button" class="menuButton" onclick="toggleMenu()">
    <img src="icons/menu.svg" style="width:10vh;height:10vh" />
    </button>
 </div>
