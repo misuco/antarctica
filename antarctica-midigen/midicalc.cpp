@@ -499,12 +499,7 @@ void Midicalc::analyzeMidiFile() {
 
     map<int,int> pressedKeys;
 
-    //double offtime = 0.0;
-
-    int beat = 0;
-
     int key = 0;
-    //int vel = 0;
 
     double previousQuarter=0;
 
@@ -530,8 +525,6 @@ void Midicalc::analyzeMidiFile() {
         int tick = midiIn[0][analyzeIndex].tick;
         double quarter = (double)tick / (double)ticksPerQuarterNote;
 
-        beat = quarter / 4;
-
         analyzeBlock.indexEnd = analyzeIndex;
         analyzeBlock.blockEnd = quarter;
 
@@ -539,7 +532,6 @@ void Midicalc::analyzeMidiFile() {
         cluster.blockEnd = quarter;
 
         if( (int)quarter != (int)previousQuarter ) {
-            //int quarterPause = (int)quarter - (int)previousQuarter;
 
             analyzeBlock.indexEnd--;
             analyzeBlock.blockEnd--;

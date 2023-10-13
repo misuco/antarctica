@@ -42,12 +42,26 @@
    }
 
    .menu {
-     width: 12vw;
-     height: 10vh;
+     width: 12vh;
+     height: 12vh;
      font-size: 8vh;
      text-align: center;
+     align-items: center;
+     radius: 5vh;
      background-color: rgba(255,255,255,0.5);
      color: rgba(255,255,255,0.5);
+   }
+
+   .closebutton {
+     width: 12vh;
+     height: 12vh;
+     font-size: 8vh;
+     text-align: center;
+     align-items: center;
+     radius: 5vh;
+     background-color: rgba(255,255,255,0);
+     color: rgba(255,255,255,0);
+     border-width: 0
    }
 
    .list {
@@ -88,11 +102,11 @@
 
    <!--
    <script src="//preview.babylonjs.com/babylon.js"></script>
-   <!-- <script src="https://cdn.babylonjs.com/babylon.js"></script>
+   <script src="https://cdn.babylonjs.com/babylon.js"></script>
    <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
    <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
    <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
--->
+   -->
 
 <script src="babylon/babylon.js"></script>
 <script src="babylon/babylonjs.loaders.min.js"></script>
@@ -111,24 +125,53 @@
 <script type="text/javascript" src="scene.js"></script>
 <script type="text/javascript" src="autoPilot.js"></script>
 
-<div style="top:0px;left:0;position:absolute;z-index:1000" id="menu">
-   <input type="button" class="menu" value="X-:" onclick="hideAllViews()"/>
-   <input type="button" class="menu" value="Start" onclick="showSessionMenu()"/>
-   <input type="button" class="menu" value="CTL" onclick="showSessionControl()"/>
-   <input type="button" class="menu" value="TRK" onclick="showPlayer()"/>
-   <input type="button" class="menu" value="NXT" onclick="selectSpot(nextPointFields);" />
+<div style="top:0px;right:0;position:absolute;z-index:1000" id="next">
+   <button type="button" class="menu" value="NXT" onclick="selectSpot(nextPointFields);">
+   <img src="icons/next.svg" style="width:10vh;height:10vh" />
+   </button>
+</div>
+
+<div style="top:0px;left:0;position:absolute;z-index:1000" id="menuButton">
+   <button type="button" class="menu" onclick="toggleMenu()">
+   <img src="icons/menu.svg" style="width:10vh;height:10vh" />
+   </button>
+</div>
+
+<div style="top:12vh;left:0;position:absolute;z-index:1000;" id="menu">
+   <button class="menu" value="Start" onclick="showSessionMenu()">
+      <img src="icons/restart.svg" style="width:10vh;height:10vh" />
+   </button><br/>
+
+   <button class="menu" value="CTL" onclick="showSessionControl()"/>
+      <img src="icons/settings.svg" style="width:10vh;height:10vh" />
+   </button><br/>
+
+   <button class="menu" value="TRK" onclick="showPlayer()"/>
+      <img src="icons/mixer.svg" style="width:10vh;height:10vh" />
+   </button><br/>
+
+   <button class="menu" value="FS" onclick="fullscreen()"/>
+      <img src="icons/fullscreen.svg" style="width:10vh;height:10vh" />
+   <br/>
+
+   <!--
    <input type="button" class="menu" value="SLO" onclick="cameraAlphaSpeed=cameraAlphaSpeed/2;" />
    <input type="button" class="menu" value="FST" onclick="cameraAlphaSpeed=cameraAlphaSpeed*2;" />
-   <!--
    <input type="button" value="2d cam" onclick="cam2d();console.log('2d cam');" />
    <input type="button" value="3d cam" onclick="cam3d();console.log('3d cam');" />
    <span id="sessionNameDisplay">No session</span>
    -->
 </div>
 
-<div style="top:10vh;left:0;position:absolute;z-index:1000;" id="sessionControl"><span>Session Control</span></div>
-<div style="top:10vh;left:0;position:absolute;z-index:1000;" id="multitrackPlayerControl"><span>Player Control</span></div>
-<div style="top:10vh;left:0;position:absolute;z-index:1000;" id="ratingList"><span></span></div>
+<div style="top:10vh;left:15vw;width:10vw;height:10vh;position:absolute;z-index:1001;" id="closeButton">
+   <button class="closebutton" value="X" onclick="hideAllViews()"/>
+   <img src="icons/close.svg" style="width:10vh;height:10vh" />
+   </button>
+</div>
+
+<div style="top:10vh;left:15vw;width:70vw;height:80vh;overflow:auto;position:absolute;z-index:1000;" id="sessionControl"><span>Session Control</span></div>
+<div style="bottom:0;left:0;width:70vw;height:10vh;overflow:auto;position:absolute;z-index:1000;background-color:#00000000;" id="multitrackPlayerControl"><span>Player Control</span></div>
+<div style="top:10vh;left:15vw;width:70vw;height:80vh;overflow:auto;position:absolute;z-index:1000;" id="ratingList"><span></span></div>
 
 <div style="top:0;left:0;width:100vw;height:100vh;background-color:#ffffff80;position:absolute;z-index:1000;display:none;" id="sessionStart">
    <div style="text-align:center;line-height:100vh;">

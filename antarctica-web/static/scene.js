@@ -45,8 +45,8 @@ function updateScene() {
 	if(trackStateUpdated) {
 		trackStateUpdated=false;
 		const multitrackPlayerControl = document.getElementById('multitrackPlayerControl');
-		//var htmlTable = "<table><tr><td> Track </td><td>Point</td><td> Control </td><td> Manage </td><td> Rate </td><td> Status </td><td> Play Time </td><td> Duration </td><td> Clip </td><td> Tempo  </td><td> Name </td></tr>";
-		var htmlTable = "<table><tr><td> Control </td><td> Clear </td><td> Play Time </td><td> Duration </td><td> Name </td></tr>";
+		//var htmlTable = "<table><tr><td> Control </td><td> Clear </td><td> Play Time </td><td> Duration </td><td> Name </td></tr>";
+		var htmlTable = "<table>";
 		var trackNr = 0;
 		sounds.forEach(element => {
 			var t = Math.round( element.currentTime );
@@ -61,11 +61,17 @@ function updateScene() {
 				//htmlTable += "<tr><td>" + trackNr + "</td><td>" + pointId + "</td><td>";
 				htmlTable += "<tr><td>";
 				if(element.isPlaying) {
-					htmlTable += "<input type=\"button\" class=\"list\" onclick=\"pauseSoundTrack("+trackNr+");\" value=\"ll\"/> ";
+					htmlTable += "<button class=\"list\" onclick=\"pauseSoundTrack("+trackNr+");\" value=\"ll\"> ";
+					htmlTable += "<img src=\"icons/pause.svg\" style=\"width:8vh;height:8vh\"/>";
+					htmlTable += "</button>";
 				} else {
-					htmlTable += "<input type=\"button\" class=\"list\" onclick=\"playSoundTrack("+trackNr+");\" value=\"l>\"/> ";
+					htmlTable += "<button class=\"list\" onclick=\"playSoundTrack("+trackNr+");\" value=\"l>\"> ";
+					htmlTable += "<img src=\"icons/play.svg\" style=\"width:8vh;height:8vh\"/>";
+					htmlTable += "</button>";
 				}
-				htmlTable += "</td><td><input type=\"button\" class=\"list\" onclick=\"disposeSoundTrack("+trackNr+");\" value=\"X\"/> ";
+				htmlTable += "</td><td><button class=\"list\" onclick=\"disposeSoundTrack("+trackNr+");\" value=\"X\"> ";
+				htmlTable += "<img src=\"icons/close.svg\" style=\"width:8vh;height:8vh\"/>";
+				htmlTable += "</button></td>";
 //				htmlTable += "<input type=\"button\" onclick=\"highlightSpot("+pointId+");\" value=\"show\"/> ";
 //				htmlTable += "<a href=\""+element.name+"\" target=\"_blank\">download</a></td>";
 
@@ -95,9 +101,9 @@ function updateScene() {
 		}
 
 		htmlTable += "</table>";
-		htmlTable += "<table id=\"pointInfoField\" style=\"word-wrap:break-word;width:50vw;\">";
-		htmlTable += "<tr><td colspan=\"5\"></td></tr>";
-		htmlTable += "</table>";
+		//htmlTable += "<table id=\"pointInfoField\" style=\"word-wrap:break-word;width:50vw;\">";
+		//htmlTable += "<tr><td colspan=\"5\"></td></tr>";
+		//htmlTable += "</table>";
 
 		multitrackPlayerControl.innerHTML = htmlTable;
 	}

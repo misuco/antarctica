@@ -61,6 +61,7 @@ var playTrack = function(trackId) {
 				if(autoPilot==1 && music1.loopcount==1) {
 					selectSpot(nextPointFields);
 				}
+				disposeStopedSounds();
 			});
 
 			checkMaxSounds();
@@ -207,6 +208,15 @@ var createSoundTrack = function (scene) {
 	} );
 	soundParams.push(soundParamsMap.get("Title"));
 
+}
+
+var disposeStopedSounds = function () {
+	let i=sounds.length-1;
+	for(;i>=0;i--) {
+		if(sounds[i].isPlaying==false) {
+			disposeSoundTrack(i);
+		}
+	}
 }
 
 var disposeSoundTrack = function ( trackNr ) {

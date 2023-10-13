@@ -125,6 +125,7 @@ function showSessionMenu() {
 	sessionControl.innerHTML=view;
 	hideAllViews();
 	sessionControl.hidden=false;
+	closeButton.hidden=false;
 }
 
 function showTeleportMenu() {
@@ -137,6 +138,7 @@ function showTeleportMenu() {
 	sessionControl.innerHTML=view;
 	hideAllViews();
 	sessionControl.hidden=false;
+	closeButton.hidden=false;
 }
 
 function showSessionControl() {
@@ -149,7 +151,7 @@ function showSessionControl() {
 	});
 	*/
 
-	view = "<table><tr><td>Session Name</td><td colspan=\"8\">" + sessionName + "</h1></td></tr>";
+	view = "<br/><table><tr><td>Session Name</td><td colspan=\"8\">" + sessionName + "</h1></td></tr>";
 	view += "<tr><td>Parameter</td><td></td><td>V</td><td></td><td>co</td><td>rn</td><td>sa</td><td>tr</td><td>sq</td><td>Ev</td><td>By</td><td>Seq</td></tr>";
 	soundParams.forEach((item, i) => {
 		if (typeof item.value === 'string') {
@@ -194,7 +196,15 @@ function showSessionControl() {
 
 	hideAllViews();
 	sessionControl.hidden=false;
+	closeButton.hidden=false;
+}
 
+function toggleMenu() {
+	menu.hidden=!menu.hidden
+}
+
+function fullscreen() {
+	document.querySelector("body").requestFullscreen();
 }
 
 function hideAllViews() {
@@ -202,6 +212,8 @@ function hideAllViews() {
 	ratingList.hidden=true;
 	sessionStart.hidden=true;
 	sessionControl.hidden=true;
+	closeButton.hidden=true;
+	menu.hidden=true;
 }
 
 hideAllViews();
