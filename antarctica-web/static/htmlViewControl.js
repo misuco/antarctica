@@ -223,7 +223,16 @@ function hideAllViews() {
 	menu.hidden=true;
 }
 
+function initSettingsCheckboxes() {
+	document.getElementById('spatialSoundCheckbox').checked=false;
+	document.getElementById('buildingPointsCheckbox').checked=false;
+	document.getElementById('selectedPointsCheckbox').checked=false;
+	document.getElementById('landscapePointsCheckbox').checked=false;
+	document.getElementById('quickNext').checked=false;
+}
+
 hideAllViews();
+initSettingsCheckboxes();
 sessionStart.hidden=false;
 initPopUpScales();
 initPopUpGmInstruments();

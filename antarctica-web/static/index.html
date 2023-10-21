@@ -15,9 +15,14 @@
    }
    td {
       font-size: 4vh;
-      color: red;
+      color: white;
       background-color: rgba(0,0,0,0.5);
    }
+   input[type=checkbox] {
+      width: 4vh;
+      height: 4vh;
+   }
+
 
    .tdPadding2 {
       padding-left: 2vh;
@@ -199,10 +204,13 @@
 
 <div style="top:10vh;left:15vw;width:70vw;height:80vh;overflow:auto;position:absolute;z-index:1000;background-color:#ffffff80;" id="viewControl">
    <h2>View control</h2>
-   <input type="checkbox" id="spatialSoundCheckbox" onchange="spatialSoundOn=document.getElementById('spatialSoundCheckbox').checked" \> Spatial Sound <br/>
-   <input type="checkbox" id="buildingPointsCheckbox" onchange="buildingPointsNode.setEnabled(document.getElementById('buildingPointsCheckbox').checked);" \> Building Points <br/>
-   <input type="checkbox" id="selectedPointsCheckbox" onchange="selectedPointsNode.setEnabled(document.getElementById('selectedPointsCheckbox').checked);" \> Selected Points <br/>
-   <input type="checkbox" id="landscapePointsCheckbox" onchange="landscapePointsNode.setEnabled(document.getElementById('landscapePointsCheckbox').checked);" \> Landscape Points <br/>
+   <table>
+      <tr><td><input type="checkbox" id="spatialSoundCheckbox" onchange="spatialSoundOn=document.getElementById('spatialSoundCheckbox').checked;" \> Spatial Sound </td></tr>
+      <tr><td><input type="checkbox" id="buildingPointsCheckbox" onchange="buildingPointsNode.setEnabled(document.getElementById('buildingPointsCheckbox').checked);" \> Building Points </td></tr>
+      <tr><td><input type="checkbox" id="selectedPointsCheckbox" onchange="selectedPointsNode.setEnabled(document.getElementById('selectedPointsCheckbox').checked);" \> Selected Points </td></tr>
+      <tr><td><input type="checkbox" id="landscapePointsCheckbox" onchange="landscapePointsNode.setEnabled(document.getElementById('landscapePointsCheckbox').checked);" \> Landscape Points </td></tr>
+      <tr><td><input type="checkbox" id="quickNext" onchange="quickNext=document.getElementById('quickNext').checked;" \> Quick Next </td></tr>
+   </table>
 </div>
 
 <div style="bottom:0;left:0;width:70vw;height:10vh;overflow:auto;position:absolute;z-index:1000;background-color:#00000000;" id="multitrackPlayerControl"><span>Player Control</span></div>

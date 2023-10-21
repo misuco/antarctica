@@ -6,6 +6,7 @@ var getClosestUnvisited = function(id,nth) {
 	// array for 10 closest points
 	var closestDistance = [10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0];
 	var closestId = [0,0,0,0,0,0,0,0,0,0];
+	console.log("getClosestUnvisited pointLoadedMap "+pointLoadedMap.size+" visitedPoints "+visitedPoints.size);
 	pointLoadedMap.forEach(point => {
 		var fields = point.fields;
 		if(fields!=undefined) {

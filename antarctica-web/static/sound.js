@@ -15,6 +15,7 @@ var autoPilot = 0;
 var autoPilotDistance = 5;
 var maxSounds = 1;
 var spatialSoundOn = false;
+var quickNext = false;
 
 
 var sounds = [];
@@ -71,6 +72,10 @@ var playTrack = function(trackId) {
 			music1.setVolume(1);
 			music1.play();
 			trackStateUpdated=true;
+
+			if(quickNext==true) {
+				selectSpot(nextPointFields);
+			}
 		},
 		{
 			loop: false,
