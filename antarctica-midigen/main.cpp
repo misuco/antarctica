@@ -37,11 +37,12 @@ int main(int argc, char *argv[])
     //if(file_exists(":/data/chords.csv") ) { cout << "chords.csv exists"; } else { cout << "chords.csv does NOT exist"; }
     //if(file_exists(":/data/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid")) { cout << "_Sechs_kleine_Klavierstcke_Op exists"; } else { cout << "_Sechs_kleine_Klavierstcke_Op does NOT exist"; }
 
-    mc.loadChordMap( "/home/antarctica/chords.csv" );
-    mc.loadScaleMap( "/home/antarctica/scales_cleaned_sorted.csv" );
+    mc.loadChordMap( "/home/devel/MISUCO/antarctica/antarctica-midigen/data/chords.csv" );
+    mc.loadScaleMap( "/home/devel/MISUCO/antarctica/antarctica-midigen/data/scales_cleaned_sorted.csv" );
     //mc.loadMidiFile( ":/data/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
     //mc.loadMidiFile( "/home/c1/ownCloud/studio-exchange/schoenberg/Midi/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
-    mc.loadMidiFile( "/home/antarctica/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
+    //mc.loadMidiFile( "/home/antarctica/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
+    mc.loadMidiFile( "/home/devel/Desktop/bk_xmas1.mid" );
     mc.analyzeMidiFile();
 
     cout << "Params:";
@@ -50,16 +51,16 @@ int main(int argc, char *argv[])
     }
     cout << endl;
 
-    string target="";
-    int block=0;
-    int loopLength=0;
-    int repeat=0;
-    int tempo=0;
+    string target="test3";
+    int block=302;
+    int loopLength=4;
+    int repeat=1;
+    int tempo=70;
     int pitch=0;
-    int scale=0;
+    int scale=16;
     int basenote=0;
-    int arrange=0;
-    int sound = 1;
+    int arrange=10;
+    int sound=13;
 
     int c;
     while ((c = getopt (argc, argv, "o:b:l:r:t:p:s:n:a:c:")) != -1) {
@@ -248,7 +249,7 @@ int main(int argc, char *argv[])
             playTime += secondsPerQuarter * 8;
         }
     } else {
-        for(int r=0;(r<repeat || playTime<minPlayTime) && playTime<maxPlayTime;r++) {
+        for(int r=0;r<repeat;r++) {
             for(int c=0;c<loopLength;c++) {
                 config.push_back( { block+c, pitch, tempo, basenote, scale, sound } );
             }

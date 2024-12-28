@@ -79,8 +79,8 @@ void Midicalc::initScaleFilter(int scale, int basenote)
 {
     if(scale>=scalePool.size()) scale=scalePool.size()-1;
 
-    //cout << "Scale: " << scaleMap[scalePool.at(scale)] << endl;
-    //cout << "Basenote: " << midinote2txt(basenote) << endl;
+    cout << "Scale: " << scaleMap[scalePool.at(scale)] << endl;
+    cout << "Basenote: " << midinote2txt(basenote) << endl;
 
     // clear existing filter
     scaleFilter.clear();
@@ -394,16 +394,21 @@ void Midicalc::saveNewMidiFile(const string &filename)
 
     string soundfont = "/home/antarctica/antarcticalibs/Touhou.sf2";
     //string command = "fluidsynth /home/antarctica/antarcticalibs/TimGM6mb.sf2 " + filename + ".mid -F " + filename + ".wav -r 48000 -O s24";
+
+    /*
+     *
+     *
     string command = "fluidsynth  " + soundfont + " " + filename + ".mid -F " + filename + ".wav -r 48000 -O s24";
     system( command.c_str() );
-    command = "ffmpeg -i " + filename + ".wav -acodec mp3 -ab 128k " + filename + ".mp3";
+    command = "ffmpeg -y -i " + filename + ".wav -acodec mp3 -ab 128k " + filename + ".mp3";
     system( command.c_str() );
     command = "rm " + filename + ".wav";
     system( command.c_str() );
+    */
 
-    command = "fluidsynth " + soundfont + " " + filename + "-loop.mid -F " + filename + "-loop.wav -r 48000 -O s24";
+    string command = "fluidsynth " + soundfont + " " + filename + "-loop.mid -F " + filename + "-loop.wav -r 48000 -O s24";
     system( command.c_str() );
-    command = "ffmpeg -i " + filename + "-loop.wav -acodec mp3 -ab 128k " + filename + "-loop.mp3";
+    command = "ffmpeg -y -i " + filename + "-loop.wav -acodec mp3 -ab 128k " + filename + "-loop.mp3";
     system( command.c_str() );
     command = "rm " + filename + "-loop.wav";
     system( command.c_str() );
