@@ -135,7 +135,7 @@ var triggerNewSound = function(trackId) {
 		if(this.response.includes("Error")) {
 			console.log("server error!!!");
 			nextSound();
-			triggerNewSound();
+			triggerNewSound(nextTrackId);
 		} else {
 			if(loopPlay==1) playTrack(this.response + "-loop.mp3");
 			else playTrack(this.response + ".mp3");
