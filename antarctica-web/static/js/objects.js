@@ -14,13 +14,13 @@ mYellow.diffuseColor = new BABYLON.Color3(1, 1, 0);
 mYellow.alpha = 0.5;
 mYellow.freeze();
 
-var nOrbiter=0;
+var nOrbiter=16;
 var orbiter = [];
-var track = [];
+var orbitertrack = [];
 
 
 for(let i=0;i<nOrbiter;i++) {
-  orbiter[i] = BABYLON.MeshBuilder.CreateSphere("orbiter"+i, { diameter:5 }, scene);
+  orbiter[i] = BABYLON.MeshBuilder.CreateSphere("orbiter"+i, { diameter:2 }, scene);
   orbiter[i].material = mGreen;
   //track[i] = new BABYLON.Sound("track"+i, "music/test"+i+".mp3", scene, null, { loop: true, autoplay: true, spatialSound: true });
   //track[i].attachToMesh(orbiter[i]);
@@ -65,11 +65,22 @@ var nextSound = function() {
 	nextTrackId++;
 	clipId+=4;
 	soundProg+=1;
+	if(nextTrackId>15) nextTrackId=0;
+	if(clipId>300) clipId=0;
+	if(soundProg>127) soundProg=0;
 }
+
+scene.audioListenerPositionProvider = () => {
+  // Returns a static position
+  return spaceshipMesh.absolutePosition;
+};
 
 var playTrack = function(trackId) {
 	console.log("play track: "+trackId);
-	playingTrack=trackId;
+
+	if(orbitertrack.length>nextTrackId) {
+		orbitertrack[nextTrackId].stop();
+	}
 
 	var track = new BABYLON.Sound(
 		trackId,
@@ -104,12 +115,15 @@ var playTrack = function(trackId) {
 			loop: true,
 			spatialSound: true,
 			distanceModel: "exponential",
-			rolloffFactor: 0.9
+			rolloffFactor: 0.5,
+			panningModel: "HRTF"
 		}
 	);
 
 	track.attachToMesh(orbiter[nextTrackId]);
-	track[nextTrackId]=track;
+	orbitertrack[nextTrackId]=track;
+	
+    orbiter[nextTrackId].material = mGreen;
 
 	//sounds.push(music1);
 
@@ -122,11 +136,7 @@ var playTrack = function(trackId) {
 
 var triggerNewSound = function(trackId) {
 
-	if(trackId>16) return;
-	
-    orbiter[trackId] = BABYLON.MeshBuilder.CreateSphere("orbiter"+trackId, { diameter:5 }, scene);
-    orbiter[trackId].material = mGreen;
-	nOrbiter++;
+    orbiter[trackId].material = mRed;
 	
 	var oReq = new XMLHttpRequest();
 	oReq.addEventListener("load", function() {

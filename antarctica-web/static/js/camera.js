@@ -239,9 +239,9 @@ scene.onBeforeRenderObservable.add(() => {
     if (!orbiter[i]) {
       continue;
     }
-    orbiter[i].position.x = spaceshipMesh.position.x+60*Math.sin(now+i*orbiterDist);
+    orbiter[i].position.x = spaceshipMesh.position.x+10*Math.sin(now+i*orbiterDist);
     orbiter[i].position.y = spaceshipMesh.position.y;
-    orbiter[i].position.z = spaceshipMesh.position.z+60*Math.cos(now+i*orbiterDist);
+    orbiter[i].position.z = spaceshipMesh.position.z+10*Math.cos(now+i*orbiterDist);
   }
   
   
