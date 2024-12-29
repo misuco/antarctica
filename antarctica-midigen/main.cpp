@@ -37,12 +37,12 @@ int main(int argc, char *argv[])
     //if(file_exists(":/data/chords.csv") ) { cout << "chords.csv exists"; } else { cout << "chords.csv does NOT exist"; }
     //if(file_exists(":/data/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid")) { cout << "_Sechs_kleine_Klavierstcke_Op exists"; } else { cout << "_Sechs_kleine_Klavierstcke_Op does NOT exist"; }
 
-    mc.loadChordMap( "/home/devel/MISUCO/antarctica/antarctica-midigen/data/chords.csv" );
-    mc.loadScaleMap( "/home/devel/MISUCO/antarctica/antarctica-midigen/data/scales_cleaned_sorted.csv" );
+    mc.loadChordMap( "/home/antarctica/axmas/antarctica-midigen/data/chords.csv" );
+    mc.loadScaleMap( "/home/antarctica/axmas/antarctica-midigen/data/scales_cleaned_sorted.csv" );
     //mc.loadMidiFile( ":/data/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
     //mc.loadMidiFile( "/home/c1/ownCloud/studio-exchange/schoenberg/Midi/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
     //mc.loadMidiFile( "/home/antarctica/Schoenberg_-_Sechs_kleine_Klavierstcke_Op._19.mid" );
-    mc.loadMidiFile( "/home/devel/Desktop/bk_xmas1.mid" );
+    mc.loadMidiFile( "/home/antarctica/bk_xmas1.mid" );
     mc.analyzeMidiFile();
 
     cout << "Params:";

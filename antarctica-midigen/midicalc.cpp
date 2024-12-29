@@ -116,6 +116,8 @@ void Midicalc::initScaleFilter(int scale, int basenote)
             i+=4;
         } else if(scaleSteps.at(stepI)=="3H") {
             i+=3;
+        } else if(scaleSteps.at(stepI)=="4H") {
+            i+=4;
         } else {
             cout << "WARNING: unknown step token " << scaleSteps.at(stepI) << endl;
         }
@@ -134,7 +136,7 @@ void Midicalc::initScaleFilter(int scale, int basenote)
 
 Midicalc::Midicalc() :
     bpm { 125 },
-    outputPath { "/home/c1/MISUCO/antarctica-files/" }
+    outputPath { "." }
 {
     //QDir d;
     //d.mkdir(outputPath+"wav");
