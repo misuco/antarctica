@@ -45,8 +45,22 @@ set(HDRS
 
 add_library(midifile STATIC ${SRCS} ${HDRS})
 
-set(SOURCES main.cpp midicalc.cpp midicalc.hpp )
+##############################
+##
+## App 1:
+##
+set(SOURCES midicalc/main.cpp midicalc/midicalc.cpp midicalc/midicalc.hpp )
 
 ##############################
 add_executable(antarctica ${SOURCES} ${RESOURCES} )
 target_link_libraries(antarctica midifile )
+
+##############################
+##
+## App 2:
+##
+set(SOURCES2 midigen/main.cpp midigen/midigen.cpp midigen/midigen.hpp )
+
+##############################
+add_executable(midigen ${SOURCES2} ${RESOURCES} )
+target_link_libraries(midigen midifile )

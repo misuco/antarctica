@@ -239,9 +239,27 @@ scene.onBeforeRenderObservable.add(() => {
     if (!orbiter[i]) {
       continue;
     }
-    orbiter[i].position.x = spaceshipMesh.position.x+10*Math.sin(now+i*orbiterDist);
-    orbiter[i].position.y = spaceshipMesh.position.y;
-    orbiter[i].position.z = spaceshipMesh.position.z+10*Math.cos(now+i*orbiterDist);
+    if(i%4==0) {
+		let radius=8;
+		orbiter[i].position.x = spaceshipMesh.position.x+radius*Math.sin(now+i*orbiterDist);
+		orbiter[i].position.y = spaceshipMesh.position.y;
+		orbiter[i].position.z = spaceshipMesh.position.z+radius*Math.cos(now+i*orbiterDist);
+	} else if(i%4==1) {	
+		let radius=8;
+		orbiter[i].position.x = spaceshipMesh.position.x+radius*Math.sin(now+i*orbiterDist);
+		orbiter[i].position.y = spaceshipMesh.position.y+radius*Math.cos(now+i*orbiterDist);		
+		orbiter[i].position.z = spaceshipMesh.position.z;
+	} else if(i%4==2) {	
+		let radius=12;
+		orbiter[i].position.x = spaceshipMesh.position.x+radius*Math.sin(now+i*orbiterDist);
+		orbiter[i].position.y = spaceshipMesh.position.y;
+		orbiter[i].position.z = spaceshipMesh.position.z+radius*Math.cos(now+i*orbiterDist);		
+	} else if(i%4==3) {	
+		let radius=12;
+		orbiter[i].position.x = spaceshipMesh.position.x+radius*Math.sin(now+i*orbiterDist);
+		orbiter[i].position.y = spaceshipMesh.position.y+radius*Math.cos(now+i*orbiterDist);		
+		orbiter[i].position.z = spaceshipMesh.position.z;
+	}
   }
   
   

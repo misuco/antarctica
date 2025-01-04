@@ -27,6 +27,18 @@ app.get('/newclip', function(req, res) {
    res.send("loops/" + req.query.sessionId + "/" + req.query.id);
 });
 
+app.get('/newsync', function(req, res) {
+   console.log("got newsync " + req.query.id);
+   console.log(config.app.bin_path_midigen + ' -t '+req.query.tempo+' -o '+config.app.web_path+'/loops/'+req.query.sessionId+'/'+req.query.id);
+   createSessionDir(req.query.sessionId);
+   result=proc.execSync(config.app.bin_path_midigen + ' -t '+req.query.tempo+' -o '+config.app.web_path+'/loops/'+req.query.sessionId+'/'+req.query.id);
+   console.log("------------------------------------------------------------------------------");
+   console.log("request result :");
+   console.log("--> "+result);
+   console.log("------------------------------------------------------------------------------");
+   res.send("loops/" + req.query.sessionId + "/" + req.query.id);
+});
+
 app.get('/rate', function(req, res) {
    console.log("got rating " + req.query.rating + " for " + req.query.trackId);
    var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
