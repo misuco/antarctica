@@ -45,10 +45,13 @@ SceneLoader.ImportMeshAsync(
 	  //planet_mesh.scaling.x = 0.2;
 	  //planet_mesh.scaling.y = 0.2;
 	  //planet_mesh.scaling.z = 0.2;
+	 
+});
 
 for(let i=0;i<nSlalom;i++) {
-  slalom[i] = planet_mesh.createInstance("slalom"+i); //BABYLON.MeshBuilder.CreateSphere("slalom"+i, { diameter:5 }, scene);
-  //slalom[i].material = mYellow;
+  //slalom[i] = planet_mesh.createInstance("slalom"+i); 
+  slalom[i] = BABYLON.MeshBuilder.CreateSphere("slalom"+i, { diameter:5 }, scene);
+  slalom[i].material = mYellow;
   //console.log("adding track slalom "+i);
   //slalomtrack[i] = new BABYLON.Sound("track"+i, "music/slalom"+i%10+".mp3", scene, null, { loop: true, autoplay: true, spatialSound: true });
   //slalomtrack[i].attachToMesh(slalom[i]);
@@ -56,11 +59,6 @@ for(let i=0;i<nSlalom;i++) {
   slalom[i].position.y = Math.round(i/10)%10*100;
   slalom[i].position.z = i%10*-100;
 }
-
-	  
-});
-
-
 
 var nextTrackId=0;
 
