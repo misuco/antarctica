@@ -66,19 +66,28 @@ void Midigen::newMidiFile() {
         MidiEvent midievent;
 
         int beat=i%8;
-        int note=0x2A; // Hihat
-        if(beat==0) {
-            note=0x24; // Bassdrum
-        } else if(beat==4) {
-            note=0x26; // Snare
+
+        for(int note:{0x2A,0x24,0x26}) {
+            bool addEvent=false;
+            if(note==0x2A) { // HiHat
+                addEvent=true;
+            } else if(note==0x24) { // Bassdrum
+                if(beat==0 || beat==4) {
+                    addEvent=true;
+                }
+            } else if(note==0x26) { // Snare
+                if(beat==4) {
+                    addEvent=true;
+                }
+            }
+            if(addEvent) {
+                midievent.setCommand(0x99,note,0xff);
+                midiOut.addEvent( 0, tick, midievent );
+
+                midievent.setCommand(0x89,note,0x00);
+                midiOut.addEvent( 0, tick+tpq/2, midievent );
+            }
         }
-
-        midievent.setCommand(0x99,note,0xff);
-        midiOut.addEvent( 0, tick, midievent );
-
-        midievent.setCommand(0x89,note,0x00);
-        midiOut.addEvent( 0, tick+tpq/2, midievent );
-
     }
 
 
@@ -93,13 +102,13 @@ void Midigen::newMidiFile() {
 
         int beat=i%8;
 
-        if(beat==2 || beat==6) {
+        if(beat==2 || beat==6 || beat==3 || beat==7) {
             int note=0x25;
             midievent.setCommand(0x90,note,0xff);
             midiOut.addEvent( 1, tick, midievent );
 
             midievent.setCommand(0x80,note,0x00);
-            midiOut.addEvent( 1, tick+tpq/2, midievent );
+            midiOut.addEvent( 1, tick+tpq, midievent );
         }
     }
 
@@ -171,7 +180,8 @@ void Midigen::saveNewMidiFile(const string &filename)
 
     string command = "fluidsynth " + soundfont + " " + filename + "-loop.mid -F " + filename + "-loop-cut.wav -r 48000 -O s24";
     system( command.c_str() );
-    command = "sox " + filename + "-loop-cut.wav " + filename + "-loop.wav " + " trim 0 209452s";
+    //command = "sox " + filename + "-loop-cut.wav " + filename + "-loop.wav " + " trim 0 209452s"; // 55 bpm
+    command = "sox " + filename + "-loop-cut.wav " + filename + "-loop.wav " + " trim 0 76800s"; //
     system( command.c_str() );
     command = "ffmpeg -y -i " + filename + "-loop.wav -acodec mp3 -ab 128k " + filename + "-loop.mp3";
     system( command.c_str() );

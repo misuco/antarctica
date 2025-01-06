@@ -29,6 +29,8 @@ for(let i=0;i<nOrbiter;i++) {
 const nSlalom=1000;
 var slalom = [];
 var slalomtrack = [];
+
+/*
 var planet_mesh;
 
 SceneLoader.ImportMeshAsync(
@@ -47,6 +49,7 @@ SceneLoader.ImportMeshAsync(
 	  //planet_mesh.scaling.z = 0.2;
 	 
 });
+*/
 
 for(let i=0;i<nSlalom;i++) {
   //slalom[i] = planet_mesh.createInstance("slalom"+i); 
@@ -66,7 +69,7 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-let tempo=55;
+let tempo=75;
 let clipId=0;//+getRandomInt(300);
 let loopLength=2;
 let repeat=8;
@@ -88,11 +91,6 @@ var nextSound = function() {
 	if(soundProg>127) soundProg=0;
 	triggerNewSound(nextTrackId);
 }
-
-scene.audioListenerPositionProvider = () => {
-  // Returns a static position
-  return spaceshipMesh.absolutePosition;
-};
 
 var playTrack = function(trackId) {
 	console.log("play track: "+trackId);

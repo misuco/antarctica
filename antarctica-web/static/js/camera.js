@@ -62,6 +62,12 @@ SceneLoader.ImportMeshAsync(
   chaseCameraLookAt.position = new Vector3(0, 2, 10);
   // Now that chaseCameraPosition and chaseCameraLookAt are set, the
   // chase camera code can will it's thing (see code above)
+  
+  scene.audioListenerPositionProvider = () => {
+    // Returns a static position
+    return spaceshipMesh.absolutePosition;
+  };
+  
 });
 
 

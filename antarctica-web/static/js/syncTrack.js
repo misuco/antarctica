@@ -59,7 +59,7 @@ var loadSyncTrack = function() {
 
 	console.log("trigger new sync track ");
 	
-	let tempo=55;
+	let tempo=150;
 	let loopLength=16;
 	let sessionId=0;
 	let queryId="sync_"+tempo+"_"+Date.now();
